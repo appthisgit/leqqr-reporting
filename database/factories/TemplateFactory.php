@@ -25,7 +25,7 @@ class TemplateFactory extends Factory
     public function definition(): array
     {
         return [
-            //
+            'xml' => '<template font-size="9" receipt-width-char-amount="36" receipt-width-paper="200"></template>'
         ];
     }
 }

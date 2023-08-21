@@ -2,26 +2,28 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\UserResource\Pages;
-use App\Models\User;
+use App\Filament\Resources\TemplateResource\Pages;
+use App\Filament\Resources\TemplateResource\RelationManagers\EndpointsRelationManager;
+use App\Models\Template;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
 
-class UserResource extends Resource
+class TemplateResource extends Resource
 {
-    protected static ?string $model = User::class;
+    protected static ?string $model = Template::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-users';
+    protected static ?string $navigationIcon = 'heroicon-o-book-open';
 
     protected static ?string $recordTitleAttribute = 'name';
 
+    protected static ?string $navigationGroup = 'Output';
+
     public static function getGloballySearchableAttributes(): array
     {
-        return ['name', 'email'];
+        return ['name'];
     }
 
     public static function form(Form $form): Form
@@ -31,16 +33,10 @@ class UserResource extends Resource
                 Forms\Components\TextInput::make('name')
                     ->required()
                     ->maxLength(255),
-                Forms\Components\TextInput::make('email')
-                    ->email()
+                Forms\Components\Textarea::make('content')
                     ->required()
-                    ->maxLength(255),
-                Forms\Components\DateTimePicker::make('email_verified_at'),
-                Forms\Components\TextInput::make('password')
-                    ->password()
-                    ->required()
-                    ->hiddenOn('edit')
-                    ->maxLength(255),
+                    ->maxLength(65535)
+                    ->columnSpanFull(),
             ]);
     }
 
@@ -50,12 +46,6 @@ class UserResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('email')
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('email_verified_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -66,8 +56,7 @@ class UserResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                Tables\Filters\Filter::make('verified')
-                    ->query(fn (Builder $query): Builder => $query->whereNotNull('email_verified_at')),
+                //
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
@@ -85,16 +74,16 @@ class UserResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            EndpointsRelationManager::class
         ];
     }
 
     public static function getPages(): array
     {
         return [
-            'index' => Pages\ListUsers::route('/'),
-            'create' => Pages\CreateUser::route('/create'),
-            'edit' => Pages\EditUser::route('/{record}/edit'),
+            'index' => Pages\ListTemplates::route('/'),
+            'create' => Pages\CreateTemplate::route('/create'),
+            'edit' => Pages\EditTemplate::route('/{record}/edit'),
         ];
     }
 }

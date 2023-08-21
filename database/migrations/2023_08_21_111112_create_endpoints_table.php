@@ -11,10 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('templates', function (Blueprint $table) {
+        Schema::create('endpoints', function (Blueprint $table) {
             $table->id();
-            $table->string('name', 30);
-            $table->text('content');
+            $table->foreignId('template_id')
+                ->constrained()
+                ->onUpdate('cascade')
+                ->onDelete('restrict');
+                $table->string('name', 40);
+            $table->string('type', 20);
+            $table->string('target', 100);
             $table->timestamps();
         });
     }
@@ -24,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('templates');
+        Schema::dropIfExists('endpoints');
     }
 };
