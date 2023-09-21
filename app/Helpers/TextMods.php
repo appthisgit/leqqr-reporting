@@ -8,11 +8,6 @@ class TextMods
 {
     const SPACE = 1;
 
-    public static function isEmptyOrNull($text): bool
-    {
-        return $text == null || empty(trim($text)) || $text == 'null';
-    }
-
     public static function wordwrap(string $value, int $maxLength): string
     {
         return implode("\r\n", self::wordwrap_toArray($value, $maxLength));
