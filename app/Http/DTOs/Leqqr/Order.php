@@ -8,7 +8,6 @@ class Order extends OrderCollectionItem
     public function __construct(
         public array $products,
         public array $taxes,
-        public float $taxTotal,
         public string $name,            // customer name
         public string $notes,           // customer notes
         public string $coupon_code,
@@ -31,7 +30,7 @@ class Order extends OrderCollectionItem
 
     public function hasPinTransactionReceipt()
     {
-        return trim($this->pin_transaction_receipt) == '';
+        return !empty(trim($this->pin_transaction_receipt));
     }
 
     public function isIdeal()

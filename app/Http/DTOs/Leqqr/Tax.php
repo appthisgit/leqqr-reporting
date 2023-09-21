@@ -7,7 +7,7 @@ class Tax
 
     public function __construct(
         public float $tarif,
-        public float $price,
+        public float $total,
     ) {
     }
 

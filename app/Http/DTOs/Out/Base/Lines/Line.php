@@ -3,14 +3,18 @@
 namespace App\Http\DTOs\Out\Base\Lines;
 
 use App\Helpers\Margins;
+use App\Helpers\PrintSettings;
 
 abstract class Line
 {
+    public bool $centered;
+    public Margins $margins;
 
     public function __construct(
-        public array $centered,
-        public Margins $margins,
+        PrintSettings $defaults
     ) {
+        $this->centered = $defaults->center;
+        $this->margins = $defaults->lineMargins->copy();
     }
 
     public function center() {

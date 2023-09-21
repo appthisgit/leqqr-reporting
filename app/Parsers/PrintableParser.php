@@ -5,6 +5,7 @@ namespace App\Parsers\In;
 use App\Exceptions\TemplateException;
 use App\Helpers\ReceiptMods;
 use App\Helpers\Strings;
+use App\Helpers\TextMods;
 use App\Http\DTOs\Leqqr\Product;
 use App\Http\DTOs\Leqqr\Receipt;
 use App\Http\DTOs\Leqqr\Tax;
@@ -204,25 +205,59 @@ class PrintableParser
                 }
                 break;
 
-            // non-functional
+                // non-functional
             case 'stripe':
                 $this->currentLine = $this->createTextLine($node, ReceiptMods::divider($this->receipt->settings->stripeChar, $this->receipt->settings->widthCharAmount));
                 $this->printable->lines[] = $this->currentLine;
                 break;
             case 'item':
-
+                if (!($this->currentLine instanceof ReceiptRow)) {
+                    throw new TemplateException('item', 'found at unparsable location');
+                }
+                $this->parseChildren($node);
                 break;
             case 'price':
+                if (!($this->currentLine instanceof ReceiptRow)) {
+                    throw new TemplateException('price', 'found at unparsable location');
+                }
+                if (!$node->hasAttributes() || empty($node->attributes->getNamedItem('value'))) {
+                    throw new TemplateException('price', 'doesn\'t contain the attribute "value" with a key for a price value');
+                }
+
+                $key = $node->attributes->getNamedItem('value')->nodeValue;
+                // Intellisense gives an error but secretly the object is a ReceiptRow which has price as property
+                $this->currentLine->price = $this->retrievePrice($key);
                 break;
             case 'text':
+                if (!($this->currentLine instanceof TextLine)) {
+                    throw new TemplateException('text', 'trying to add text to a non textual line');
+                }
+
+                $this->currentLine->appendText($node->textContent);
+                break;
             default:
+                if ($node->hasChildNodes()) {
+                    throw new TemplateException($node->nodeName, 'is unknown to have children');
+                }
+                $value = $this->retrieveValue($node->nodeName);
+
+                if ($node->hasAttributes() && !empty($node->attributes->getNamedItem('wordwrap'))) {
+                    $value = TextMods::wordwrap($value, $this->receipt->settings->widthCharAmount);
+                }
+
+                if (!($this->currentLine instanceof TextLine)) {
+                    throw new TemplateException('text', 'trying to add text to a non textual line');
+                }
+
+                $this->currentLine->appendText($node->textContent);
                 break;
         }
     }
 
+
     private function createTextLine(DOMNode $node, string $value): TextLine
     {
-        $line = new TextLine($value);
+        $line = new TextLine($value, $this->receipt->settings);
 
         foreach ($node->attributes as $attribute) {
             switch ($attribute->nodeName) {
@@ -340,6 +375,120 @@ class PrintableParser
         }
 
         throw new TemplateException("if key=\"$key\"", 'unknown key');
+    }
+
+
+    private function retrievePrice(string $key): float
+    {
+        switch ($key) {
+            case 'subtotal':
+                return $this->receipt->order->price_subtotal;
+            case 'delivery_costs':
+                return $this->receipt->order->price_delivery;
+            case 'transaction_costs':
+                return $this->receipt->order->price_transaction;
+            case 'discount_amount':
+                return $this->receipt->order->price_discount;
+            case 'tax_total':
+                return $this->receipt->order->price_tax;
+            case 'total';
+                return $this->receipt->order->price_total;
+
+                // Product
+            case 'product_price':
+                $this->checkValue($this->currentProduct, "price value=\"$key\"",  'can\'t be accessed outside of product loop');
+                return $this->currentProduct ?? 0;
+            case 'product_subtotal':
+                $this->checkValue($this->currentProduct, "price value=\"$key\"",  'can\'t be accessed outside of product loop');
+                return $this->currentProduct->subtotal;
+            case 'product_tax':
+                $this->checkValue($this->currentProduct, "price value=\"$key\"",  'can\'t be accessed outside of product loop');
+                return $this->currentProduct->getTax();
+
+                // Taxes
+            case 'product_tax':
+                $this->checkValue($this->currentTax, "price value=\"$key\"",  'can\'t be accessed outside of tax loop');
+                return $this->currentTax->total;
+
+                // Variation
+            case 'variation_price':
+                $this->checkValue($this->currentTax, "price value=\"$key\"",  'can\'t be accessed outside of variation loop');
+                return $this->currentVariationValue->price;
+        }
+    }
+
+    private function retrieveValue(string $key): string
+    {
+        switch ($key) {
+            case 'order_id':
+                return $this->receipt->order->id;
+            case 'order_date':
+                return $this->receipt->order->createdAt;
+            case 'company_name':
+                return $this->receipt->company->name;
+            case 'order_number':
+                return $this->receipt->order->confirmation_code;
+            case 'order_ready_date':
+                return $this->receipt->order->order_ready;
+            case 'tablenumber':
+                return $this->receipt->order->table_nr;
+            case 'buzzernumber':
+                return $this->receipt->order->buzzer_nr;
+            case 'customer_name':
+                return $this->receipt->order->name;
+            case 'customer_phone':
+                return $this->receipt->order->phone;
+            case 'customer_email':
+                return $this->receipt->order->email;
+            case 'customer_adress':
+                return $this->receipt->order->address;
+            case 'customer_postal':
+                return $this->receipt->order->postal;
+            case 'customer_city':
+                return $this->receipt->order->city;
+            case 'order_notes':
+                return $this->receipt->order->notes;
+            case 'payment_method':
+                return $this->receipt->order->payment_method;
+            case 'pin_receipt':
+                return $this->receipt->order->hasPinTransactionReceipt()
+                    ? $this->receipt->order->pin_transaction_receipt : '';
+
+                // Product
+            case 'product_tax_tarif':
+                $this->checkValue($this->currentProduct, $key,  'can\'t be accessed outside of product loop');
+                return number_format($this->currentProduct->vat_tarif, 0, ',', '.');
+            case 'product_amount':
+                $this->checkValue($this->currentProduct, $key,  'can\'t be accessed outside of product loop');
+                return $this->currentProduct->amount;
+            case 'product_name':
+                $this->checkValue($this->currentProduct, $key,  'can\'t be accessed outside of product loop');
+                return $this->currentProduct->name;
+            case 'product_kitchen_info':
+                $this->checkValue($this->currentProduct, $key,  'can\'t be accessed outside of product loop');
+                return $this->currentProduct->kitchen_info;
+            case 'product_notes':
+                $this->checkValue($this->currentProduct, $key,  'can\'t be accessed outside of product loop');
+                return $this->currentProduct->notes;
+
+                // Variation
+            case 'variation_symbol':
+                $this->checkValue($this->currentVariation, $key,  'can\'t be accessed outside of variation loop');
+                return ($this->currentVariationValue->price > 0) ? ' + ' : ' - ';
+            case 'variation_name':
+                $this->checkValue($this->currentVariation, $key,  'can\'t be accessed outside of variation loop');
+                return $this->currentVariationValue->name;
+            case 'variation_kitchen_info':
+                $this->checkValue($this->currentVariation, $key,  'can\'t be accessed outside of variation loop');
+                return $this->currentVariationValue->kitchen_info;
+
+            // Taxes
+            case 'tax_tarif':
+                $this->checkValue($this->currentTax, $key,  'can\'t be accessed outside of tax loop');
+                return number_format($this->currentTax->tarif, 0, ',', '.');
+        }
+
+        throw new TemplateException($key, 'us an unknown element');
     }
 
     private function checkValue($value, string $command, string $message)
