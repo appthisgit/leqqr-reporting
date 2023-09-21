@@ -6,7 +6,7 @@ class Variation
 {
 
     public function __construct(
-        public string $key,
+        public readonly string $key,
         public array $values,
     ) {
     }

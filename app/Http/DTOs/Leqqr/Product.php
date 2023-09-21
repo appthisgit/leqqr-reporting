@@ -9,17 +9,17 @@ class Product
 
     public function __construct(
         public array $variations,
-        public int $amount,
-        public string $name,
-        public string $kitchen_info,
-        public string $notes,
-        public float $subtotal,
-        public float $price,
-        public float $price_discount,
-        public bool $printable,
-        public float $vat_tarif,
-        public string $zone,
-        public int $external_id,
+        public readonly int $amount,
+        public readonly string $name,
+        public readonly ?string $kitchen_info,
+        public readonly ?string $notes,
+        public readonly float $subtotal,
+        public readonly float $price,
+        public readonly ?float $price_discount,
+        public readonly ?bool $printable,
+        public readonly ?float $vat_tarif,
+        public readonly ?string $zone,
+        public readonly ?int $external_id,
     ) {
     }
 
