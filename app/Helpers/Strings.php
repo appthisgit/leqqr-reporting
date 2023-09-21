@@ -10,4 +10,9 @@ class Strings extends UtilsStrings
     {
         return $text == null || empty(trim($text)) || $text == 'null';
     }
+
+    public static function isNotEmptyOrValueNull(?string $text): bool
+    {
+        return !self::isEmptyOrValueNull($text);
+    }
 }

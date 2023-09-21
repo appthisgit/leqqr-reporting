@@ -8,6 +8,7 @@ use App\Helpers\TextMods;
 use App\Http\DTOs\Leqqr\Product;
 use App\Http\DTOs\Leqqr\Receipt;
 use App\Http\DTOs\Leqqr\Variation;
+use App\Http\DTOs\Leqqr\VariationValue;
 use App\Http\DTOs\Out\Base\Lines\Line;
 use App\Http\DTOs\Out\Base\Lines\ReceiptRow;
 use App\Http\DTOs\Out\Base\Lines\TextLine;
@@ -27,6 +28,7 @@ class PrintableParser
     private Line $currentLine;
     private Product $currentProduct;
     private Variation $currentVariation;
+    private VariationValue $currentVariationValue;
 
     public function __construct(
         private readonly Receipt $receipt,
@@ -278,11 +280,27 @@ class PrintableParser
                 $this->checkValue($value, "if key=\"$key\"", 'doesn\'t have a value!');
                 return $this->receipt->order->pin_terminal_id == $value;
 
-            // Product
+                // Product
             case 'has_product_kitchen_info':
                 $this->checkValue($this->currentProduct, "if key=\"$key\"",  'can\'t be accessed outside of product loop');
+                return Strings::isNotEmptyOrValueNull($this->currentProduct->kitchen_info);
+            case 'has_product_tax':
+                $this->checkValue($this->currentProduct, "if key=\"$key\"",  'can\'t be accessed outside of product loop');
+                return $this->currentProduct->hasTax();
+            case 'has_product_notes':
+                $this->checkValue($this->currentProduct, "if key=\"$key\"",  'can\'t be accessed outside of product loop');
+                return Strings::isNotEmptyOrValueNull($this->currentProduct->notes);
 
+                // Variation
+            case 'has_variation_price':
+                $this->checkValue($this->currentVariation, "if key=\"$key\"",  'can\'t be accessed outside of variation loop');
+                return $this->currentVariationValue->price > 0;
+            case 'has_variation_kitchen_info':
+                $this->checkValue($this->currentVariation, "if key=\"$key\"",  'can\'t be accessed outside of variation loop');
+                return Strings::isNotEmptyOrValueNull($this->currentVariationValue->kitchen_info);
         }
+
+        throw new TemplateException("if key=\"$key\"", 'unknown key');
     }
 
     private function checkValue($value, string $command, string $message)
