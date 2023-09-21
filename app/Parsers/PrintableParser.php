@@ -148,7 +148,7 @@ class PrintableParser
                 break;
             case 'row':
                 $textLine = $this->createTextLine($node, '');
-                $this->currentLine = ReceiptRow::fromTextLine($textLine);
+                $this->currentLine = ReceiptRow::fromTextLine($textLine, $this->receipt->settings);
                 $this->printable->lines[] = $this->currentLine;
 
                 $this->parseChildren($node);
