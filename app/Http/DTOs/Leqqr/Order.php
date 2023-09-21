@@ -2,11 +2,13 @@
 
 namespace App\Http\DTOs\Leqqr;
 
-class Order extends OrderCollectionItem {
+class Order extends OrderCollectionItem
+{
 
     public function __construct(
         public array $products,
         public array $taxes,
+        public float $taxTotal,
         public string $name,            // customer name
         public string $notes,           // customer notes
         public string $coupon_code,
@@ -23,16 +25,34 @@ class Order extends OrderCollectionItem {
         public ?float $price_tax,
         public ?float $price_delivery,
         public ?float $price_transaction,
-    ) {}
+    ) {
+    }
 
 
-    public function hasPinTransactionReceipt() {
+    public function hasPinTransactionReceipt()
+    {
         return trim($this->pin_transaction_receipt) == '';
     }
 
-    public function isIdeal() {
+    public function isIdeal()
+    {
         return $this->payment_method == 'ideal';
     }
 
+    public function getProductsFiltered(bool $filterPrintable, ?string $filterZone): array
+    {
+        if ($filterPrintable || $filterZone) {
+            $filteredProducts = array();
 
+            foreach ($this->products as $product) {
+                if ($product->inFilters($filterPrintable, $filterZone)) {
+                    $filteredProducts[] = $product;
+                }
+            }
+
+            return $filteredProducts;
+        }
+
+        return $this->products;
+    }
 }

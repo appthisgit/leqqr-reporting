@@ -3,10 +3,11 @@
 namespace App\Parsers\In;
 
 use App\Exceptions\TemplateException;
+use App\Helpers\ReceiptMods;
 use App\Helpers\Strings;
-use App\Helpers\TextMods;
 use App\Http\DTOs\Leqqr\Product;
 use App\Http\DTOs\Leqqr\Receipt;
+use App\Http\DTOs\Leqqr\Tax;
 use App\Http\DTOs\Leqqr\Variation;
 use App\Http\DTOs\Leqqr\VariationValue;
 use App\Http\DTOs\Out\Base\Lines\Line;
@@ -27,13 +28,12 @@ class PrintableParser
     private DOMElement $documentRoot;
     private Line $currentLine;
     private Product $currentProduct;
+    private Tax $currentTax;
     private Variation $currentVariation;
     private VariationValue $currentVariationValue;
 
     public function __construct(
         private readonly Receipt $receipt,
-        private readonly bool $filterPrintable,
-        private readonly string $filterZone,
     ) {
     }
 
@@ -122,6 +122,7 @@ class PrintableParser
     {
         $this->printable = new Printable();
         $this->parseChildren($this->documentRoot);
+        return $this->printable;
     }
 
     private function parseChildren(DOMElement $node)
@@ -163,15 +164,53 @@ class PrintableParser
                 $ifKey = $node->attributes->getNamedItem('key')->nodeValue;
                 $ifValue = (empty($ifValueNode)) ? null : $ifValueNode->nodeValue;
 
-
+                if ($this->doIf($ifKey, $ifValue)) {
+                    $this->parseChildren($node);
+                }
                 break;
             case 'product':
+                $this->parseChildren($node);
                 break;
             case 'foreach':
+                if (empty($node->attributes) || empty($node->attributes->getNamedItem('items'))) {
+                    throw new TemplateException('foreach', 'doesn\'t contain the attribute "items" with a key for the statement');
+                }
+
+                switch ($node->attributes->getNamedItem('items')->nodeValue) {
+                    case 'products':
+                        foreach ($this->receipt->getProductsFiltered() as $product) {
+                            $this->currentProduct = $product;
+                            $this->parseChildren($node);
+                        }
+                        break;
+                    case 'taxes':
+                        foreach ($this->receipt->order->taxes as $tax) {
+                            $this->currentTax = $tax;
+                            $this->parseChildren($node);
+                        }
+                        break;
+                    case 'variations':
+                        foreach ($this->currentProduct->variations as $variation) {
+                            $this->currentVariation = $variation;
+
+                            foreach ($variation->values as $value) {
+                                $this->currentVariationValue = $value;
+                                $this->parseChildren($node);
+                            }
+                        }
+                        break;
+                    default:
+                        throw new TemplateException('foreach items="' + $node->attributes->getNamedItem('items')->nodeValue + '"', 'unknown items value');
+                }
                 break;
+
+            // non-functional
             case 'stripe':
+                $this->currentLine = $this->createTextLine($node, ReceiptMods::divider($this->receipt->settings->stripeChar, $this->receipt->settings->widthCharAmount));
+                $this->printable->lines[] = $this->currentLine;
                 break;
             case 'item':
+
                 break;
             case 'price':
                 break;
