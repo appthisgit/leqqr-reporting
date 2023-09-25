@@ -1,13 +1,17 @@
 <?php
 
-namespace App\Http\DTOs\Leqqr;
+namespace App\Http\Data;
 
-class Order extends OrderCollectionItem
+use Spatie\LaravelData\DataCollection;
+
+class OrderData extends OrderCollectionItem
 {
 
     public function __construct(
-        public array $products,
-        public array $taxes,
+        /** @var ProductData[] */
+        public DataCollection $products,
+         /** @var TaxData[] */
+        public DataCollection $taxes,
         public readonly string $name,            // customer name
         public readonly ?string $notes,           // customer notes
         public readonly ?string $coupon_code,

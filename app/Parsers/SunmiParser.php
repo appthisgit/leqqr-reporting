@@ -1,17 +1,17 @@
 <?php
 
-namespace App\Http\DTOs\Out;
+namespace App\Parsers;
 
-use App\Http\DTOs\Out\Base\Printable;
+use App\Parsers\Printable\Printable;
 
-class TextPrintable extends Printable
+class SunmiParser
 {
 
-    public function getValue() : string
+    public function sendToPrinter(string $uid, Printable $printable)
     {
         $value = '';
 
-        foreach ($this->lines as $line) {
+        foreach ($printable->lines as $line) {
 
             switch (get_class($line)) {
                 case TextLine::class:
@@ -23,6 +23,7 @@ class TextPrintable extends Printable
             }
         }
 
-        return $value;
+        // send $value to sunmi
     }
+
 }

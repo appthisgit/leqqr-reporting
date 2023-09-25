@@ -1,14 +1,18 @@
 <?php
 
-namespace App\Http\DTOs\Leqqr;
+namespace App\Http\Data;
 
 use Illuminate\Support\Facades\Log;
 
-class Product
+use Spatie\LaravelData\Data;
+use Spatie\LaravelData\DataCollection;
+
+class ProductData extends Data
 {
 
     public function __construct(
-        public array $variations,
+        /** @var VariationData[] */
+        public DataCollection $variations,
         public readonly int $amount,
         public readonly string $name,
         public readonly ?string $kitchen_info,

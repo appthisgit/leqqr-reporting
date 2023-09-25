@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\DTOs\Out\Base\Lines;
+namespace App\Parsers\Printable\Lines;
 
 class ImageLine extends Line
 {

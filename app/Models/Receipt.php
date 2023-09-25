@@ -1,8 +1,10 @@
 <?php
 
-namespace App\Http\DTOs\Leqqr;
+namespace App\Models;
 
 use App\Helpers\ReceiptSettings;
+use App\Http\Data\CompanyData;
+use App\Http\Data\OrderData;
 
 class Receipt
 {
@@ -11,9 +13,9 @@ class Receipt
 
 
     public function __construct(
-        public Order $order,
-        public Company $company,
-        public ReceiptSettings $settings = new ReceiptSettings(),
+        public OrderData $order,
+        public CompanyData $company,
+        public ReceiptSettings $settings,
         private readonly bool $filterPrintable,
         private readonly ?string $filterZone,
     ){}
@@ -26,5 +28,9 @@ class Receipt
         return $this->cachedFilteredProducts;
     }
 
+    public function parse(Template $template)
+    {
+
+    }
     //TODO: parseTemplate function?
 }

@@ -1,8 +1,10 @@
 <?php
 
-namespace App\Http\DTOs\Leqqr;
+namespace App\Http\Data;
 
-class Tax
+use Spatie\LaravelData\Data;
+
+class TaxData extends Data
 {
 
     public function __construct(

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\DTOs\Out\Base\Lines;
+namespace App\Parsers\Printable\Lines;
 
 use App\Helpers\Margins;
 use App\Helpers\PrintSettings;

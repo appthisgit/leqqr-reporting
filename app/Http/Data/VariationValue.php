@@ -1,15 +1,17 @@
 <?php
 
-namespace App\Http\DTOs\Leqqr;
+namespace App\Http\Data;
 
-class VariationValue {
+use Spatie\LaravelData\Data;
+
+class VariationValueData extends Data {
 
     public function __construct(
-        public string $name,
-        public ?string $kitchen_info,
-        public ?float $price,
-        public ?float $vat_tarif,
-        public ?int $external_id,
+        public readonly string $name,
+        public readonly ?string $kitchen_info,
+        public readonly ?float $price,
+        public readonly ?float $vat_tarif,
+        public readonly ?int $external_id,
     ) {}
 
     public function hasTax(): bool
