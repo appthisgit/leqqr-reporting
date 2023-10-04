@@ -8,17 +8,18 @@ use App\Http\Data\OrderData;
 
 class Receipt
 {
-
+    public ReceiptSettings $settings;
     private array $cachedFilteredProducts;
 
 
     public function __construct(
         public OrderData $order,
         public CompanyData $company,
-        public ReceiptSettings $settings,
         private readonly bool $filterPrintable,
         private readonly ?string $filterZone,
-    ){}
+    ){
+        $this->settings = new ReceiptSettings();
+    }
 
     public function getProductsFiltered(): array
     {
