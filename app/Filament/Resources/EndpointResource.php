@@ -3,7 +3,6 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\EndpointResource\Pages;
-use App\Filament\Resources\EndpointResource\RelationManagers;
 use App\Models\Endpoint;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -26,6 +25,9 @@ class EndpointResource extends Resource
                 Forms\Components\TextInput::make('name')
                     ->required()
                     ->maxLength(255),
+                Forms\Components\TextInput::make('company_id')
+                    ->numeric()
+                    ->required(),
                 Forms\Components\Select::make('template_id')
                     ->relationship('template', 'name')
                     ->required(),
@@ -42,6 +44,9 @@ class EndpointResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('company_id')
+                    ->numeric()
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('template.name')

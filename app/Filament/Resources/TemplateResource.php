@@ -33,6 +33,10 @@ class TemplateResource extends Resource
                 Forms\Components\TextInput::make('name')
                     ->required()
                     ->maxLength(255),
+                Forms\Components\TextInput::make('zone')
+                    ->maxLength(30),
+                Forms\Components\Toggle::make('printable')
+                    ,
                 Forms\Components\Textarea::make('content')
                     ->required()
                     ->maxLength(65535)
@@ -45,6 +49,11 @@ class TemplateResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('zone')
+                    ->searchable(),
+                Tables\Columns\IconColumn::make('printable')
+                    ->boolean()
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()

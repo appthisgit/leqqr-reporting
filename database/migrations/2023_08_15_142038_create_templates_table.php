@@ -14,6 +14,8 @@ return new class extends Migration
         Schema::create('templates', function (Blueprint $table) {
             $table->id();
             $table->string('name', 30);
+            $table->string('zone', 30)->nullable();
+            $table->boolean('printable');
             $table->text('content');
             $table->timestamps();
         });

@@ -10,8 +10,19 @@ class Template extends Model
 {
     use HasFactory;
 
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'printable' => 'boolean',
+    ];
+
     protected $fillable = [
         'name',
+        'zone',
+        'printable',
         'content',
     ];
 

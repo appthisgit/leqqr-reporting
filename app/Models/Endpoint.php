@@ -12,6 +12,7 @@ class Endpoint extends Model
 
     protected $fillable = [
         'name',
+        'company_id',
         'template_id',
         'type',
         'target',
