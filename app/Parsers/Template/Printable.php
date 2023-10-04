@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Parsers\Printable;
+namespace App\Parsers\Template;
 
 use Spatie\LaravelData\Data;
 

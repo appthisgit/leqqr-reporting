@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Parsers\Printable\Lines;
+namespace App\Parsers\Template\Lines;
 
 use App\Helpers\Margins;
 use App\Helpers\PrintSettings;

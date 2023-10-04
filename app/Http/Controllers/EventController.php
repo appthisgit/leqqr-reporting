@@ -6,8 +6,8 @@ use App\Http\Data\CompanyData;
 use App\Http\Data\OrderData;
 use App\Models\Endpoint;
 use App\Models\Receipt;
-use App\Parsers\PrintableParser;
 use App\Parsers\SunmiParser;
+use App\Parsers\TemplateParser;
 
 class EventController extends Controller
 {
@@ -20,12 +20,10 @@ class EventController extends Controller
 
                 $receipt = new Receipt(
                     $order,
-                    $company,
-                    $endpoint->filter_printable,
-                    $endpoint->filter_zone,
+                    $company
                 );
 
-                switch ($endpoint->type) {
+                switch (strtolower($endpoint->type)) {
                     case 'sunmi':
                         $this->sunmiPrinter($endpoint, $receipt);
                         break;
@@ -40,23 +38,22 @@ class EventController extends Controller
 
     private function sunmiPrinter(Endpoint $endpoint, Receipt $receipt)
     {
-        $sunmi = new SunmiParser($endpoint->target);
-        $parser = new PrintableParser($receipt);
+        $parser = new SunmiParser($receipt, $endpoint->target);
         $parser->load($endpoint->template);
 
         if ($receipt->settings->singleProductTemplate) {
-            foreach ($receipt->getProductsFiltered() as $product) {
+            foreach ($receipt->order->getProductsFiltered($endpoint->filter_printable, $endpoint->filter_zone) as $product) {
                 $printable = $parser->parse($product);
                 if (!empty($printable)) {
                     for ($i = 0; $i < $product->amount; $i++) {
-                        $sunmi->print($printable);
+                        $parser->print($printable);
                     }
                 }
             }
         } else {
             $printable = $parser->parse();
             if (!empty($printable)) {
-                $sunmi->print($printable);
+                $parser->print($printable);
             }
         }
     }

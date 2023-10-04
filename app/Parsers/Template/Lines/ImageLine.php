@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Parsers\Printable\Lines;
+namespace App\Parsers\Template\Lines;
 
 class ImageLine extends Line
 {

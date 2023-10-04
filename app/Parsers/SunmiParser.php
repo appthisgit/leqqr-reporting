@@ -2,17 +2,20 @@
 
 namespace App\Parsers;
 
-use App\Parsers\Printable\Printable;
+use App\Models\Receipt;
+use App\Parsers\Template\Printable;
 use App\Parsers\Sunmi\SunmiCloudPrinter;
 
-class SunmiParser
+class SunmiParser extends TemplateParser
 {
 
     private SunmiCloudPrinter $printer;
 
     public function __construct(
-        private string $serialnumber
+        Receipt $receipt,
+        private string $serialnumber,
     ) {
+        parent::__construct($receipt);
         $this->printer = new SunmiCloudPrinter();
     }
 

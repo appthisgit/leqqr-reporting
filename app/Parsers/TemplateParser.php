@@ -7,15 +7,15 @@ use App\Helpers\ReceiptMods;
 use App\Helpers\TextMods;
 use App\Http\Data\ProductData;
 use App\Models\Template;
-use App\Parsers\Printable\Lines\Line;
-use App\Parsers\Printable\Lines\ReceiptRow;
-use App\Parsers\Printable\Lines\TextLine;
-use App\Parsers\Printable\Printable;
+use App\Parsers\Template\Lines\Line;
+use App\Parsers\Template\Lines\ReceiptRow;
+use App\Parsers\Template\Lines\TextLine;
+use App\Parsers\Template\Printable;
 use DOMDocument;
 use DOMElement;
 use DOMNode;
 
-class PrintableParser extends BaseParser
+class TemplateParser extends FieldParser
 {
     // Result
     private Printable $printable;

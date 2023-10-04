@@ -10,7 +10,7 @@ use App\Http\Data\VariationData;
 use App\Http\Data\VariationValueData;
 use App\Models\Receipt;
 
-class BaseParser
+class FieldParser
 {
     protected ProductData $currentProduct;
     protected TaxData $currentTax;
