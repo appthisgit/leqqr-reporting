@@ -7,7 +7,12 @@ use App\Parsers\Printable\Printable;
 class SunmiParser
 {
 
-    public function sendToPrinter(string $uid, Printable $printable)
+    public function __construct(
+        private string $printer
+    ) {
+    }
+
+    public function print(Printable $printable)
     {
         $value = '';
 
@@ -23,7 +28,6 @@ class SunmiParser
             }
         }
 
-        // send $value to sunmi
+        // send $value to sunmi API
     }
-
 }
