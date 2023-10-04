@@ -2,11 +2,11 @@
 
 namespace App\Parsers\Template;
 
-use Spatie\LaravelData\Data;
+// use Spatie\LaravelData\Data;
 
-class Printable extends Data
+class Printable
 {
-
+    /** @var \App\Parsers\Template\Lines\Line[] */
     public array $lines = array();
 
 }
