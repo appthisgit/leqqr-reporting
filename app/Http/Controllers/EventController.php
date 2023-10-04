@@ -5,51 +5,38 @@ namespace App\Http\Controllers;
 use App\Helpers\ReceiptSettings;
 use App\Http\Data\CompanyData;
 use App\Http\Data\OrderData;
+use App\Models\Endpoint;
 use App\Models\Receipt;
-use App\Models\Template;
 use App\Parsers\PrintableParser;
+use App\Parsers\SunmiParser;
 
 class EventController extends Controller
 {
 
     public function printOrder(OrderData $order, CompanyData $company)
     {
-        //TODO: find from company
-        $template = Template::find(123);
-        $filterPrintable = false;
-        $filterZone = null;
 
-        $receipt = new Receipt(
-            $order,
-            $company,
-            new ReceiptSettings(),
-            $filterPrintable,
-            $filterZone,
-        );
+        foreach (Endpoint::where('order_id', $order->id) as $endpoint) {
 
-        $printables = array();
+            $filterPrintable = false;
+            $filterZone = null;
 
-        $parser = new PrintableParser($receipt);
-        $parser->load($template);
+            $receipt = new Receipt(
+                $order,
+                $company,
+                new ReceiptSettings(),
+                $filterPrintable,
+                $filterZone,
+            );
 
-        // Settings.singleProductTemplate (from template?)
-        if (false) {
-            foreach ($receipt->getProductsFiltered() as $product) {
-                $printable = $parser->parse($product);
-                if (!empty($printable)) {
-                    for ($i = 0; $i < $product->amount; $i++) {
-                        $printables[] = $printable;
-                    }
-                }
+            switch ($endpoint->type) {
+                case 'sunmi':
+
+                    $this->sunmiPrinter($endpoint, $receipt);
+                    break;
             }
         }
-        else {
-            $printable = $parser->parse();
-            if (!empty($printable))
-            {
-                $printables[] = $printable;
-            }
-        }
+
 
         // NOW WE HAVE PRINTABLES
         /**
@@ -60,5 +47,29 @@ class EventController extends Controller
         return response()->json([
             'msg' => 'error'
         ], 500);
+    }
+
+    private function sunmiPrinter(Endpoint $endpoint, Receipt $receipt)
+    {
+        $sunmi = new SunmiParser($endpoint->target);
+        $parser = new PrintableParser($receipt);
+        $parser->load($endpoint->template);
+
+        // Settings.singleProductTemplate (from template?)
+        if (false) {
+            foreach ($receipt->getProductsFiltered() as $product) {
+                $printable = $parser->parse($product);
+                if (!empty($printable)) {
+                    for ($i = 0; $i < $product->amount; $i++) {
+                        $sunmi->print($printable);
+                    }
+                }
+            }
+        } else {
+            $printable = $parser->parse();
+            if (!empty($printable)) {
+                $sunmi->print($printable);
+            }
+        }
     }
 }
