@@ -5,9 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Data\CompanyData;
 use App\Http\Data\OrderData;
 use App\Models\Endpoint;
-use App\Models\Receipt;
 use App\Parsers\SunmiParser;
-use App\Parsers\TemplateParser;
 
 class EventController extends Controller
 {
@@ -18,43 +16,28 @@ class EventController extends Controller
 
             if (empty($endpoint->filter_terminal) || $endpoint->filter_terminal == $order->pin_terminal_id) {
 
-                $receipt = new Receipt(
-                    $order,
-                    $company
-                );
+                $parser = null;
 
                 switch (strtolower($endpoint->type)) {
                     case 'sunmi':
-                        $this->sunmiPrinter($endpoint, $receipt);
+                        $parser = new SunmiParser(
+                            $order,
+                            $company,
+                            $endpoint
+                        );
                         break;
+                }
+
+                if ($parser) {
+                    $parser->load($endpoint->template);
+                    $parser->send();
                 }
             }
         }
+
 
         return response()->json([
             'msg' => 'success'
         ], 200);
-    }
-
-    private function sunmiPrinter(Endpoint $endpoint, Receipt $receipt)
-    {
-        $parser = new SunmiParser($receipt, $endpoint->target);
-        $parser->load($endpoint->template);
-
-        if ($receipt->settings->singleProductTemplate) {
-            foreach ($receipt->order->getProductsFiltered($endpoint->filter_printable, $endpoint->filter_zone) as $product) {
-                $printable = $parser->parse($product);
-                if (!empty($printable)) {
-                    for ($i = 0; $i < $product->amount; $i++) {
-                        $parser->print($printable);
-                    }
-                }
-            }
-        } else {
-            $printable = $parser->parse();
-            if (!empty($printable)) {
-                $parser->print($printable);
-            }
-        }
     }
 }
