@@ -10,12 +10,24 @@ class Endpoint extends Model
 {
     use HasFactory;
 
+        /**
+     * The attributes that should be cast.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'filter_printable' => 'boolean',
+    ];
+
     protected $fillable = [
         'name',
         'company_id',
         'template_id',
         'type',
         'target',
+        'filter_terminal',
+        'filter_zone',
+        'filter_printable',
     ];
 
     public function template(): BelongsTo

@@ -37,6 +37,11 @@ class EndpointResource extends Resource
                 Forms\Components\TextInput::make('target')
                     ->required()
                     ->maxLength(100),
+                Forms\Components\TextInput::make('filter_terminal')
+                    ->maxLength(40),
+                Forms\Components\TextInput::make('filter_zone')
+                    ->maxLength(40),
+                Forms\Components\Toggle::make('filter_printable'),
             ]);
     }
 
@@ -55,6 +60,15 @@ class EndpointResource extends Resource
                 Tables\Columns\TextColumn::make('type')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('target')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('filter_terminal')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('filter_zone')
+                    ->searchable(),
+                Tables\Columns\IconColumn::make('filter_printable')
+                    ->boolean()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('zone')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()

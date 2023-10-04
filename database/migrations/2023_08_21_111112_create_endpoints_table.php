@@ -18,9 +18,12 @@ return new class extends Migration
                 ->constrained()
                 ->onUpdate('cascade')
                 ->onDelete('restrict');
-                $table->string('name', 40);
+            $table->string('name', 40);
             $table->string('type', 20);
             $table->string('target', 100);
+            $table->string('filter_terminal', 40)->nullable();
+            $table->string('filter_zone', 40)->nullable();
+            $table->boolean('filter_printable');
             $table->timestamps();
         });
     }
