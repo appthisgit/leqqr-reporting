@@ -88,6 +88,9 @@ class SunmiParser extends TemplateParser
                     /** @var \App\Parsers\Template\Lines\TextLine */
                     $textLine = $line;
 
+                    if ($textLine->margins->top > $this->receipt->settings->lineMargins->top) {
+                        $this->printer->lineFeed($textLine->margins->top / 10);
+                    }
                     if ($textLine->centered) {
                         $this->printer->setAlignment(SunmiCloudPrinter::ALIGN_CENTER);
                     }
@@ -99,11 +102,8 @@ class SunmiParser extends TemplateParser
                     }
                     if ($textLine->font != $this->receipt->settings->font) {
                         $this->setPrinterFont($textLine->font);
+                    }
 
-                    }
-                    if ($textLine->margins->top > $this->receipt->settings->lineMargins->top) {
-                        $this->printer->lineFeed($textLine->margins->top / 10);
-                    }
 
                     $this->printer->appendText($textLine->getText() . "\n");
 
@@ -118,7 +118,18 @@ class SunmiParser extends TemplateParser
                     /** @var \App\Parsers\Template\Lines\ImageLine */
                     $imageLine = $line;
 
+                    if ($imageLine->margins->top > $this->receipt->settings->lineMargins->top) {
+                        $this->printer->lineFeed($imageLine->margins->top / 10);
+                    }
+
+                    $this->printer->setAlignment(SunmiCloudPrinter::ALIGN_CENTER);
                     $this->printer->appendText("<images are not yet supported>" . "\n");
+
+                    $this->resetPrinter();
+
+                    if ($imageLine->margins->bottom > $this->receipt->settings->lineMargins->bottom) {
+                        $this->printer->lineFeed($imageLine->margins->bottom / 10);
+                    }
                     break;
                 default:
                     Log::error("how did you get here? >> " . get_class($line));
