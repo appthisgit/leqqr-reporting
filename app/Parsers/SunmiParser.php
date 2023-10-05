@@ -8,7 +8,10 @@ use App\Models\Endpoint;
 use App\Models\Receipt;
 use App\Parsers\Template\Printable;
 use App\Parsers\Sunmi\SunmiCloudPrinter;
+use App\Parsers\Template\Lines\ImageLine;
 use App\Parsers\Template\Lines\ReceiptRow;
+use App\Parsers\Template\Lines\TextLine;
+use Illuminate\Support\Facades\Log;
 
 class SunmiParser extends TemplateParser
 {
@@ -75,6 +78,7 @@ class SunmiParser extends TemplateParser
                         //todo: make this available
                     }
 
+                    Log::debug($textLine->getText());
                     $this->printer->appendText($textLine->getText() . "\n");
 
                     // reset for next line
@@ -94,6 +98,7 @@ class SunmiParser extends TemplateParser
                     // //$printer->lineFeed();
                     // $printer->printInColumns("Testje geprint op", date("Y-m-d h:i:sa"), "€ 1.234,00");
 
+                    Log::debug($receiptLine->getText());
                     $this->printer->appendText($receiptLine->getText() . "\n");
                     break;
                 case ImageLine::class:
@@ -101,6 +106,9 @@ class SunmiParser extends TemplateParser
                     $imageLine = $line;
 
                     $this->printer->appendText("<images are not yet supported>" . "\n");
+                    break;
+                default:
+                    Log::error("how did you get here? >> " . get_class($line));
                     break;
             }
         }

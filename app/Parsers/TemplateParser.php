@@ -235,21 +235,26 @@ class TemplateParser extends FieldParser
 
                 $this->currentLine->appendText($node->textContent);
                 break;
-            default:
+            default: // value nodes
                 if ($node->hasChildNodes()) {
                     throw new TemplateException($node->nodeName, 'is unknown to have children');
                 }
                 $value = $this->retrieveValue($node->nodeName);
 
-                if ($node->hasAttributes() && !empty($node->attributes->getNamedItem('wordwrap'))) {
-                    $value = TextMods::wordwrap($value, $this->receipt->settings->widthCharAmount);
+                if ($node->hasAttributes()) {
+                    if (!empty($node->attributes->getNamedItem('wordwrap'))) {
+                        $value = TextMods::wordwrap($value, $this->receipt->settings->widthCharAmount);
+                    }
+                    if (boolval($node->attributes->getNamedItem('center'))) {
+                        $this->currentLine->center();
+                    }
                 }
 
                 if (!($this->currentLine instanceof TextLine)) {
                     throw new TemplateException('text', 'trying to add text to a non textual line');
                 }
 
-                $this->currentLine->appendText($node->textContent);
+                $this->currentLine->appendText($value);
                 break;
         }
     }
