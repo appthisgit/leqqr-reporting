@@ -17,8 +17,8 @@ class EndpointFactory extends Factory
     public function definition(): array
     {
         return [
-            'type' => 'sunmi',
-            'target' => '123.123.123.123',
+            'type' => 'Leqqr Sunmi Cloudprinter',
+            'target' => 'N41122AN00930',
         ];
     }
 }
