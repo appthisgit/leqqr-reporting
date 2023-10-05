@@ -10,28 +10,23 @@ class OrderCollectionItem extends Data
     public function __construct(
         public readonly int $id,
         public readonly string $confirmation_code,
-        public readonly bool $is_seen,
-        public readonly string $shipmentType,
+        public readonly string $shipment_type,
         public readonly string $address,
         public readonly string $postal,
         public readonly string $city,
         public readonly string $phone,
         public readonly string $email,
-        public readonly string $createdAt,
+        public readonly string $created_at,
     ) {
-    }
-
-    public function isSeen() : bool {
-        return $this->is_seen == 1;
     }
 
     public function isDelivery() : bool
     {
-        return $this->shipmentType == 'delivery';
+        return $this->shipment_type == 'delivery';
     }
 
     public function isPickup() : bool
     {
-        return $this->shipmentType == 'pickup';
+        return $this->shipment_type == 'pickup';
     }
 }

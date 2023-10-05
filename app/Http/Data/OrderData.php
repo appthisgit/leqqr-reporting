@@ -6,15 +6,22 @@ use Spatie\LaravelData\DataCollection;
 
 class OrderData extends OrderCollectionItem
 {
-
     public function __construct(
+        int $id,
+        string $confirmation_code,
+        string $shipment_type,
+        string $address,
+        string $postal,
+        string $city,
+        string $phone,
+        string $email,
+        string $created_at,
+
         /** @var ProductData[] */
         public DataCollection $products,
-         /** @var TaxData[] */
-        public DataCollection $taxes,
+        public VatData $vat,
         public readonly string $name,            // customer name
         public readonly ?string $notes,           // customer notes
-        public readonly ?string $coupon_code,
         public readonly string $order_ready,
         public readonly ?string $table_nr,
         public readonly ?string $buzzer_nr,
@@ -25,12 +32,20 @@ class OrderData extends OrderCollectionItem
         public readonly float $price_subtotal,
         public readonly float $price_total,
         public readonly ?float $price_discount,
-        public readonly ?float $price_tax,
-        public readonly ?float $price_delivery,
         public readonly ?float $price_transaction,
     ) {
+        parent::__construct(
+            $id,
+            $confirmation_code,
+            $shipment_type,
+            $address,
+            $postal,
+            $city,
+            $phone,
+            $email,
+            $created_at
+        );
     }
-
 
     public function hasPinTransactionReceipt()
     {

@@ -18,4 +18,4 @@ use Illuminate\Support\Facades\Route;
 //     return $request->user();
 // });
 
-Route::post('event/print');
+Route::post('/print', 'App\Http\Controllers\EventController@printOrder');

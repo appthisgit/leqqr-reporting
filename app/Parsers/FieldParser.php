@@ -5,7 +5,7 @@ namespace App\Parsers;
 use App\Exceptions\TemplateException;
 use App\Helpers\Strings;
 use App\Http\Data\ProductData;
-use App\Http\Data\TaxData;
+use App\Http\Data\VatRowData;
 use App\Http\Data\VariationData;
 use App\Http\Data\VariationValueData;
 use App\Models\Receipt;
@@ -13,7 +13,7 @@ use App\Models\Receipt;
 class FieldParser
 {
     protected ProductData $currentProduct;
-    protected TaxData $currentTax;
+    protected VatRowData $currentVatRow;
     protected VariationData $currentVariation;
     protected VariationValueData $currentVariationValue;
 
@@ -43,14 +43,12 @@ class FieldParser
                 return !Strings::isEmptyOrValueNull($this->receipt->order->email);
             case 'has_notes':
                 return !Strings::isEmptyOrValueNull($this->receipt->order->notes);
-            case 'has_delivery_costs':
-                return !empty($this->receipt->order->price_delivery);
             case 'has_transaction_costs':
                 return !empty($this->receipt->order->price_transaction);
             case 'has_discounts':
                 return !empty($this->receipt->order->price_discount);
             case 'has_taxes':
-                return !empty($this->receipt->order->price_tax);
+                return !empty($this->receipt->order->vat->order_vat > 0);
             case 'is_method_cash':
                 return $this->receipt->order->payment_method == 'cash';
             case 'is_method_account':
@@ -103,14 +101,12 @@ class FieldParser
         switch ($key) {
             case 'subtotal':
                 return $this->receipt->order->price_subtotal;
-            case 'delivery_costs':
-                return $this->receipt->order->price_delivery;
             case 'transaction_costs':
                 return $this->receipt->order->price_transaction;
             case 'discount_amount':
                 return $this->receipt->order->price_discount;
             case 'tax_total':
-                return $this->receipt->order->price_tax;
+                return $this->receipt->order->vat->order_vat;
             case 'total';
                 return $this->receipt->order->price_total;
 
@@ -127,12 +123,12 @@ class FieldParser
 
                 // Taxes
             case 'product_tax':
-                $this->checkValue($this->currentTax, "price value=\"$key\"",  'can\'t be accessed outside of tax loop');
-                return $this->currentTax->total;
+                $this->checkValue($this->currentVatRow, "price value=\"$key\"",  'can\'t be accessed outside of tax loop');
+                return $this->currentVatRow->vat_value;
 
                 // Variation
             case 'variation_price':
-                $this->checkValue($this->currentTax, "price value=\"$key\"",  'can\'t be accessed outside of variation loop');
+                $this->checkValue($this->currentVatRow, "price value=\"$key\"",  'can\'t be accessed outside of variation loop');
                 return $this->currentVariationValue->price;
         }
     }
@@ -204,8 +200,8 @@ class FieldParser
 
                 // Taxes
             case 'tax_tarif':
-                $this->checkValue($this->currentTax, $key,  'can\'t be accessed outside of tax loop');
-                return number_format($this->currentTax->tarif, 0, ',', '.');
+                $this->checkValue($this->currentVatRow, $key,  'can\'t be accessed outside of tax loop');
+                return number_format($this->currentVatRow->tarif, 0, ',', '.');
         }
 
         throw new TemplateException($key, 'us an unknown element');

@@ -8,7 +8,7 @@ class CompanyData extends Data
 {
     public function __construct(
         public readonly int $id,
-        public readonly string $GUID,
+        public readonly string $guid,
         public readonly string $name,
     ){}
 }
