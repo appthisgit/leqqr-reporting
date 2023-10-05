@@ -6,15 +6,16 @@ use Spatie\LaravelData\DataCollection;
 
 class OrderData extends OrderCollectionItem
 {
+
     public function __construct(
         int $id,
         string $confirmation_code,
         string $shipment_type,
-        string $address,
-        string $postal,
-        string $city,
-        string $phone,
-        string $email,
+        ?string $address,
+        ?string $postal,
+        ?string $city,
+        ?string $phone,
+        ?string $email,
         string $created_at,
 
         /** @var ProductData[] */

@@ -14,8 +14,6 @@ class EventController extends Controller
 
     public function printOrder(Request $request)
     {
-        Log::debug($request->order);
-
         $order = OrderData::from($request->order);
         Log::debug($order);
 
