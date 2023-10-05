@@ -8,7 +8,7 @@ use App\Helpers\ReceiptSettings;
 class ReceiptRow extends TextLine
 {
 
-    private float $price;
+    public float $price;
     public int $widthCharAmount;
     public int $priceCharAmount;
 

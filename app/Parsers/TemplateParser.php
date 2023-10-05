@@ -223,8 +223,10 @@ class TemplateParser extends FieldParser
                 }
 
                 $key = $node->attributes->getNamedItem('value')->nodeValue;
-                // Intellisense gives an error but secretly the object is a ReceiptRow which has price as property
-                $this->currentLine->price = $this->retrievePrice($key);
+
+                /** @var ReceiptRow */
+                $currentRow = $this->currentLine;
+                $currentRow->price = $this->retrievePrice($key);
                 break;
             case 'text':
                 if (!($this->currentLine instanceof TextLine)) {
