@@ -57,21 +57,4 @@ class OrderData extends OrderCollectionItem
     {
         return $this->payment_method == 'ideal';
     }
-
-    public function getProductsFiltered(bool $filterPrintable, ?string $filterZone): array
-    {
-        if ($filterPrintable || $filterZone) {
-            $filteredProducts = array();
-
-            foreach ($this->products as $product) {
-                if ($product->inFilters($filterPrintable, $filterZone)) {
-                    $filteredProducts[] = $product;
-                }
-            }
-
-            return $filteredProducts;
-        }
-
-        return $this->products;
-    }
 }

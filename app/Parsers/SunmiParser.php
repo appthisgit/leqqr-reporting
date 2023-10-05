@@ -21,7 +21,12 @@ class SunmiParser extends TemplateParser
         private Endpoint $endpoint,
     ) {
         parent::__construct(
-            new Receipt($order, $company)
+            new Receipt(
+                $order,
+                $company,
+                $this->endpoint->filter_printable,
+                $this->endpoint->filter_zone
+            )
         );
         $this->printer = new SunmiCloudPrinter();
     }
@@ -30,12 +35,7 @@ class SunmiParser extends TemplateParser
     {
         if ($this->receipt->settings->singleProductTemplate) {
 
-            $filteredProducts = $this->receipt->order->getProductsFiltered(
-                $this->endpoint->filter_printable,
-                $this->endpoint->filter_zone
-            );
-
-            foreach ($filteredProducts as $product) {
+            foreach ( $this->receipt->getProductsFiltered() as $product) {
                 $printable = $this->parseProduct($product);
                 if (!empty($printable)) {
                     for ($i = 0; $i < $product->amount; $i++) {

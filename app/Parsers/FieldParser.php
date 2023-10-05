@@ -139,7 +139,7 @@ class FieldParser
             case 'order_id':
                 return $this->receipt->order->id;
             case 'order_date':
-                return $this->receipt->order->createdAt;
+                return $this->receipt->order->created_at;
             case 'company_name':
                 return $this->receipt->company->name;
             case 'order_number':

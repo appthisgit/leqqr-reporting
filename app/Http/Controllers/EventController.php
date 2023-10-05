@@ -15,12 +15,13 @@ class EventController extends Controller
     public function printOrder(Request $request)
     {
         $order = OrderData::from($request->order);
-        Log::debug($order);
 
         $company = CompanyData::from($request->company);
-        Log::debug($company);
 
-        foreach (Endpoint::where('order_id', $order->id) as $endpoint) {
+        $endpoints = Endpoint::where('company_id', $company->id)->get();
+        Log::debug($endpoints);
+
+        foreach ($endpoints as $endpoint) {
 
             if (empty($endpoint->filter_terminal) || $endpoint->filter_terminal == $order->pin_terminal_id) {
 

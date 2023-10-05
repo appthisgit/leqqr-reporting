@@ -183,8 +183,8 @@ class TemplateParser extends FieldParser
                         }
                         break;
                     case 'taxes':
-                        foreach ($this->receipt->order->taxes as $tax) {
-                            $this->currentTax = $tax;
+                        foreach ($this->receipt->order->vat->rows_vat as $vat) {
+                            $this->currentVatRow = $vat;
                             $this->parseChildren($node);
                         }
                         break;
