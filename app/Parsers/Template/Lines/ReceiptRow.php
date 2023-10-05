@@ -12,25 +12,11 @@ class ReceiptRow extends TextLine
     public int $widthCharAmount;
     public int $priceCharAmount;
 
-    public static function fromTextLine(TextLine $line, ReceiptSettings $defaults): ReceiptRow
-    {
-        $row = new ReceiptRow($line->text, $defaults);
-
-        $row->bolded = $line->bolded;
-        $row->font = $line->font;
-        $row->fontSize = $line->fontSize;
-        $row->margins->top = $line->margins->top;
-        $row->margins->bottom = $line->margins->bottom;
-
-        return $row;
-    }
-
-    private function __construct(
-        string $text,
+    public function __construct(
         ReceiptSettings $defaults,
     )
     {
-        parent::__construct($text, $defaults);
+        parent::__construct($defaults);
         $this->widthCharAmount = $defaults->widthCharAmount;
         $this->priceCharAmount = $defaults->priceCharAmount;
     }

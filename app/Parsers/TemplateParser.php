@@ -7,6 +7,7 @@ use App\Helpers\ReceiptMods;
 use App\Helpers\TextMods;
 use App\Http\Data\ProductData;
 use App\Models\Template;
+use App\Parsers\Template\Lines\ImageLine;
 use App\Parsers\Template\Lines\Line;
 use App\Parsers\Template\Lines\ReceiptRow;
 use App\Parsers\Template\Lines\TextLine;
@@ -52,15 +53,6 @@ class TemplateParser extends FieldParser
                 case 'stripe-char':
                     $this->receipt->settings->stripeChar = $attribute->nodeValue;
                     break;
-
-                case 'default-line-margins':
-                    // TODO: is this required?
-                    // value = Integer.parseInt(item.getNodeValue());
-                    // receipt.getSettings().lineMargins.top = value;
-                    // receipt.getSettings().lineMargins.right = value;
-                    // receipt.getSettings().lineMargins.bottom = value;
-                    // receipt.getSettings().lineMargins.left = value;
-                    break;
                 case 'default-line-margin-top':
                     $this->receipt->settings->lineMargins->top = $attribute->nodeValue;
                     break;
@@ -72,16 +64,6 @@ class TemplateParser extends FieldParser
                     break;
                 case 'default-line-margin-left':
                     $this->receipt->settings->lineMargins->left = $attribute->nodeValue;
-                    break;
-
-                case 'paddings':
-                case 'margins':
-                    // TODO: is this required?
-                    // value = Integer.parseInt(item.getNodeValue());
-                    // receipt.getSettings().paddings.top = value;
-                    // receipt.getSettings().paddings.right = value;
-                    // receipt.getSettings().paddings.bottom = value;
-                    // receipt.getSettings().paddings.left = value;
                     break;
                 case 'margin-top':
                 case 'padding-top':
@@ -139,24 +121,20 @@ class TemplateParser extends FieldParser
     {
         switch ($node->nodeName) {
             case 'line':
-                $this->currentLine = $this->createTextLine($node, '');
-                $this->printable->lines[] = $this->currentLine;
-
+                $this->setCurrentLine(new TextLine($this->receipt->settings), $node);
                 $this->parseChildren($node);
                 break;
             case 'row':
-                $textLine = $this->createTextLine($node, '');
-                $this->currentLine = ReceiptRow::fromTextLine($textLine, $this->receipt->settings);
-                $this->printable->lines[] = $this->currentLine;
-
+                $this->setCurrentLine(new ReceiptRow($this->receipt->settings), $node);
                 $this->parseChildren($node);
                 break;
             case 'image':
             case 'img':
-                //TODO: not yet supported
+                $img = $node->attributes->getNamedItem("file")->nodeValue;
+                $this->setCurrentLine(new ImageLine($img), $node);
                 break;
             case 'if':
-                if (!$node->hasAttributes() || empty($node->attributes->getNamedItem('key'))) {
+                if (empty($node->attributes->getNamedItem('key'))) {
                     throw new TemplateException('if', 'doesn\'t contain the attribute "key" with a key for the statement');
                 }
                 $ifValueNode = $node->attributes->getNamedItem('value');
@@ -167,11 +145,8 @@ class TemplateParser extends FieldParser
                     $this->parseChildren($node);
                 }
                 break;
-            case 'product':
-                $this->parseChildren($node);
-                break;
             case 'foreach':
-                if (empty($node->attributes) || empty($node->attributes->getNamedItem('items'))) {
+                if (empty($node->attributes->getNamedItem('items'))) {
                     throw new TemplateException('foreach', 'doesn\'t contain the attribute "items" with a key for the statement');
                 }
 
@@ -202,11 +177,10 @@ class TemplateParser extends FieldParser
                         throw new TemplateException('foreach items="' + $node->attributes->getNamedItem('items')->nodeValue + '"', 'unknown items value');
                 }
                 break;
-
-                // non-functional
             case 'stripe':
-                $this->currentLine = $this->createTextLine($node, ReceiptMods::divider($this->receipt->settings->stripeChar, $this->receipt->settings->widthCharAmount));
-                $this->printable->lines[] = $this->currentLine;
+                $stripe = new TextLine($this->receipt->settings);
+                $stripe->appendText(ReceiptMods::divider($this->receipt->settings->stripeChar, $this->receipt->settings->widthCharAmount));
+                $this->setCurrentLine($stripe, $node);
                 break;
             case 'item':
                 if (!($this->currentLine instanceof ReceiptRow)) {
@@ -239,72 +213,64 @@ class TemplateParser extends FieldParser
                 if ($node->hasChildNodes()) {
                     throw new TemplateException($node->nodeName, 'is unknown to have children');
                 }
-                $value = $this->retrieveValue($node->nodeName);
-
-                if ($node->hasAttributes()) {
-                    if (!empty($node->attributes->getNamedItem('wordwrap'))) {
-                        $value = TextMods::wordwrap($value, $this->receipt->settings->widthCharAmount);
-                    }
-                    if (boolval($node->attributes->getNamedItem('center'))) {
-                        $this->currentLine->center();
-                    }
-                }
-
                 if (!($this->currentLine instanceof TextLine)) {
                     throw new TemplateException('text', 'trying to add text to a non textual line');
                 }
+                if ($node->hasAttributes()) {
+                    throw new TemplateException($node->nodeName, 'is unknown to have attributes, move them to <line>');
+                }
 
-                $this->currentLine->appendText($value);
+                $this->currentLine->appendText($this->retrieveValue($node->nodeName));
                 break;
         }
     }
 
 
-    private function createTextLine(DOMNode $node, string $value): TextLine
+    private function setCurrentLine(Line $line, DOMNode $node)
     {
-        $line = new TextLine($value, $this->receipt->settings);
+        $this->currentLine = $line;
+        $this->printable->lines[] = $line;
 
         foreach ($node->attributes as $attribute) {
+
+            if ($line instanceof TextLine) {
+
+                /** @var TextLine */
+                $textLine = $line;
+                $v = $attribute->nodeValue;
+
+                switch ($attribute->nodeName) {
+                    case 'wordwrap':
+                        $textLine->setWordwrap();
+                    case 'font-size':
+                        $textLine->fontSize = $v;
+                        break;
+                    case 'font':
+                        $textLine->font = $v;
+                        break;
+                    case 'bold':
+                        $textLine->bolded = $v;
+                        break;
+                }
+            }
+
             switch ($attribute->nodeName) {
-                case 'font-size':
-                    $line->fontSize = $attribute->nodeValue;
+                case 'center':
+                    $line->centered = $v;
                     break;
-                case 'font':
-                    $line->font = $attribute->nodeValue;
+                case 'margin-top':
+                    $line->margins->top = $v;
                     break;
-                case 'bold':
-                    $line->bolded = $attribute->nodeValue;
+                case 'margin-right':
+                    $line->margins->right = $v;
                     break;
-                default:
-                    $line = $this->setLineFields($attribute->nodeName, $attribute->nodeValue, $line);
+                case 'margin-bottom':
+                    $line->margins->bottom = $v;
+                    break;
+                case 'margin-left':
+                    $line->margins->left = $v;
                     break;
             }
         }
-
-        return $line;
     }
-
-    private function setLineFields(string $key, string $value, Line $line): Line
-    {
-        switch ($key) {
-            case 'center':
-                $line->centered = $value;
-                break;
-            case 'margin-top':
-                $line->margins->top = $value;
-                break;
-            case 'margin-right':
-                $line->margins->right = $value;
-                break;
-            case 'margin-bottom':
-                $line->margins->bottom = $value;
-                break;
-            case 'margin-left':
-                $line->margins->left = $value;
-                break;
-        }
-
-        return $line;
-    }
-
 }

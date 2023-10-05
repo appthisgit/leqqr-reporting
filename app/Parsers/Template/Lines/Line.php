@@ -11,7 +11,7 @@ abstract class Line
     public Margins $margins;
 
     public function __construct(
-        PrintSettings $defaults
+        protected PrintSettings $defaults
     ) {
         $this->centered = $defaults->center;
         $this->margins = $defaults->lineMargins->copy();
