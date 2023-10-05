@@ -54,13 +54,36 @@ class SunmiParser extends TemplateParser
         }
     }
 
+    private function resetPrinter() {
+        $this->printer->restoreDefaultLineSpacing();
+        $this->printer->setPrintModes(false, false, false);
+        $this->printer->setAlignment(SunmiCloudPrinter::ALIGN_LEFT);
+        $this->printer->setHarfBuzzAsciiCharSize($this->receipt->settings->fontSize);
+        $this->setPrinterFont($this->receipt->settings->font);
+    }
+
+    private function setPrinterFont(string $font) {
+        switch ($font) {
+            default:
+            case 'Lucida Console':
+            case 'SansSerif':
+                $this->printer->selectAsciiCharFont(1);
+                break;
+            case 'Monospaced':
+                $this->printer->selectAsciiCharFont(0);
+                break;
+        }
+    }
+
     private function print(Printable $printable)
     {
-        $this->printer->lineFeed();
+        $this->resetPrinter();
+        // $this->printer->lineFeed();
 
         foreach ($printable->lines as $line) {
             switch (get_class($line)) {
                 case TextLine::class:
+                case ReceiptRow::class:
 
                     /** @var \App\Parsers\Template\Lines\TextLine */
                     $textLine = $line;
@@ -72,34 +95,24 @@ class SunmiParser extends TemplateParser
                         $this->printer->setPrintModes(true, false, false);
                     }
                     if ($textLine->fontSize != $this->receipt->settings->fontSize) {
-                        //todo: make this available
+                        $this->printer->setHarfBuzzAsciiCharSize($textLine->fontSize);
                     }
                     if ($textLine->font != $this->receipt->settings->font) {
-                        //todo: make this available
+                        $this->setPrinterFont($textLine->font);
+
+                    }
+                    if ($textLine->margins->top > $this->receipt->settings->lineMargins->top) {
+                        $this->printer->lineFeed($textLine->margins->top / 10);
                     }
 
-                    Log::debug($textLine->getText());
                     $this->printer->appendText($textLine->getText() . "\n");
 
-                    // reset for next line
-                    $this->printer->setPrintModes(false, false, false);
-                    $this->printer->setAlignment(SunmiCloudPrinter::ALIGN_LEFT);
+                    $this->resetPrinter();
 
-                    break;
-                case ReceiptRow::class:
-                    /** @var \App\Parsers\Template\Lines\ReceiptRow */
-                    $receiptLine = $line;
+                    if ($textLine->margins->bottom > $this->receipt->settings->lineMargins->bottom) {
+                        $this->printer->lineFeed($textLine->margins->bottom / 10);
+                    }
 
-                    // $printer->setupColumns(
-                    //     [96 , SunmiCloudPrinter::ALIGN_LEFT  , 0],
-                    //     [144, SunmiCloudPrinter::ALIGN_CENTER, 0],
-                    //     [0  , SunmiCloudPrinter::ALIGN_RIGHT , SunmiCloudPrinter::COLUMN_FLAG_BW_REVERSE]);
-                    // //$printer->printInColumns("商品名称", "数量\n(单位：随意)", "小计\n(单位：元)");
-                    // //$printer->lineFeed();
-                    // $printer->printInColumns("Testje geprint op", date("Y-m-d h:i:sa"), "€ 1.234,00");
-
-                    Log::debug($receiptLine->getText());
-                    $this->printer->appendText($receiptLine->getText() . "\n");
                     break;
                 case ImageLine::class:
                     /** @var \App\Parsers\Template\Lines\ImageLine */
