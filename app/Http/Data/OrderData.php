@@ -34,6 +34,7 @@ class OrderData extends OrderCollectionItem
         public readonly float $price_total,
         public readonly ?float $price_discount,
         public readonly ?float $price_transaction,
+        public readonly string $origin,
     ) {
         parent::__construct(
             $id,

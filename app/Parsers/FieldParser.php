@@ -59,6 +59,10 @@ class FieldParser
                 return $this->receipt->order->payment_method == 'pin';
             case 'is_method_cikam':
                 return $this->receipt->order->payment_method == 'cikam';
+            case 'is_origin_kiosk':
+                return $this->receipt->order->origin == 'kiosk';
+            case 'is_origin_online':
+                return $this->receipt->order->origin == 'online';
             case 'is_method_other':
                 return $this->receipt->order->payment_method != 'cash'
                     && $this->receipt->order->payment_method != 'account'
@@ -164,6 +168,8 @@ class FieldParser
                 return $this->receipt->order->city;
             case 'order_notes':
                 return $this->receipt->order->notes;
+            case 'order_origin':
+                return $this->receipt->order->origin;
             case 'payment_method':
                 return $this->receipt->order->payment_method;
             case 'pin_receipt':
