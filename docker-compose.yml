@@ -50,7 +50,6 @@ services:
             timeout: 5s
     phpmyadmin:
         image: phpmyadmin/phpmyadmin
-        restart: unless-stopped
         ports:
             - '8088:80'
         environment:
