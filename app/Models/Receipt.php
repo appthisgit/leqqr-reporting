@@ -7,6 +7,8 @@ use App\Http\Data\CompanyData;
 use App\Http\Data\OrderData;
 use Spatie\LaravelData\DataCollection;
 
+//TODO: update name and make into Eloquent Model and store them for history
+
 class Receipt
 {
     public ReceiptSettings $settings;
