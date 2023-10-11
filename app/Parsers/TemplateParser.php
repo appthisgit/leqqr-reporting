@@ -131,7 +131,7 @@ class TemplateParser extends FieldParser
             case 'image':
             case 'img':
                 $img = $node->attributes->getNamedItem("file")->nodeValue;
-                $this->setCurrentLine(new ImageLine($img), $node);
+                $this->setCurrentLine(new ImageLine($img, $this->receipt->settings), $node);
                 break;
             case 'if':
                 if (empty($node->attributes->getNamedItem('key'))) {
