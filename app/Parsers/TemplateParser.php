@@ -167,7 +167,7 @@ class TemplateParser extends FieldParser
                         foreach ($this->currentProduct->variations as $variation) {
                             $this->currentVariation = $variation;
 
-                            foreach ($variation->values as $value) {
+                            foreach ($variation->selected as $value) {
                                 $this->currentVariationValue = $value;
                                 $this->parseChildren($node);
                             }

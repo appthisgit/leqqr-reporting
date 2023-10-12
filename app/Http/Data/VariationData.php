@@ -8,12 +8,13 @@ use Spatie\LaravelData\DataCollection;
 class VariationData extends Data
 {
 
-    //TODO: variation order?
-
     public function __construct(
-        public readonly string $key,
         /** @var VariationValueData[] */
-        public DataCollection $values,
+        public DataCollection $selected,
+        public readonly int $id,
+        public readonly string $overview_title,
+        public readonly string $type,
+        public readonly float $subtotal,
     ) {
     }
 }
