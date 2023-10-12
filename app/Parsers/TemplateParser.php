@@ -199,7 +199,7 @@ class TemplateParser extends FieldParser
 
                 /** @var ReceiptRow */
                 $currentRow = $this->currentLine;
-                $currentRow->price = number_format($this->retrievePrice($key), 2, ',', '');
+                $currentRow->price = $this->retrievePrice($key);
                 break;
             case 'text':
                 if (!($this->currentLine instanceof TextLine)) {

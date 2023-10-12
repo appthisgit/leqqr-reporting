@@ -21,7 +21,7 @@ class ReceiptMods extends TextMods
 
         $result = '';
         $col_1 = TextMods::multipad_array($description, $left);
-        $col_2 = '€' . Str::padLeft($price, $right);
+        $col_2 = '€' . Str::padLeft(number_format($price, 2, ',', ''), $right);
 
         if (count($col_1) == 1) {
             $result = $col_1[0] . ' ' . $col_2;
