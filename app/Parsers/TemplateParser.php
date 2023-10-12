@@ -4,7 +4,6 @@ namespace App\Parsers;
 
 use App\Exceptions\TemplateException;
 use App\Helpers\ReceiptMods;
-use App\Helpers\TextMods;
 use App\Http\Data\ProductData;
 use App\Models\Template;
 use App\Parsers\Template\Lines\ImageLine;
@@ -200,7 +199,7 @@ class TemplateParser extends FieldParser
 
                 /** @var ReceiptRow */
                 $currentRow = $this->currentLine;
-                $currentRow->price = $this->retrievePrice($key);
+                $currentRow->price = number_format($this->retrievePrice($key), 2, ',', '');
                 break;
             case 'text':
                 if (!($this->currentLine instanceof TextLine)) {
