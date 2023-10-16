@@ -19,6 +19,7 @@ use Illuminate\Session\Middleware\StartSession;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Awcodes\FilamentGravatar\GravatarProvider;
 use Awcodes\FilamentGravatar\GravatarPlugin;
+use Saade\FilamentLaravelLog\FilamentLaravelLogPlugin;
 
 class AdminPanelProvider extends PanelProvider
 {
@@ -29,6 +30,9 @@ class AdminPanelProvider extends PanelProvider
             ->plugins([
                 GravatarPlugin::make(),
             ])
+            ->plugin(
+                FilamentLaravelLogPlugin::make()
+            )
             ->default()
             ->id('admin')
             ->path('admin')
