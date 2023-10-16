@@ -144,6 +144,9 @@ class TemplateParser extends FieldParser
                     $this->parseChildren($node);
                 }
                 break;
+            case "product":
+                $this->parseChildren($node);
+                break;
             case 'foreach':
                 if (empty($node->attributes->getNamedItem('items'))) {
                     throw new TemplateException('foreach', 'doesn\'t contain the attribute "items" with a key for the statement');
