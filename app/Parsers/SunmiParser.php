@@ -11,7 +11,7 @@ use App\Parsers\Sunmi\SunmiCloudPrinter;
 use App\Parsers\Template\Lines\ImageLine;
 use App\Parsers\Template\Lines\ReceiptRow;
 use App\Parsers\Template\Lines\TextLine;
-use Illuminate\Support\Facades\Log;
+use Exception;
 
 class SunmiParser extends TemplateParser
 {
@@ -38,23 +38,25 @@ class SunmiParser extends TemplateParser
     {
         if ($this->receipt->settings->singleProductTemplate) {
 
-            foreach ( $this->receipt->getProductsFiltered() as $product) {
+            $products = $this->receipt->getProductsFiltered();
+
+            foreach ($products as $product) {
                 $printable = $this->parseProduct($product);
+                
                 if (!empty($printable)) {
-                    for ($i = 0; $i < $product->amount; $i++) {
-                        $this->print($printable);
-                    }
+                    $this->print($printable, $product->amount);
                 }
             }
         } else {
             $printable = $this->parse();
             if (!empty($printable)) {
-                                $this->print($printable);
-                            }
+                $this->print($printable);
+            }
         }
     }
 
-    private function resetPrinter() {
+    private function resetPrinter()
+    {
         $this->printer->restoreDefaultLineSpacing();
         $this->printer->setPrintModes(false, false, false);
         $this->printer->setAlignment(SunmiCloudPrinter::ALIGN_LEFT);
@@ -62,7 +64,8 @@ class SunmiParser extends TemplateParser
         $this->setPrinterFont($this->receipt->settings->font);
     }
 
-    private function setPrinterFont(string $font) {
+    private function setPrinterFont(string $font)
+    {
         switch ($font) {
             default:
             case 'Lucida Console':
@@ -75,10 +78,9 @@ class SunmiParser extends TemplateParser
         }
     }
 
-    private function print(Printable $printable)
+    private function print(Printable $printable, int $amount = 1)
     {
         $this->resetPrinter();
-        // $this->printer->lineFeed();
 
         foreach ($printable->lines as $line) {
             switch (get_class($line)) {
@@ -103,7 +105,6 @@ class SunmiParser extends TemplateParser
                     if ($textLine->font != $this->receipt->settings->font) {
                         $this->setPrinterFont($textLine->font);
                     }
-
 
                     $this->printer->appendText($textLine->getText() . "\n");
 
@@ -132,17 +133,21 @@ class SunmiParser extends TemplateParser
                     }
                     break;
                 default:
-                    Log::error("how did you get here? >> " . get_class($line));
+                    throw new Exception("how did you get here? >> " . get_class($line));
                     break;
             }
         }
-
         $this->printer->printAndExitPageMode();
         $this->printer->lineFeed(4);
         $this->printer->cutPaper(false);
         $this->printer->pushContent(
-            $this->endpoint->target, 
-            sprintf("%s_%s", $this->endpoint->target, uniqid())
+            $this->endpoint->target,
+            sprintf("%s_%s", $this->endpoint->target, uniqid()),
+            1,
+            $amount,
+            'Lekr order',
+            1
         );
+        $this->printer->clear();
     }
 }

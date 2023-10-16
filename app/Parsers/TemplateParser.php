@@ -95,13 +95,10 @@ class TemplateParser extends FieldParser
 
     public function parseProduct(ProductData $currentProduct): Printable
     {
-
+        
         $this->printable = new Printable();
         $this->currentProduct = $currentProduct;
-
-        // TODO: is this correct?
         $this->parseChildren($this->documentRoot);
-
         return $this->printable;
     }
 

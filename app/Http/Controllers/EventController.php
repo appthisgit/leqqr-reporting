@@ -7,12 +7,14 @@ use App\Http\Data\OrderData;
 use App\Models\Endpoint;
 use App\Parsers\SunmiParser;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class EventController extends Controller
 {
 
     public function printOrder(Request $request)
     {
+        Log::debug("print");
         $order = OrderData::from($request->order);
         $company = CompanyData::from($request->company);
         $endpoints = Endpoint::where('company_id', $company->id)->get();
@@ -39,7 +41,6 @@ class EventController extends Controller
                 }
             }
         }
-
 
         return response()->json([
             'msg' => 'success'
