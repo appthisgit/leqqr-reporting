@@ -10,12 +10,15 @@ class Template extends Model
 {
     use HasFactory;
 
-
-
     protected $fillable = [
         'name',
         'zone',
         'content',
+        'images',
+    ];
+
+    protected $casts = [
+        'images' => 'array',
     ];
 
     public function endpoints(): HasMany

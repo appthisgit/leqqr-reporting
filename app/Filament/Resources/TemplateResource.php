@@ -33,6 +33,15 @@ class TemplateResource extends Resource
                 Forms\Components\TextInput::make('name')
                     ->required()
                     ->maxLength(255),
+                Forms\Components\FileUpload::make('images')
+                    ->disk('public')
+                    ->directory('uploads/')
+                    ->visibility('public')
+                    ->image()
+                    ->imageEditor()
+                    ->multiple()
+                    ->reorderable()
+                    ->appendFiles(),
                 Forms\Components\Textarea::make('content')
                     ->required()
                     ->maxLength(65535)

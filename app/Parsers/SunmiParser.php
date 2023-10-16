@@ -12,6 +12,7 @@ use App\Parsers\Template\Lines\ImageLine;
 use App\Parsers\Template\Lines\ReceiptRow;
 use App\Parsers\Template\Lines\TextLine;
 use Exception;
+use Illuminate\Support\Facades\Storage;
 
 class SunmiParser extends TemplateParser
 {
@@ -42,7 +43,7 @@ class SunmiParser extends TemplateParser
 
             foreach ($products as $product) {
                 $printable = $this->parseProduct($product);
-                
+
                 if (!empty($printable)) {
                     $this->print($printable, $product->amount);
                 }
@@ -124,7 +125,7 @@ class SunmiParser extends TemplateParser
                     }
 
                     $this->printer->setAlignment(SunmiCloudPrinter::ALIGN_CENTER);
-                    $this->printer->appendText("<images are not yet supported>" . "\n");
+                    $this->printer->appendImage(Storage::path('public/'. $imageLine->image), SunmiCloudPrinter::DIFFUSE_DITHER);
 
                     $this->resetPrinter();
 

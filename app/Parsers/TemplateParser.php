@@ -23,9 +23,12 @@ class TemplateParser extends FieldParser
     // Receipt parsing
     private DOMElement $documentRoot;
     private Line $currentLine;
+    private array $images;
 
     public function load(Template $template)
     {
+        $this->images = $template->images;
+
         $doc = new DOMDocument();
         $doc->loadXML($template->content);
 
@@ -95,7 +98,7 @@ class TemplateParser extends FieldParser
 
     public function parseProduct(ProductData $currentProduct): Printable
     {
-        
+
         $this->printable = new Printable();
         $this->currentProduct = $currentProduct;
         $this->parseChildren($this->documentRoot);
@@ -126,7 +129,10 @@ class TemplateParser extends FieldParser
                 break;
             case 'image':
             case 'img':
-                $img = $node->attributes->getNamedItem("file")->nodeValue;
+                if (empty($this->images)) {
+                    throw new TemplateException('image', 'No images uploaded');
+                }
+                $img = array_shift($this->images);
                 $this->setCurrentLine(new ImageLine($img, $this->receipt->settings), $node);
                 break;
             case 'if':
