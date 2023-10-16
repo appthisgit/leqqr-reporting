@@ -16,5 +16,6 @@ class VariationData extends Data
         public readonly string $type,
         public readonly float $subtotal,
     ) {
+        $selected->toCollection()->sortBy('order');
     }
 }
