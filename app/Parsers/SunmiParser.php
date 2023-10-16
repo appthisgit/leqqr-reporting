@@ -49,8 +49,8 @@ class SunmiParser extends TemplateParser
         } else {
             $printable = $this->parse();
             if (!empty($printable)) {
-                $this->print($printable);
-            }
+                                $this->print($printable);
+                            }
         }
     }
 
@@ -140,6 +140,9 @@ class SunmiParser extends TemplateParser
         $this->printer->printAndExitPageMode();
         $this->printer->lineFeed(4);
         $this->printer->cutPaper(false);
-        $this->printer->pushContent($this->endpoint->target, sprintf("%s_%010d", $this->endpoint->target, time()));
+        $this->printer->pushContent(
+            $this->endpoint->target, 
+            sprintf("%s_%s", $this->endpoint->target, uniqid())
+        );
     }
 }

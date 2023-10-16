@@ -132,7 +132,7 @@ class SunmiCloudPrinter
         $this->httpPost("/v2/printer/open/open/device/pushVoice", $body);
     }
 
-    function pushContent($sn, $trade_no, $order_type = 1, $count = 1, $media_text = "Lekr test order", $cycle = 1)
+    function pushContent($sn, $trade_no, $order_type = 1, $count = 1, $media_text = "Lekr order", $cycle = 1)
     {
         $body = [
             "sn"            => $sn,
