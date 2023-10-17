@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\EndpointResource\Pages;
 use App\Models\Endpoint;
 use Filament\Forms;
+use Filament\Forms\Components\Section;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -21,27 +22,48 @@ class EndpointResource extends Resource
     public static function form(Form $form): Form
     {
         return $form
+            ->columns(3)
             ->schema([
-                Forms\Components\TextInput::make('name')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\TextInput::make('company_id')
-                    ->numeric()
-                    ->required(),
-                Forms\Components\Select::make('template_id')
-                    ->relationship('template', 'name')
-                    ->required(),
-                Forms\Components\TextInput::make('type')
-                    ->required()
-                    ->maxLength(20),
-                Forms\Components\TextInput::make('target')
-                    ->required()
-                    ->maxLength(100),
-                Forms\Components\TextInput::make('filter_terminal')
-                    ->maxLength(40),
-                Forms\Components\TextInput::make('filter_zone')
-                    ->maxLength(40),
-                Forms\Components\Toggle::make('filter_printable'),
+                Section::make('Instellingen')
+                    ->columnSpan(2)
+                    ->schema([
+                        Forms\Components\TextInput::make('name')
+                            ->label('Naam')
+                            ->helperText('Eigen bedachte naam')
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\TextInput::make('company_id')
+                            ->helperText('Bij welke company ID behoort dit endpoint')
+                            ->numeric()
+                            ->required(),
+                        Forms\Components\Select::make('template_id')
+                            ->relationship('template', 'name')
+                            ->required(),
+                        Forms\Components\Select::make('type')
+                            ->options([
+                                'sunmi' => 'Sunmi Cloudprinter',
+                            ])
+                            ->required(),
+                        Forms\Components\TextInput::make('target')
+                            ->helperText('Het apparaat of email adres waarheen het resultaat wordt gestuurd')
+                            ->required()
+                            ->maxLength(100),
+                    ]),
+                Section::make('Filters')
+                    ->columnSpan(1)
+                    ->schema([
+                        Forms\Components\TextInput::make('filter_terminal')
+                            ->label('Terminal')
+                            ->helperText('Filteren op betaal terminal')
+                            ->maxLength(40),
+                        Forms\Components\TextInput::make('filter_zone')
+                            ->label('Zone')
+                            ->helperText('Filteren op deze zone')
+                            ->maxLength(40),
+                        Forms\Components\Toggle::make('filter_printable')
+                            ->label('Printable')
+                            ->helperText('Filteren op "printable" producten'),
+                ]),
             ]);
     }
 
@@ -49,10 +71,11 @@ class EndpointResource extends Resource
     {
         return $table
             ->columns([
+                Tables\Columns\TextColumn::make('name')
+                    ->label('Naam')
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('company_id')
                     ->numeric()
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('name')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('template.name')
                     ->numeric()
@@ -62,19 +85,25 @@ class EndpointResource extends Resource
                 Tables\Columns\TextColumn::make('target')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('filter_terminal')
-                    ->searchable(),
+                    ->label('Terminal')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('filter_zone')
-                    ->searchable(),
+                ->label('Zone')
+                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\IconColumn::make('filter_printable')
+                ->label('Printable')
                     ->boolean()
-                    ->searchable(),
-                Tables\Columns\TextColumn::make('zone')
-                    ->searchable(),
+                    ->searchable()
+            ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('created_at')
+                    ->label('Aangemaakt')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('updated_at')
+                    ->label('Geüpdate')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -83,7 +112,10 @@ class EndpointResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\ActionGroup::make([
+                    Tables\Actions\ReplicateAction::make(),
+                    Tables\Actions\DeleteAction::make(),
+                ])
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

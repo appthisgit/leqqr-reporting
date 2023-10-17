@@ -13,7 +13,10 @@ class EditEndpoint extends EditRecord
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
+            Actions\ActionGroup::make([
+                Actions\ReplicateAction::make(),
+                Actions\DeleteAction::make(),
+            ])
         ];
     }
 }
