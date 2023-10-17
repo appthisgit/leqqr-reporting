@@ -70,7 +70,8 @@ class TemplateResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('name')
                     ->label('Naam')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Aangemaakt')
                     ->dateTime()

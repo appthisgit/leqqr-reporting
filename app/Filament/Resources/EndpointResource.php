@@ -73,20 +73,25 @@ class EndpointResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('name')
                     ->label('Naam')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('company_id')
                     ->numeric()
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('template.name')
                     ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('type')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('target')
-                    ->searchable(),
+                    ->searchable()
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('filter_terminal')
                     ->label('Terminal')
                     ->searchable()
+                    ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('filter_zone')
                 ->label('Zone')
