@@ -72,6 +72,10 @@ class TemplateResource extends Resource
                     ->label('Naam')
                     ->searchable()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('endpoints_count')
+                    ->label('Endpoints')
+                    ->counts('endpoints')
+                    ->alignEnd(),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Aangemaakt')
                     ->dateTime()

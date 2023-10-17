@@ -90,11 +90,13 @@ class EndpointResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('filter_terminal')
                     ->label('Terminal')
+                    ->placeholder('Leeg')
                     ->searchable()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('filter_zone')
                 ->label('Zone')
+                    ->placeholder('Leeg')
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\IconColumn::make('filter_printable')
