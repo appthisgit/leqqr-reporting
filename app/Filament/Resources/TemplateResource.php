@@ -6,6 +6,7 @@ use App\Filament\Resources\TemplateResource\Pages;
 use App\Filament\Resources\TemplateResource\RelationManagers\EndpointsRelationManager;
 use App\Models\Template;
 use Filament\Forms;
+use Filament\Forms\Components\Section;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -29,23 +30,37 @@ class TemplateResource extends Resource
     public static function form(Form $form): Form
     {
         return $form
+            ->columns(3)
             ->schema([
-                Forms\Components\TextInput::make('name')
-                    ->required()
-                    ->maxLength(255),
-                Forms\Components\FileUpload::make('images')
-                    ->disk('public')
-                    ->directory('uploads/')
-                    ->visibility('public')
-                    ->image()
-                    ->imageEditor()
-                    ->multiple()
-                    ->reorderable()
-                    ->appendFiles(),
-                Forms\Components\Textarea::make('content')
-                    ->required()
-                    ->maxLength(65535)
-                    ->columnSpanFull(),
+                Section::make('Instellingen')
+                    ->columnSpan(2)
+                    ->schema([
+                        Forms\Components\TextInput::make('name')
+                            ->label('Naam')
+                            ->helperText('Eigen bedachte naam')
+                            ->required()
+                            ->maxLength(255),
+                        Forms\Components\Textarea::make('content')
+                            ->rows(20)
+                            ->label('Template')
+                            ->helperText('Voer hier uw XML template in')
+                            ->required(),
+                    ]),
+                Section::make('Extra\'s')
+                    ->columnSpan(1)
+                    ->schema([
+                        Forms\Components\FileUpload::make('images')
+                            ->label('Afbeeldingen')
+                            ->helperText('Houdt rekening met de volgorde van uw afbeeldingen')
+                            ->disk('public')
+                            ->directory('uploads/')
+                            ->visibility('public')
+                            ->image()
+                            ->imageEditor()
+                            ->multiple()
+                            ->reorderable()
+                            ->appendFiles(),
+                    ]),
             ]);
     }
 
@@ -54,12 +69,15 @@ class TemplateResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('name')
+                    ->label('Naam')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('created_at')
+                    ->label('Aangemaakt')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('updated_at')
+                    ->label('Geüpdate')
                     ->dateTime()
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
@@ -68,7 +86,11 @@ class TemplateResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\ActionGroup::make([
+                    Tables\Actions\EditAction::make(),
+                    Tables\Actions\ReplicateAction::make(),
+                    Tables\Actions\DeleteAction::make(),
+                ])
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([

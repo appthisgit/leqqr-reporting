@@ -113,6 +113,7 @@ class EndpointResource extends Resource
             ])
             ->actions([
                 Tables\Actions\ActionGroup::make([
+                    Tables\Actions\EditAction::make(),
                     Tables\Actions\ReplicateAction::make(),
                     Tables\Actions\DeleteAction::make(),
                 ])
