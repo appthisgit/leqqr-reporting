@@ -14,32 +14,39 @@ class EventController extends Controller
 
     public function printOrder(Request $request)
     {
-        Log::debug("print");
-        $order = OrderData::from($request->order);
-        $company = CompanyData::from($request->company);
-        $endpoints = Endpoint::where('company_id', $company->id)->get();
+        $endpoints = Endpoint::where('company_id', $request->company['id'])->get();
 
-        foreach ($endpoints as $endpoint) {
+        if (!empty($endpoints)) {
+            $order = OrderData::from($request->order);
+            $company = CompanyData::from($request->company);
 
-            if (empty($endpoint->filter_terminal) || $endpoint->filter_terminal == $order->pin_terminal_id) {
+            foreach ($endpoints as $endpoint) {
+                if (empty($endpoint->filter_terminal) || $endpoint->filter_terminal == $order->pin_terminal_id) {
 
-                $parser = null;
+                    $parser = null;
 
-                switch (strtolower($endpoint->type)) {
-                    case 'sunmi':
-                        $parser = new SunmiParser(
-                            $order,
-                            $company,
-                            $endpoint
-                        );
-                        break;
-                }
+                    switch (strtolower($endpoint->type)) {
+                        case 'sunmi':
+                            $parser = new SunmiParser(
+                                $order,
+                                $company,
+                                $endpoint
+                            );
+                            break;
+                    }
 
-                if ($parser) {
-                    $parser->load($endpoint->template);
-                    $parser->send();
+                    if ($parser) {
+                        Log::debug('Parsing order for endpoint ' . $endpoint->name);
+                        $parser->load($endpoint->template);
+
+                        Log::debug('Sending parsed result to endpoint ' . $endpoint->name);
+                        $parser->send();
+                    }
+                } else {
+                    Log::debug('Filter terminal ' . $endpoint->filter_terminal . ' does not equal order ' . $order->pin_terminal_id . ' for endpoint ' . $endpoint->name);
                 }
             }
+            Log::debug('Completed all endpoints for company ' . $company->id);
         }
 
         return response()->json([
