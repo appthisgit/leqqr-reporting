@@ -16,7 +16,7 @@ class EventController extends Controller
     {
         $endpoints = Endpoint::where('company_id', $request->company['id'])->get();
 
-        if (!empty($endpoints)) {
+        if (count($endpoints)) {
             $order = OrderData::from($request->order);
             $company = CompanyData::from($request->company);
 
