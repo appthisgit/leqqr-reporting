@@ -23,7 +23,7 @@ class TemplateParser extends FieldParser
     // Receipt parsing
     private DOMElement $documentRoot;
     private Line $currentLine;
-    private array $images;
+    private ?array $images;
 
     public function load(Template $template)
     {
