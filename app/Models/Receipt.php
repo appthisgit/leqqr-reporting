@@ -9,7 +9,7 @@ use Spatie\LaravelData\DataCollection;
 
 //TODO: update name and make into Eloquent Model and store them for history
 
-class Receipt
+class Receipt //QueueObject?
 {
     public ReceiptSettings $settings;
 
