@@ -18,6 +18,10 @@ class SunmiParser extends TemplateParser
 {
 
     private SunmiCloudPrinter $printer;
+    private ?bool $currentCentered;
+    private ?bool $currentBold;
+    private ?int $currentFont;
+    private ?int $currentFontSize;
 
     public function __construct(
         OrderData $order,
@@ -33,12 +37,15 @@ class SunmiParser extends TemplateParser
             )
         );
         $this->printer = new SunmiCloudPrinter();
+        $this->currentCentered = null;
+        $this->currentBold = null;
+        $this->currentFont = null;
+        $this->currentFontSize = null;
     }
 
     public function send()
     {
         if ($this->receipt->settings->singleProductTemplate) {
-
             $products = $this->receipt->getProductsFiltered();
 
             foreach ($products as $product) {
@@ -56,34 +63,46 @@ class SunmiParser extends TemplateParser
         }
     }
 
-    private function resetPrinter()
+    private function setCentered(bool $center)
     {
-        $this->printer->restoreDefaultLineSpacing();
-        $this->printer->setPrintModes(false, false, false);
-        $this->printer->setAlignment(SunmiCloudPrinter::ALIGN_LEFT);
-        $this->printer->setHarfBuzzAsciiCharSize($this->receipt->settings->fontSize);
-        $this->setPrinterFont($this->receipt->settings->font);
+        if ($this->currentCentered != $center) {
+            $this->printer->setAlignment($center ?
+                SunmiCloudPrinter::ALIGN_CENTER : SunmiCloudPrinter::ALIGN_LEFT);
+            $this->currentCentered = $center;
+        }
     }
-
-    private function setPrinterFont(string $font)
+    private function setBold(bool $bold)
     {
-        switch ($font) {
-            default:
-            case 'Lucida Console':
-            case 'SansSerif':
-                $this->printer->selectAsciiCharFont(1);
-                break;
-            case 'Monospaced':
-                $this->printer->selectAsciiCharFont(0);
-                break;
+        if ($this->currentBold != $bold) {
+            $this->printer->setPrintModes($bold, false, false);
+            $this->currentBold = $bold;
+        }
+    }
+    private function setFont(string $font)
+    {
+        $selectFont = ($font == 'Monospaced') ? 0 : 1;
+
+        if ($this->currentFont != $selectFont) {
+            $this->printer->selectAsciiCharFont($selectFont);
+            $this->currentFont == $selectFont;
+        }
+    }
+    private function setFontSize(int $size)
+    {
+        if ($this->currentFontSize != $size) {
+            $this->printer->setHarfBuzzAsciiCharSize($size);
+            $this->currentFontSize = $size;
         }
     }
 
     private function print(Printable $printable, int $amount = 1)
     {
-        $this->resetPrinter();
-
         foreach ($printable->lines as $line) {
+
+            if ($line->margins->top > $this->receipt->settings->lineMargins->top) {
+                $this->printer->lineFeed($line->margins->top / 10);
+            }
+
             switch (get_class($line)) {
                 case TextLine::class:
                 case ReceiptRow::class:
@@ -94,51 +113,33 @@ class SunmiParser extends TemplateParser
                     if ($textLine->margins->top > $this->receipt->settings->lineMargins->top) {
                         $this->printer->lineFeed($textLine->margins->top / 10);
                     }
-                    if ($textLine->centered) {
-                        $this->printer->setAlignment(SunmiCloudPrinter::ALIGN_CENTER);
-                    }
-                    if ($textLine->bolded) {
-                        $this->printer->setPrintModes(true, false, false);
-                    }
-                    if ($textLine->fontSize != $this->receipt->settings->fontSize) {
-                        $this->printer->setHarfBuzzAsciiCharSize($textLine->fontSize);
-                    }
-                    if ($textLine->font != $this->receipt->settings->font) {
-                        $this->setPrinterFont($textLine->font);
-                    }
+
+                    $this->setCentered($textLine->centered);
+                    $this->setBold($textLine->bolded);
+                    $this->setFont($textLine->font);
+                    $this->setFontSize($textLine->fontSize);
 
                     $this->printer->appendText($textLine->getText() . "\n");
-
-                    $this->resetPrinter();
-
-                    if ($textLine->margins->bottom > $this->receipt->settings->lineMargins->bottom) {
-                        $this->printer->lineFeed($textLine->margins->bottom / 10);
-                    }
 
                     break;
                 case ImageLine::class:
                     /** @var \App\Parsers\Template\Lines\ImageLine */
                     $imageLine = $line;
 
-                    if ($imageLine->margins->top > $this->receipt->settings->lineMargins->top) {
-                        $this->printer->lineFeed($imageLine->margins->top / 10);
-                    }
+                    $this->setCentered(true);
+                    $this->printer->appendImage(Storage::path('public/' . $imageLine->image), SunmiCloudPrinter::DIFFUSE_DITHER);
 
-                    $this->printer->setAlignment(SunmiCloudPrinter::ALIGN_CENTER);
-                    $this->printer->appendImage(Storage::path('public/'. $imageLine->image), SunmiCloudPrinter::DIFFUSE_DITHER);
-
-                    $this->resetPrinter();
-
-                    if ($imageLine->margins->bottom > $this->receipt->settings->lineMargins->bottom) {
-                        $this->printer->lineFeed($imageLine->margins->bottom / 10);
-                    }
                     break;
                 default:
                     throw new Exception("how did you get here? >> " . get_class($line));
                     break;
             }
+
+            if ($line->margins->bottom > $this->receipt->settings->lineMargins->bottom) {
+                $this->printer->lineFeed($line->margins->bottom / 10);
+            }
         }
-        $this->printer->printAndExitPageMode();
+
         $this->printer->lineFeed(4);
         $this->printer->cutPaper(false);
         $this->printer->pushContent(
@@ -147,7 +148,7 @@ class SunmiParser extends TemplateParser
             1,
             $amount,
             'Lekr order',
-            1
+            1 // Amount of times text is said by printer
         );
         $this->printer->clear();
     }
