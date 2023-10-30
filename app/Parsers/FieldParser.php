@@ -77,6 +77,9 @@ class FieldParser
                 return $this->receipt->order->pin_terminal_id == $value;
 
                 // Product
+            case 'no_product_kitchen_info':
+                $this->checkValue($this->currentProduct, "if key=\"$key\"",  'can\'t be accessed outside of product loop');
+                return Strings::isEmptyOrValueNull($this->currentProduct->kitchen_info);
             case 'has_product_kitchen_info':
                 $this->checkValue($this->currentProduct, "if key=\"$key\"",  'can\'t be accessed outside of product loop');
                 return Strings::isNotEmptyOrValueNull($this->currentProduct->kitchen_info);
@@ -91,6 +94,9 @@ class FieldParser
             case 'has_variation_price':
                 $this->checkValue($this->currentVariation, "if key=\"$key\"",  'can\'t be accessed outside of variation loop');
                 return $this->currentVariationValue->price > 0;
+            case 'no_variation_kitchen_info':
+                $this->checkValue($this->currentVariation, "if key=\"$key\"",  'can\'t be accessed outside of variation loop');
+                return Strings::isEmptyOrValueNull($this->currentVariationValue->kitchen_info);
             case 'has_variation_kitchen_info':
                 $this->checkValue($this->currentVariation, "if key=\"$key\"",  'can\'t be accessed outside of variation loop');
                 return Strings::isNotEmptyOrValueNull($this->currentVariationValue->kitchen_info);
@@ -189,6 +195,10 @@ class FieldParser
             case 'product_kitchen_info':
                 $this->checkValue($this->currentProduct, $key,  'can\'t be accessed outside of product loop');
                 return $this->currentProduct->kitchen_info;
+            case 'product_kitchen_info_or_name':
+                $this->checkValue($this->currentProduct, $key,  'can\'t be accessed outside of product loop');
+                return (Strings::isNotEmptyOrValueNull($this->currentProduct->kitchen_info)) ?
+                    $this->currentProduct->kitchen_info : $this->currentProduct->name;
             case 'product_notes':
                 $this->checkValue($this->currentProduct, $key,  'can\'t be accessed outside of product loop');
                 return $this->currentProduct->notes;
@@ -203,6 +213,10 @@ class FieldParser
             case 'variation_kitchen_info':
                 $this->checkValue($this->currentVariation, $key,  'can\'t be accessed outside of variation loop');
                 return $this->currentVariationValue->kitchen_info;
+            case 'variation_kitchen_info_or_name':
+                $this->checkValue($this->currentProduct, $key,  'can\'t be accessed outside of product loop');
+                return (Strings::isNotEmptyOrValueNull($this->currentVariationValue->kitchen_info)) ?
+                    $this->currentVariationValue->kitchen_info : $this->currentVariationValue->name;
 
                 // Taxes
             case 'tax_tarif':
