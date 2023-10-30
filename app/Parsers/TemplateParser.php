@@ -222,10 +222,23 @@ class TemplateParser extends FieldParser
                     throw new TemplateException('text', 'trying to add text to a non textual line');
                 }
                 if ($node->hasAttributes()) {
-                    throw new TemplateException($node->nodeName, 'is unknown to have attributes, move them to <line>');
+                    if ($node->attributes->getNamedItem('format')) {
+                        $date = date_create($this->retrieveValue($node->nodeName));
+                        if ($date) {
+                            $formattedDate = date_format($date, $node->attributes->getNamedItem('format')->nodeValue);
+                            $this->currentLine->appendText($formattedDate);
+                        } else {
+                            throw new TemplateException($node->nodeName, 'has a format attribute which resulted in false');
+                        }
+                    }
+                    else {
+                        throw new TemplateException($node->nodeName, 'is unknown to have attributes other than "format" for a date, move current attributes to <line>');
+                    }
+                }
+                else {
+                    $this->currentLine->appendText($this->retrieveValue($node->nodeName));
                 }
 
-                $this->currentLine->appendText($this->retrieveValue($node->nodeName));
                 break;
         }
     }
