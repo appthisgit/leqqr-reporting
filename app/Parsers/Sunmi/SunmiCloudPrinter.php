@@ -57,14 +57,6 @@ class SunmiCloudPrinter
             "Content-Type:"    . "application/json"
         ];
 
-        print $url . "<br>";
-        print $header[0] . "<br>";
-        print $header[1] . "<br>";
-        print $header[2] . "<br>";
-        print $header[3] . "<br>";
-        print $body_data . "<br>";
-        print "<br>";
-
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
         curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
@@ -75,14 +67,13 @@ class SunmiCloudPrinter
         curl_setopt($ch, CURLOPT_POSTFIELDS, $body_data);
         $data = curl_exec($ch);
         if (curl_errno($ch)) {
-            print("FAILED<br>");
+            print("FAILED");
             $res = curl_error($ch);
         } else {
-            print("OK<br>");
+            print("OK");
             $res = json_decode($data, true);
         }
         curl_close($ch);
-        print($data);
         return $res;
     }
 
@@ -783,12 +774,12 @@ class SunmiCloudPrinter
         if ($max_width <= 0 || $max_width > $this->DOTS_PER_LINE)
             $max_width = $this->DOTS_PER_LINE;
 
-        $w = $org_width;
-        $h = $org_height;
+        $h = (int)$org_height;
+        $w = (int)$org_width;
 
         if ($w > $max_width) {
-            $h = $max_width * $h / $w;
-            $w = $max_width;
+            $h = (int)($max_width * $org_height / $org_width);
+            $w = (int)$max_width;
         }
 
         $image = imagecreatetruecolor($w, $h);
