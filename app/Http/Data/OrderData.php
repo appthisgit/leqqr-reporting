@@ -52,9 +52,11 @@ class OrderData extends OrderCollectionItem
         );
 
         $reformatted = array();
-        foreach (json_decode($questions_data) as $object) {
-            foreach ((array)$object as $key => $value) {
-                $reformatted[] = array('question' => $key, 'answer' => $value);
+        if ($questions_data) {
+            foreach (json_decode($questions_data) as $object) {
+                foreach ((array)$object as $key => $value) {
+                    $reformatted[] = array('question' => $key, 'answer' => $value);
+                }
             }
         }
         $this->questions = QuestionData::collection($reformatted);
