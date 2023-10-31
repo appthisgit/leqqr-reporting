@@ -5,6 +5,7 @@ namespace App\Parsers;
 use App\Exceptions\TemplateException;
 use App\Helpers\Strings;
 use App\Http\Data\ProductData;
+use App\Http\Data\QuestionData;
 use App\Http\Data\VatRowData;
 use App\Http\Data\VariationData;
 use App\Http\Data\VariationValueData;
@@ -16,6 +17,7 @@ class FieldParser
     protected VatRowData $currentVatRow;
     protected VariationData $currentVariation;
     protected VariationValueData $currentVariationValue;
+    protected QuestionData $currentQuestion;
 
     public function __construct(
         protected readonly Receipt $receipt,
@@ -100,6 +102,16 @@ class FieldParser
             case 'has_variation_kitchen_info':
                 $this->checkValue($this->currentVariation, "if key=\"$key\"",  'can\'t be accessed outside of variation loop');
                 return Strings::isNotEmptyOrValueNull($this->currentVariationValue->kitchen_info);
+
+                // Question
+            case 'has_questions':
+                return count($this->receipt->order->questions);
+            case 'no_question_answer':
+                $this->checkValue($this->currentQuestion, "if key=\"$key\"",  'can\'t be accessed outside of variation loop');
+                return Strings::isEmptyOrValueNull($this->currentQuestion->answer);
+            case 'has_question_answer':
+                $this->checkValue($this->currentQuestion, "if key=\"$key\"",  'can\'t be accessed outside of variation loop');
+                return Strings::isNotEmptyOrValueNull($this->currentQuestion->answer);
         }
 
         throw new TemplateException("if key=\"$key\"", 'unknown key');
@@ -222,6 +234,14 @@ class FieldParser
             case 'tax_tarif':
                 $this->checkValue($this->currentVatRow, $key,  'can\'t be accessed outside of tax loop');
                 return number_format($this->currentVatRow->tarif, 0, ',', '.');
+
+                // Questions
+            case 'question':
+                $this->checkValue($this->currentQuestion, $key,  'can\'t be accessed outside of questions loop');
+                return $this->currentQuestion->question;
+            case 'answer':
+                $this->checkValue($this->currentQuestion, $key,  'can\'t be accessed outside of questions loop');
+                return $this->currentQuestion->answer;
         }
 
         throw new TemplateException($key, 'us an unknown element');

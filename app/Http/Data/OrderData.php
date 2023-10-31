@@ -6,6 +6,8 @@ use Spatie\LaravelData\DataCollection;
 
 class OrderData extends OrderCollectionItem
 {
+    /** @var QuestionData[] */
+    public readonly DataCollection $questions;
 
     public function __construct(
         int $id,
@@ -17,6 +19,7 @@ class OrderData extends OrderCollectionItem
         ?string $phone,
         ?string $email,
         string $created_at,
+        ?string $questions_data,
 
         /** @var ProductData[] */
         public DataCollection $products,
@@ -47,6 +50,14 @@ class OrderData extends OrderCollectionItem
             $email,
             $created_at
         );
+
+        $reformatted = array();
+        foreach (json_decode($questions_data) as $object) {
+            foreach ((array)$object as $key => $value) {
+                $reformatted[] = array('question' => $key, 'answer' => $value);
+            }
+        }
+        $this->questions = QuestionData::collection($reformatted);
     }
 
     public function hasPinTransactionReceipt()

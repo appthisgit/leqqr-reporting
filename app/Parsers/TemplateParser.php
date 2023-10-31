@@ -178,6 +178,12 @@ class TemplateParser extends FieldParser
                             }
                         }
                         break;
+                    case 'questions':
+                        foreach ($this->receipt->order->questions as $questionData) {
+                            $this->currentQuestion = $questionData;
+                            $this->parseChildren($node);
+                        }
+                        break;
                     default:
                         throw new TemplateException('foreach items="' + $node->attributes->getNamedItem('items')->nodeValue + '"', 'unknown items value');
                 }
@@ -223,12 +229,12 @@ class TemplateParser extends FieldParser
                 }
                 if ($node->hasAttributes()) {
                     if ($node->attributes->getNamedItem('format')) {
-                        $date = date_create($this->retrieveValue($node->nodeName));
+                        $date = \DateTime::createFromFormat('Y-m-d H:i:s' ,$this->retrieveValue($node->nodeName));
                         if ($date) {
-                            $formattedDate = date_format($date, $node->attributes->getNamedItem('format')->nodeValue);
-                            $this->currentLine->appendText($formattedDate);
+                            $format = $node->attributes->getNamedItem('format')->nodeValue;
+                            $this->currentLine->appendText($date->format($format));
                         } else {
-                            throw new TemplateException($node->nodeName, 'has a format attribute which resulted in false');
+                            throw new TemplateException($node->nodeName, 'has a format attribute which resulted in null');
                         }
                     }
                     else {
