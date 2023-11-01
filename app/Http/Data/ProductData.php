@@ -45,10 +45,10 @@ class ProductData extends Data
 
         if (!$printableCheck)
         {
-            Log::debug('(skipped product) "' + $this->name + '" is not set as printable');
+            Log::debug('(skipped product) "' . $this->name . '" is not set as printable');
         }
         if (!$zoneCheck){
-            Log::debug('(skipped product) "' + $this->name + '" is not in correct zone');
+            Log::debug('(skipped product) "' . $this->name . '" is not in correct zone');
         }
 
         return $printableCheck && $zoneCheck;

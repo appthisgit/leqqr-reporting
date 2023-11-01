@@ -185,7 +185,7 @@ class TemplateParser extends FieldParser
                         }
                         break;
                     default:
-                        throw new TemplateException('foreach items="' + $node->attributes->getNamedItem('items')->nodeValue + '"', 'unknown items value');
+                        throw new TemplateException('foreach items="' . $node->attributes->getNamedItem('items')->nodeValue . '"', 'unknown items value');
                 }
                 break;
             case 'stripe':
