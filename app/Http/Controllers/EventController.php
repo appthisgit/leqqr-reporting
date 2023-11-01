@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Log;
 class EventController extends Controller
 {
 
-    public function printOrder(Request $request)
+    public function order(Request $request)
     {
         $endpoints = Endpoint::where('company_id', $request->company['id'])->get();
 
