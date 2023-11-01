@@ -8,6 +8,15 @@ class TextMods
 {
     const SPACE = 1;
 
+    public static function pad(string $text, int $length, bool $center = false): string
+    {
+        $lines = array();
+        foreach (TextMods::wordwrap_toArray($text, $length) as $line) {
+            $lines[] = str_pad($line, $length, ' ', ($center) ? STR_PAD_BOTH : STR_PAD_RIGHT);
+        }
+        return implode("\r\n", $lines);
+    }
+
     public static function wordwrap(string $value, int $maxLength): string
     {
         return implode("\r\n", self::wordwrap_toArray($value, $maxLength));

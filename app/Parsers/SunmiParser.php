@@ -12,12 +12,14 @@ use App\Parsers\Template\Lines\ImageLine;
 use App\Parsers\Template\Lines\ReceiptRow;
 use App\Parsers\Template\Lines\TextLine;
 use Exception;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class SunmiParser extends TemplateParser
 {
 
     private SunmiCloudPrinter $printer;
+    private ?bool $currentInverted;
     private ?bool $currentCentered;
     private ?bool $currentBold;
     private ?int $currentFont;
@@ -36,7 +38,8 @@ class SunmiParser extends TemplateParser
                 $this->endpoint->filter_zone
             )
         );
-        $this->printer = new SunmiCloudPrinter();
+        $this->printer = new SunmiCloudPrinter(500);
+        $this->currentInverted = null;
         $this->currentCentered = null;
         $this->currentBold = null;
         $this->currentFont = null;
@@ -60,6 +63,15 @@ class SunmiParser extends TemplateParser
             if (!empty($printable)) {
                 $this->print($printable);
             }
+        }
+    }
+
+    private function setInverted(bool $inverted)
+    {
+        if ($this->currentInverted != $inverted)
+        {
+            $this->printer->setBlackWhiteReverseMode($inverted);
+            $this->currentInverted = $inverted;
         }
     }
 
@@ -114,6 +126,7 @@ class SunmiParser extends TemplateParser
                         $this->printer->lineFeed($textLine->margins->top / 10);
                     }
 
+                    $this->setInverted($textLine->inverted);
                     $this->setCentered($textLine->centered);
                     $this->setBold($textLine->bolded);
                     $this->setFont($textLine->font);
@@ -126,7 +139,7 @@ class SunmiParser extends TemplateParser
                     /** @var \App\Parsers\Template\Lines\ImageLine */
                     $imageLine = $line;
 
-                    $this->setCentered(true);
+                    // $this->setCentered(true);
                     $this->printer->appendImage(Storage::path('public/' . $imageLine->image), SunmiCloudPrinter::DIFFUSE_DITHER);
 
                     break;
@@ -138,6 +151,8 @@ class SunmiParser extends TemplateParser
             if ($line->margins->bottom > $this->receipt->settings->lineMargins->bottom) {
                 $this->printer->lineFeed($line->margins->bottom / 10);
             }
+
+            // Log::debug($line);
         }
 
         $this->printer->lineFeed(4);

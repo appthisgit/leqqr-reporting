@@ -275,6 +275,9 @@ class TemplateParser extends FieldParser
                     case 'bold':
                         $textLine->bolded = $v;
                         break;
+                    case 'inverted':
+                        $textLine->inverted = $v;
+                        break;
                 }
             }
 

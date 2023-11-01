@@ -20,4 +20,9 @@ abstract class Line
     public function center() {
         $this->centered = true;
     }
+
+    public function __toString()
+    {
+        return get_class($this);
+    }
 }

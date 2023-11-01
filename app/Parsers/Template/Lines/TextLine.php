@@ -12,6 +12,7 @@ class TextLine extends Line
     public int $fontSize;
     public bool $bolded;
     public bool $wrapped;
+    public bool $inverted;
     protected string $text;
 
     public function __construct(
@@ -22,13 +23,25 @@ class TextLine extends Line
         $this->fontSize = $defaults->fontSize;
         $this->bolded = $defaults->bold;
         $this->wrapped = false;
+        $this->inverted = false;
         $this->text = '';
     }
 
     public function getText(): string
     {
-        return ($this->wrapped) ?
-            TextMods::wordwrap($this->text, $this->defaults->widthCharAmount) : $this->text;
+        if ($this->inverted && $this->defaults->fontSize == $this->fontSize) {
+            return TextMods::pad($this->text, $this->defaults->widthCharAmount, $this->centered);
+        }
+        if ($this->wrapped && $this->defaults->fontSize == $this->fontSize) {
+            return TextMods::wordwrap($this->text, $this->defaults->widthCharAmount);
+        }
+
+        return $this->text;
+    }
+
+    public function __toString()
+    {
+        return $this->getText();
     }
 
     public function setBold()
@@ -39,6 +52,11 @@ class TextLine extends Line
     public function setWordwrap()
     {
         $this->wrapped = true;
+    }
+
+    public function setInverted()
+    {
+        $this->inverted = true;
     }
 
     public function appendText(string $text)
