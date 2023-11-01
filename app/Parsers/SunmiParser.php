@@ -42,7 +42,7 @@ class SunmiParser extends TemplateParser
         $this->currentInverted = null;
         $this->currentCentered = null;
         $this->currentBold = null;
-        $this->currentFont = 1;
+        $this->currentFont = null;
         $this->currentFontSize = null;
     }
 
