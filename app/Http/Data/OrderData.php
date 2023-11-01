@@ -10,22 +10,12 @@ class OrderData extends OrderCollectionItem
     public readonly DataCollection $questions;
 
     public function __construct(
-        int $id,
-        string $confirmation_code,
-        string $shipment_type,
-        ?string $address,
-        ?string $postal,
-        ?string $city,
-        ?string $phone,
-        ?string $email,
-        string $created_at,
-        ?string $questions_data,
 
         /** @var ProductData[] */
         public DataCollection $products,
         public VatData $vat,
-        public readonly string $name,            // customer name
-        public readonly ?string $notes,           // customer notes
+        public readonly string $name,
+        public readonly ?string $notes,
         public readonly string $order_ready,
         public readonly ?string $table_nr,
         public readonly ?string $buzzer_nr,
@@ -38,6 +28,20 @@ class OrderData extends OrderCollectionItem
         public readonly ?float $price_discount,
         public readonly ?float $price_transaction,
         public readonly string $origin,
+
+        // super()
+        int $id,
+        string $confirmation_code,
+        string $shipment_type,
+        ?string $address,
+        ?string $postal,
+        ?string $city,
+        ?string $phone,
+        ?string $email,
+        string $created_at,
+
+        // optional
+        ?string $questions_data = null,
     ) {
         parent::__construct(
             $id,
