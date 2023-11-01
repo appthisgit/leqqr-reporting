@@ -12,7 +12,6 @@ use Spatie\LaravelData\DataCollection;
 class Receipt
 {
     public ReceiptSettings $settings;
-    private ?bool $empty = null;
 
     public function __construct(
         public OrderData $order,
@@ -31,7 +30,6 @@ class Receipt
             foreach ($this->order->products as $product) {
                 if ($product->inFilters($this->filter_printable, $this->filter_zone)) {
                     $filteredProducts[] = $product;
-                    $this->empty = false;
                 }
             }
 
@@ -39,10 +37,5 @@ class Receipt
         }
 
         return $this->order->products;
-    }
-
-    public function isEmpty(): ?bool
-    {
-        return $this->empty;
     }
 }

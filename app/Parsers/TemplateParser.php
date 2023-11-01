@@ -17,6 +17,9 @@ use DOMNode;
 
 class TemplateParser extends FieldParser
 {
+
+    protected bool $parsedProducts = false;
+
     // Result
     private Printable $printable;
 
@@ -24,6 +27,7 @@ class TemplateParser extends FieldParser
     private DOMElement $documentRoot;
     private Line $currentLine;
     private ?array $images;
+
 
     public function load(Template $template)
     {
@@ -98,7 +102,6 @@ class TemplateParser extends FieldParser
 
     public function parseProduct(ProductData $currentProduct): Printable
     {
-
         $this->printable = new Printable();
         $this->currentProduct = $currentProduct;
         $this->parseChildren($this->documentRoot);
@@ -160,6 +163,7 @@ class TemplateParser extends FieldParser
                         foreach ($this->receipt->getProductsFiltered() as $product) {
                             $this->currentProduct = $product;
                             $this->parseChildren($node);
+                            $this->parsedProducts = true;
                         }
                         break;
                     case 'taxes':

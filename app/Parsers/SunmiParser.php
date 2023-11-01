@@ -60,7 +60,7 @@ class SunmiParser extends TemplateParser
             }
         } else {
             $printable = $this->parse();
-            if (!empty($printable->lines) && $this->receipt->isEmpty() == false) {
+            if (!empty($printable->lines) && $this->parsedProducts) {
                 $this->print($printable);
             }
         }
