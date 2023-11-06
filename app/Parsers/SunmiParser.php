@@ -162,7 +162,7 @@ class SunmiParser extends TemplateParser
             sprintf("%s_%s", $this->endpoint->target, uniqid()),
             1,
             $amount,
-            'Lekr order',
+            'New order',
             1 // Amount of times text is said by printer
         );
         $this->printer->clear();
