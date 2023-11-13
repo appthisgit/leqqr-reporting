@@ -192,7 +192,7 @@ class FieldParser
                 return $this->receipt->order->payment_method;
             case 'pin_receipt':
                 return $this->receipt->order->hasPinTransactionReceipt()
-                    ? $this->receipt->order->pin_transaction_receipt : '';
+                    ? $this->receipt->order->pin_transaction_receipt : '-- No pin receipt --';
 
                 // Product
             case 'product_tax_tarif':
