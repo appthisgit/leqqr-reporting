@@ -157,6 +157,12 @@ class FieldParser
 
     protected function retrieveValue(string $key): string
     {
+        $value = $this->retrieveValueUnsafe($key);
+        return ($value) ? $this->retrieveValueUnsafe($key) : "";
+    }
+    
+    private function retrieveValueUnsafe(string $key): ?String
+    {
         switch ($key) {
             case 'order_id':
                 return $this->receipt->order->id;
@@ -244,7 +250,7 @@ class FieldParser
                 return $this->currentQuestion->answer;
         }
 
-        throw new TemplateException($key, 'us an unknown element');
+        throw new TemplateException($key, 'is an unknown element');
     }
 
     protected function checkValue($value, string $command, string $message)
