@@ -22,6 +22,7 @@ class SunmiParser extends TemplateParser
     private ?bool $currentInverted;
     private ?bool $currentCentered;
     private ?bool $currentBold;
+    private ?bool $currentUnderlined;
     private ?int $currentFont;
     private ?int $currentFontSize;
 
@@ -42,6 +43,7 @@ class SunmiParser extends TemplateParser
         $this->currentInverted = null;
         $this->currentCentered = null;
         $this->currentBold = null;
+        $this->currentUnderlined = null;
         $this->currentFont = null;
         $this->currentFontSize = null;
     }
@@ -90,6 +92,13 @@ class SunmiParser extends TemplateParser
             $this->currentBold = $bold;
         }
     }
+    private function setUnderline(bool $underline)
+    {
+        if ($this->currentUnderlined != $underline) {
+            $this->printer->setUnderlineMode($underline ? 2 : 0);
+            $this->currentUnderlined = $underline;
+        }
+    }
     private function setFont(string $font)
     {
         $selectFont = ($font == 'Monospaced') ? 0 : 1;
@@ -129,6 +138,7 @@ class SunmiParser extends TemplateParser
                     $this->setInverted($textLine->inverted);
                     $this->setCentered($textLine->centered);
                     $this->setBold($textLine->bolded);
+                    $this->setUnderline($textLine->underlined);
                     $this->setFont($textLine->font);
                     $this->setFontSize($textLine->fontSize);
 

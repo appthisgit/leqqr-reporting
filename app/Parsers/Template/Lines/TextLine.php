@@ -11,6 +11,7 @@ class TextLine extends Line
     public string $font;
     public int $fontSize;
     public bool $bolded;
+    public bool $underlined;
     public bool $wrapped;
     public bool $inverted;
     protected string $text;
@@ -22,6 +23,7 @@ class TextLine extends Line
         $this->font = $defaults->font;
         $this->fontSize = $defaults->fontSize;
         $this->bolded = $defaults->bold;
+        $this->underlined = false;
         $this->wrapped = false;
         $this->inverted = false;
         $this->text = '';
@@ -47,6 +49,11 @@ class TextLine extends Line
     public function setBold()
     {
         $this->bolded = true;
+    }
+
+    public function setUnderlined()
+    {
+        $this->underlined = true;
     }
 
     public function setWordwrap()

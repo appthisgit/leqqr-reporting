@@ -40,6 +40,9 @@ class TemplateParser extends FieldParser
 
         foreach ($this->documentRoot->attributes as $attribute) {
             switch ($attribute->nodeName) {
+                case 'products-sort':
+                    $this->receipt->settings->sort = $attribute->nodeValue;
+                    break;
                 case 'copyright-footer':
                     $this->receipt->settings->copyrightFooter = $attribute->nodeValue;
                     break;
@@ -161,6 +164,7 @@ class TemplateParser extends FieldParser
                 switch ($node->attributes->getNamedItem('items')->nodeValue) {
                     case 'products':
                         foreach ($this->receipt->getProductsFiltered() as $product) {
+                            $this->lastCategory = $this->currentProduct->category ?? null;
                             $this->currentProduct = $product;
                             $this->parseChildren($node);
                             $this->parsedProducts = true;
@@ -269,7 +273,8 @@ class TemplateParser extends FieldParser
 
                 switch ($attribute->nodeName) {
                     case 'wordwrap':
-                        $textLine->setWordwrap();
+                        $textLine->wrapped = $v;
+                        break;
                     case 'font-size':
                         $textLine->fontSize = $v;
                         break;
@@ -278,6 +283,9 @@ class TemplateParser extends FieldParser
                         break;
                     case 'bold':
                         $textLine->bolded = $v;
+                        break;
+                    case 'underlined':
+                        $textLine->underlined = $v;
                         break;
                     case 'inverted':
                         $textLine->inverted = $v;

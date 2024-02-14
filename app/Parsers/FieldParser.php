@@ -4,6 +4,7 @@ namespace App\Parsers;
 
 use App\Exceptions\TemplateException;
 use App\Helpers\Strings;
+use App\Http\Data\CategoryData;
 use App\Http\Data\ProductData;
 use App\Http\Data\QuestionData;
 use App\Http\Data\VatRowData;
@@ -13,6 +14,7 @@ use App\Models\Receipt;
 
 class FieldParser
 {
+    protected ?CategoryData $lastCategory;
     protected ProductData $currentProduct;
     protected VatRowData $currentVatRow;
     protected VariationData $currentVariation;
@@ -91,6 +93,9 @@ class FieldParser
             case 'has_product_notes':
                 $this->checkValue($this->currentProduct, "if key=\"$key\"",  'can\'t be accessed outside of product loop');
                 return Strings::isNotEmptyOrValueNull($this->currentProduct->notes);
+            case 'different_category':
+                $this->checkValue($this->currentProduct, "if key=\"$key\"",  'can\'t be accessed outside of product loop');
+                return empty($this->lastCategory) || $this->lastCategory->name != $this->currentProduct->category->name;
 
                 // Variation
             case 'has_variation_price':
@@ -220,6 +225,9 @@ class FieldParser
             case 'product_notes':
                 $this->checkValue($this->currentProduct, $key,  'can\'t be accessed outside of product loop');
                 return $this->currentProduct->notes;
+            case 'product_category':
+                $this->checkValue($this->currentProduct, $key,  'can\'t be accessed outside of product loop');
+                return $this->currentProduct->category->name;
 
                 // Variation
             case 'variation_symbol':
