@@ -3,6 +3,7 @@
 namespace App\Parsers;
 
 use App\Exceptions\TemplateException;
+use App\Helpers\ProductSorting;
 use App\Helpers\ReceiptMods;
 use App\Http\Data\ProductData;
 use App\Models\Template;
@@ -40,6 +41,9 @@ class TemplateParser extends FieldParser
 
         foreach ($this->documentRoot->attributes as $attribute) {
             switch ($attribute->nodeName) {
+                case 'products-sort':
+                    $this->receipt->settings->sort = $attribute->nodeValue;
+                    break;
                 case 'copyright-footer':
                     $this->receipt->settings->copyrightFooter = $attribute->nodeValue;
                     break;
