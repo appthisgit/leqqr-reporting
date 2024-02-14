@@ -2,10 +2,10 @@
 
 namespace App\Models;
 
-use App\Helpers\ProductSorting;
 use App\Helpers\ReceiptSettings;
 use App\Http\Data\CompanyData;
 use App\Http\Data\OrderData;
+use App\Http\Data\ProductData;
 use Illuminate\Support\Collection;
 use Spatie\LaravelData\DataCollection;
 
@@ -34,27 +34,27 @@ class Receipt
 
             switch ($this->settings->sort) {
                 case 'category-order':
-                    $callback = fn (array $a, array $b) => $a['category']['ordernum'] <=> $b['category']['ordernum'];
+                    $callback = fn (ProductData $a, ProductData $b) => $a->category->ordernum <=> $b->category->ordernum;
                     break;
                 case 'category-order-reverse':
-                    $callback = fn (array $a, array $b) => $b['category']['ordernum'] <=> $a['category']['ordernum'];
+                    $callback = fn (ProductData $a, ProductData $b) => $b->category->ordernum <=> $a->category->ordernum;
                     break;
                 case 'category-name':
-                    $callback = fn (array $a, array $b) => $a['category']['name'] <=> $b['category']['name'];
+                    $callback = fn (ProductData $a, ProductData $b) => $a->category->name <=> $b->category->name;
                     break;
                 case 'category-name-reverse':
-                    $callback = fn (array $a, array $b) => $b['category']['name'] <=> $a['category']['name'];
+                    $callback = fn (ProductData $a, ProductData $b) => $b->category->name <=> $a->category->name;
                     break;
                 case 'product-name':
-                    $callback = fn (array $a, array $b) => $a['name'] <=> $b['name'];
+                    $callback = fn (ProductData $a, ProductData $b) => $a->name <=> $b->name;
                     break;
                 case 'product-name-reverse':
-                    $callback = fn (array $a, array $b) => $b['name'] <=> $a['name'];
+                    $callback = fn (ProductData $a, ProductData $b) => $b->name <=> $a->name;
                     break;
             }
 
             if ($callback) {
-                $products = $this->order->products->toCollection()->sortBy($callback);
+                $products = $this->order->products->toCollection()->sort($callback);
             }
             elseif ($this->settings->sort == 'reverse') {
                 $products = $this->order->products->toCollection()->reverse();
