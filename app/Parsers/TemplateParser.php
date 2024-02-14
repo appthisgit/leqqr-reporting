@@ -273,7 +273,8 @@ class TemplateParser extends FieldParser
 
                 switch ($attribute->nodeName) {
                     case 'wordwrap':
-                        $textLine->setWordwrap();
+                        $textLine->wrapped = $v;
+                        break;
                     case 'font-size':
                         $textLine->fontSize = $v;
                         break;
