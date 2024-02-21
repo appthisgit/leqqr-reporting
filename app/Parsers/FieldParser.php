@@ -158,6 +158,8 @@ class FieldParser
                 $this->checkValue($this->currentVatRow, "price value=\"$key\"",  'can\'t be accessed outside of variation loop');
                 return $this->currentVariationValue->price;
         }
+        
+        throw new TemplateException($key, 'is an unknown element');
     }
 
     protected function retrieveValue(string $key): string
