@@ -34,16 +34,16 @@ class Receipt
 
             switch ($this->settings->sort) {
                 case 'category-order':
-                    $callback = fn (ProductData $a, ProductData $b) => $a->category->ordernum <=> $b->category->ordernum;
+                    $callback = fn (ProductData $a, ProductData $b) => $a->category?->ordernum <=> $b->category?->ordernum;
                     break;
                 case 'category-order-reverse':
-                    $callback = fn (ProductData $a, ProductData $b) => $b->category->ordernum <=> $a->category->ordernum;
+                    $callback = fn (ProductData $a, ProductData $b) => $b->category?->ordernum <=> $a->category?->ordernum;
                     break;
                 case 'category-name':
-                    $callback = fn (ProductData $a, ProductData $b) => $a->category->name <=> $b->category->name;
+                    $callback = fn (ProductData $a, ProductData $b) => $a->category?->name <=> $b->category?->name;
                     break;
                 case 'category-name-reverse':
-                    $callback = fn (ProductData $a, ProductData $b) => $b->category->name <=> $a->category->name;
+                    $callback = fn (ProductData $a, ProductData $b) => $b->category?->name <=> $a->category?->name;
                     break;
                 case 'product-name':
                     $callback = fn (ProductData $a, ProductData $b) => $a->name <=> $b->name;
