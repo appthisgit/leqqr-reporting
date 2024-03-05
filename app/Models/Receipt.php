@@ -24,9 +24,28 @@ class Receipt
         $this->settings = new ReceiptSettings();
     }
 
-    public function getProductsFiltered(): array|DataCollection|Collection
+    public function getRequiredProducts(): array
     {
-        $products = $this->order->products;
+        $productsCollection = $this->order->products->toCollection()->filter(function (ProductData $product) {
+            return !($product->category);
+        });
+        
+        return $productsCollection->all();
+    }
+
+    public function getProductsFiltered(): array
+    {
+        $productsCollection = $this->order->products->toCollection()->filter(function (ProductData $product) {
+            if ($product->category) {
+                if ($this->filter_printable || $this->filter_zone) {
+                    return $product->inFilters($this->filter_printable, $this->filter_zone);
+                }
+
+                return true;
+            }
+
+            return false;
+        });
 
         if (!empty($this->settings->sort)) {
 
@@ -54,26 +73,12 @@ class Receipt
             }
 
             if ($callback) {
-                $products = $this->order->products->toCollection()->sort($callback);
-            }
-            elseif ($this->settings->sort == 'reverse') {
-                $products = $this->order->products->toCollection()->reverse();
+                $productsCollection->sort($callback);
+            } elseif ($this->settings->sort == 'reverse') {
+                $productsCollection->reverse();
             }
         }
-        
 
-        if ($this->filter_printable || $this->filter_zone) {
-            $filteredProducts = array();
-
-            foreach ($products as $product) {
-                if ($product->inFilters($this->filter_printable, $this->filter_zone)) {
-                    $filteredProducts[] = $product;
-                }
-            }
-
-            return $filteredProducts;
-        }
-
-        return $products;
+        return $productsCollection->all();
     }
 }
