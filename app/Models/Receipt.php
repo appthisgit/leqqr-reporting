@@ -27,9 +27,17 @@ class Receipt
     public function getRequiredProducts(): array
     {
         $productsCollection = $this->order->products->toCollection()->filter(function (ProductData $product) {
-            return !($product->category);
+            if (!($product->category)) {
+                if ($this->filter_printable || $this->filter_zone) {
+                    return $product->inFilters($this->filter_printable, $this->filter_zone);
+                }
+
+                return true;
+            }
+
+            return false;
         });
-        
+
         return $productsCollection->all();
     }
 
