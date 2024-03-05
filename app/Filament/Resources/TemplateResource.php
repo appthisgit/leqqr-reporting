@@ -6,6 +6,7 @@ use App\Filament\Resources\TemplateResource\Pages;
 use App\Filament\Resources\TemplateResource\RelationManagers\EndpointsRelationManager;
 use App\Models\Template;
 use Filament\Forms;
+use Filament\Forms\Components\MarkdownEditor;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
@@ -40,8 +41,11 @@ class TemplateResource extends Resource
                             ->helperText('Eigen bedachte naam')
                             ->required()
                             ->maxLength(255),
-                        Forms\Components\Textarea::make('content')
-                            ->rows(20)
+                        MarkdownEditor::make('content')
+                            ->toolbarButtons([
+                                'undo',
+                                'redo',
+                            ])
                             ->label('Template')
                             ->helperText('Voer hier uw XML template in')
                             ->required(),

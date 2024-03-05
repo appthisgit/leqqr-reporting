@@ -18,8 +18,6 @@ use DOMNode;
 class TemplateParser extends FieldParser
 {
 
-    protected bool $parsedProducts = false;
-
     // Result
     private Printable $printable;
 
@@ -167,7 +165,12 @@ class TemplateParser extends FieldParser
                             $this->lastCategory = $this->currentProduct->category ?? null;
                             $this->currentProduct = $product;
                             $this->parseChildren($node);
-                            $this->parsedProducts = true;
+                        }
+                        break;
+                    case 'required_products':
+                        foreach ($this->receipt->getRequiredProducts() as $product) {
+                            $this->currentRequiredProduct = $product;
+                            $this->parseChildren($node);
                         }
                         break;
                     case 'taxes':
