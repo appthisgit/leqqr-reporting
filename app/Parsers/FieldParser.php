@@ -99,6 +99,8 @@ class FieldParser
                 return empty($this->lastCategory) || $this->lastCategory->name != $this->currentProduct->category->name;
 
                 // Required Product
+            case 'hase_required_products':
+                return !empty($this->receipt->getRequiredProducts());
             case 'has_required_product_tax':
                 $this->checkValue($this->currentRequiredProduct, "if key=\"$key\"",  'can\'t be accessed outside of required_product loop');
                 return $this->currentRequiredProduct->hasTax();
@@ -113,6 +115,11 @@ class FieldParser
             case 'has_variation_kitchen_info':
                 $this->checkValue($this->currentVariation, "if key=\"$key\"",  'can\'t be accessed outside of variation loop');
                 return Strings::isNotEmptyOrValueNull($this->currentVariationValue->kitchen_info);
+
+                // Taxes
+            case 'has_tax_value':
+                $this->checkValue($this->currentVatRow, "if key=\"$key\"",  'can\'t be accessed outside of taxes loop');
+                return Strings::isNotEmptyOrValueNull($this->currentVatRow->vat_value);
 
                 // Question
             case 'has_questions':
@@ -157,23 +164,20 @@ class FieldParser
                 // RequiredProduct
             case 'required_product_price':
                 $this->checkValue($this->currentRequiredProduct, "price value=\"$key\"",  'can\'t be accessed outside of required_product loop');
-                return $this->currentRequiredProduct ?? 0;
-            case 'required_product_subtotal':
-                $this->checkValue($this->currentRequiredProduct, "price value=\"$key\"",  'can\'t be accessed outside of required_product loop');
                 return $this->currentRequiredProduct->subtotal;
             case 'required_product_tax':
                 $this->checkValue($this->currentRequiredProduct, "price value=\"$key\"",  'can\'t be accessed outside of required_product loop');
                 return $this->currentRequiredProduct->getTax();
 
-                // Taxes
-            case 'product_tax':
-                $this->checkValue($this->currentVatRow, "price value=\"$key\"",  'can\'t be accessed outside of tax loop');
-                return $this->currentVatRow->vat_value;
-
-                // Variation
+                // Variations
             case 'variation_price':
                 $this->checkValue($this->currentVatRow, "price value=\"$key\"",  'can\'t be accessed outside of variation loop');
                 return $this->currentVariationValue->price;
+                
+                // Taxes
+            case 'tax':
+                $this->checkValue($this->currentVatRow, "price value=\"$key\"",  'can\'t be accessed outside of tax loop');
+                return $this->currentVatRow->vat_value;
         }
 
         throw new TemplateException("price value=\"$key\"", 'unknown key');
@@ -274,7 +278,10 @@ class FieldParser
                 // Taxes
             case 'tax_tarif':
                 $this->checkValue($this->currentVatRow, $key,  'can\'t be accessed outside of tax loop');
-                return number_format($this->currentVatRow->tarif, 0, ',', '.');
+                return $this->currentVatRow->tarif ? number_format($this->currentVatRow->tarif, 0, ',', '.') : '0';
+            case 'tax_code':
+                $this->checkValue($this->currentVatRow, $key,  'can\'t be accessed outside of tax loop');
+                return $this->currentVatRow->code;
 
                 // Questions
             case 'question':
