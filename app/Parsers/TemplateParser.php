@@ -285,11 +285,14 @@ class TemplateParser extends FieldParser
                         $textLine->font = $v;
                         break;
                     case 'bold':
+                    case 'bolded':
                         $textLine->bolded = $v;
                         break;
+                    case 'underline':
                     case 'underlined':
                         $textLine->underlined = $v;
                         break;
+                    case 'invert':
                     case 'inverted':
                         $textLine->inverted = $v;
                         break;
@@ -298,6 +301,7 @@ class TemplateParser extends FieldParser
 
             switch ($attribute->nodeName) {
                 case 'center':
+                case 'centered':
                     $line->centered = $v;
                     break;
                 case 'margin-top':
