@@ -2,9 +2,6 @@
 
 namespace App\Parsers;
 
-use App\Http\Data\CompanyData;
-use App\Http\Data\OrderData;
-use App\Models\Endpoint;
 use App\Models\Receipt;
 use App\Parsers\Template\Printable;
 use App\Parsers\Sunmi\SunmiCloudPrinter;
@@ -12,7 +9,6 @@ use App\Parsers\Template\Lines\ImageLine;
 use App\Parsers\Template\Lines\ReceiptRow;
 use App\Parsers\Template\Lines\TextLine;
 use Exception;
-use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class SunmiParser extends TemplateParser
@@ -27,17 +23,10 @@ class SunmiParser extends TemplateParser
     private ?int $currentFontSize;
 
     public function __construct(
-        OrderData $order,
-        CompanyData $company,
-        private Endpoint $endpoint,
+        Receipt $receipt
     ) {
         parent::__construct(
-            new Receipt(
-                $order,
-                $company,
-                $this->endpoint->filter_printable,
-                $this->endpoint->filter_zone
-            )
+            $receipt
         );
         $this->printer = new SunmiCloudPrinter(500);
         $this->currentInverted = null;
@@ -52,18 +41,21 @@ class SunmiParser extends TemplateParser
     {
         if ($this->receipt->settings->singleProductTemplate) {
             $products = $this->receipt->getProductsFiltered();
+            $results = [];
 
             foreach ($products as $product) {
                 $printable = $this->parseProduct($product);
 
                 if (!empty($printable)) {
-                    $this->print($printable, $product->amount);
+                    $result[] = $this->print($printable, $product->amount);
                 }
             }
+
+            return $results;
         } else {
             $printable = $this->parse();
             if (!empty($printable->lines)) {
-                $this->print($printable);
+                return $this->print($printable);
             }
         }
     }
@@ -167,14 +159,22 @@ class SunmiParser extends TemplateParser
 
         $this->printer->lineFeed(4);
         $this->printer->cutPaper(false);
-        $this->printer->pushContent(
-            $this->endpoint->target,
-            sprintf("%s_%s", $this->endpoint->target, uniqid()),
+        $succes = $this->printer->pushContent(
+            $this->receipt->endpoint->target,
+            sprintf("%s_%s", $this->receipt->endpoint->target, uniqid()),
             1,
             $amount,
             'New order',
             1 // Amount of times text is said by printer
         );
         $this->printer->clear();
+
+        if ($succes) {
+            $this->receipt->printed++;
+            $this->receipt->save();
+            return $this->printer->lastResult;
+        }
+
+        return $this->printer->lastError;
     }
 }

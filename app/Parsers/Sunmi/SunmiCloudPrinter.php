@@ -23,6 +23,9 @@ class SunmiCloudPrinter
     public const COLUMN_FLAG_DOUBLE_H   = 1 << 2;
     public const COLUMN_FLAG_DOUBLE_W   = 1 << 3;
 
+    public $lastError = null;
+    public $lastResult = null;
+
     private $DOTS_PER_LINE = 384;
     private $charHSize = 1;
     private $asciiCharWidth = 12;
@@ -43,89 +46,85 @@ class SunmiCloudPrinter
 
     private function httpPost($path, $body)
     {
-        $url = "https://openapi.sunmi.com" . $path;
+        $this->lastError = $this->lastResult = null;
+
         $timestamp = sprintf("%d", time());
         $nonce = sprintf("%06d", mt_rand(0, 999999));
         $body_data = json_encode($body, JSON_UNESCAPED_UNICODE);
 
-        $header = [
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, "https://openapi.sunmi.com" . $path);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
             "Sunmi-Appid:"     . self::APP_ID,
             "Sunmi-Timestamp:" . $timestamp,
             "Sunmi-Nonce:"     . $nonce,
             "Sunmi-Sign:"      . $this->generateSign($body_data, $timestamp, $nonce),
             "Source:"          . "openapi",
             "Content-Type:"    . "application/json"
-        ];
-
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_HTTPHEADER, $header);
+        ]);
         curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, 0);
         curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
         curl_setopt($ch, CURLOPT_POST, 1);
         curl_setopt($ch, CURLOPT_POSTFIELDS, $body_data);
+
         $data = curl_exec($ch);
+
         if (curl_errno($ch)) {
-            print("FAILED");
-            $res = curl_error($ch);
+            $this->lastError = curl_error($ch);
         } else {
-            print("OK");
-            $res = json_decode($data, true);
+            $this->lastResult = json_decode($data, true);
         }
+
         curl_close($ch);
-        return $res;
+
+        return curl_errno($ch) == 0;
     }
 
     function bindShop($sn, $shop_id)
     {
-        $body = [
+        return $this->httpPost("/v2/printer/open/open/device/bindShop", [
             "sn"        => $sn,
             "shop_id"   => $shop_id
-        ];
-        $this->httpPost("/v2/printer/open/open/device/bindShop", $body);
+        ]);
     }
 
     function unbindShop($sn, $shop_id)
     {
-        $body = [
+        return $this->httpPost("/v2/printer/open/open/device/unbindShop", [
             "sn"        => $sn,
             "shop_id"   => $shop_id
-        ];
-        $this->httpPost("/v2/printer/open/open/device/unbindShop", $body);
+        ]);
     }
 
     function onlineStatus($sn)
     {
-        $body = [
+        return $this->httpPost("/v2/printer/open/open/device/onlineStatus", [
             "sn" => $sn
-        ];
-        $this->httpPost("/v2/printer/open/open/device/onlineStatus", $body);
+        ]);
     }
 
     function clearPrintJob($sn)
     {
-        $body = [
+        return $this->httpPost("/v2/printer/open/open/device/clearPrintJob", [
             "sn" => $sn
-        ];
-        $this->httpPost("/v2/printer/open/open/device/clearPrintJob", $body);
+        ]);
     }
 
     function pushVoice($sn, $content, $cycle = 1, $interval = 2, $expire_in = 300)
     {
-        $body = [
+        return $this->httpPost("/v2/printer/open/open/device/pushVoice", [
             "sn"        => $sn,
             "content"   => $content,
             "cycle"     => $cycle,
             "interval"  => $interval,
             "expire_in" => $expire_in
-        ];
-        $this->httpPost("/v2/printer/open/open/device/pushVoice", $body);
+        ]);
     }
 
     function pushContent($sn, $trade_no, $order_type = 1, $count = 1, $media_text = "Lekr order", $cycle = 1)
     {
-        $body = [
+        return $this->httpPost("/v2/printer/open/open/device/pushContent", [
             "sn"            => $sn,
             "trade_no"      => $trade_no,
             "content"       => $this->orderData,
@@ -133,24 +132,21 @@ class SunmiCloudPrinter
             "count"         => $count,
             "media_text"    => $media_text,
             "cycle"         => $cycle
-        ];
-        $this->httpPost("/v2/printer/open/open/device/pushContent", $body);
+        ]);
     }
 
     function printStatus($trade_no)
     {
-        $body = [
+        return $this->httpPost("/v2/printer/open/open/ticket/printStatus", [
             "trade_no" => $trade_no
-        ];
-        $this->httpPost("/v2/printer/open/open/ticket/printStatus", $body);
+        ]);
     }
 
     function newTicketNotify($sn)
     {
-        $body = [
+        return $this->httpPost("/v2/printer/open/open/ticket/newTicketNotify", [
             "sn" => $sn
-        ];
-        $this->httpPost("/v2/printer/open/open/ticket/newTicketNotify", $body);
+        ]);
     }
 
     //////////////////////////////////////////////////
