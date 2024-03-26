@@ -22,6 +22,7 @@ return new class extends Migration
                 ->onUpdate('cascade')
                 ->onDelete('cascade');
             $table->json('order');
+            $table->unsignedTinyInteger('printed')->default(0);
             $table->timestamps();
         });
     }

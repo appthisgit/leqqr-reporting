@@ -41,18 +41,21 @@ class SunmiParser extends TemplateParser
     {
         if ($this->receipt->settings->singleProductTemplate) {
             $products = $this->receipt->getProductsFiltered();
+            $results = [];
 
             foreach ($products as $product) {
                 $printable = $this->parseProduct($product);
 
                 if (!empty($printable)) {
-                    $this->print($printable, $product->amount);
+                    $result[] = $this->print($printable, $product->amount);
                 }
             }
+
+            return $results;
         } else {
             $printable = $this->parse();
             if (!empty($printable->lines)) {
-                $this->print($printable);
+                return $this->print($printable);
             }
         }
     }
@@ -156,7 +159,7 @@ class SunmiParser extends TemplateParser
 
         $this->printer->lineFeed(4);
         $this->printer->cutPaper(false);
-        $this->printer->pushContent(
+        $succes = $this->printer->pushContent(
             $this->receipt->endpoint->target,
             sprintf("%s_%s", $this->receipt->endpoint->target, uniqid()),
             1,
@@ -165,5 +168,13 @@ class SunmiParser extends TemplateParser
             1 // Amount of times text is said by printer
         );
         $this->printer->clear();
+
+        if ($succes) {
+            $this->receipt->printed++;
+            $this->receipt->save();
+            return $this->printer->lastResult;
+        }
+
+        return $this->printer->lastError;
     }
 }
