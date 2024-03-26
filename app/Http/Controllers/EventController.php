@@ -6,6 +6,7 @@ use App\Http\Data\CompanyData;
 use App\Http\Data\OrderData;
 use App\Models\Company;
 use App\Models\Endpoint;
+use App\Models\Receipt;
 use App\Parsers\SunmiParser;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -18,24 +19,23 @@ class EventController extends Controller
         $endpoints = Endpoint::where('company_id', $request->company['id'])->get();
 
         if (count($endpoints)) {
-            $order = OrderData::from($request->order);
-            $company = CompanyData::from($request->company);
-
-            // Write to database (if needed)
-            $companyModel = Company::fromData($company);
+            $orderData = OrderData::from($request->order);
+            $companyData = CompanyData::from($request->company);
 
             foreach ($endpoints as $endpoint) {
-                if (empty($endpoint->filter_terminal) || $endpoint->filter_terminal == $order->pin_terminal_id) {
+                if (empty($endpoint->filter_terminal) || $endpoint->filter_terminal == $orderData->pin_terminal_id) {
+
+                    $receipt = new Receipt([
+                        'order' => $orderData,
+                    ]);
+                    $receipt->endpoint()->associate($endpoint);
+                    $receipt->company()->associate(Company::fromData($companyData));
+                    $receipt->save();
 
                     $parser = null;
-
                     switch (strtolower($endpoint->type)) {
                         case 'sunmi':
-                            $parser = new SunmiParser(
-                                $order,
-                                $company,
-                                $endpoint
-                            );
+                            $parser = new SunmiParser($receipt);
                             break;
                     }
 
@@ -47,10 +47,10 @@ class EventController extends Controller
                         $parser->send();
                     }
                 } else {
-                    Log::debug('Filter terminal ' . $endpoint->filter_terminal . ' does not equal order ' . $order->pin_terminal_id . ' for endpoint ' . $endpoint->name);
+                    Log::debug('Filter terminal ' . $endpoint->filter_terminal . ' does not equal order ' . $orderData->pin_terminal_id . ' for endpoint ' . $endpoint->name);
                 }
             }
-            Log::debug('Completed all endpoints for company ' . $company->id);
+            Log::debug('Completed all endpoints for company ' . $companyData->id);
         }
 
         return response()->json([

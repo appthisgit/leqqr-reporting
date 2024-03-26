@@ -3,42 +3,58 @@
 namespace App\Models;
 
 use App\Helpers\ReceiptSettings;
-use App\Http\Data\CompanyData;
 use App\Http\Data\OrderData;
 use App\Http\Data\ProductData;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Collection;
 use Spatie\LaravelData\DataCollection;
 
-//TODO: update name and make into Eloquent Model and store them for history
-
-class Receipt
+class Receipt extends Model
 {
     public ReceiptSettings $settings;
 
-    public function __construct(
-        public OrderData $order,
-        public CompanyData $company,
-        public bool $filter_printable,
-        public ?string $filter_zone,
-    ) {
+    /**
+     * Create a new Eloquent model instance.
+     *
+     * @param  array  $attributes
+     * @return void
+     */
+    public function __construct(array $attributes = [])
+    {
+        parent::__construct($attributes);
         $this->settings = new ReceiptSettings();
     }
 
-    public function getRequiredProducts(): array
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'order' => OrderData::class,
+    ];
+
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<string>
+     */
+    protected $fillable = [
+        'company_id',
+        'endpoint_id',
+        'order',
+    ];
+
+    public function company(): BelongsTo
     {
-        $productsCollection = $this->order->products->toCollection()->filter(function (ProductData $product) {
-            if (!($product->category)) {
-                if ($this->filter_printable || $this->filter_zone) {
-                    return $product->inFilters($this->filter_printable, $this->filter_zone);
-                }
+        return $this->belongsTo(Company::class);
+    }
 
-                return true;
-            }
-
-            return false;
-        });
-
-        return $productsCollection->all();
+    public function endpoint(): BelongsTo
+    {
+        return $this->belongsTo(Endpoint::class);
     }
 
     public function getProductsFiltered(): array
