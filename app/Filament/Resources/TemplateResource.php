@@ -6,8 +6,6 @@ use App\Filament\Resources\TemplateResource\Pages;
 use App\Filament\Resources\TemplateResource\RelationManagers\EndpointsRelationManager;
 use App\Models\Template;
 use Filament\Forms;
-use Filament\Forms\Components\MarkdownEditor;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
@@ -33,7 +31,7 @@ class TemplateResource extends Resource
         return $form
             ->columns(3)
             ->schema([
-                Section::make('Instellingen')
+                Forms\Components\Section::make('Instellingen')
                     ->columnSpan(2)
                     ->schema([
                         Forms\Components\TextInput::make('name')
@@ -41,7 +39,7 @@ class TemplateResource extends Resource
                             ->helperText('Eigen bedachte naam')
                             ->required()
                             ->maxLength(255),
-                        MarkdownEditor::make('content')
+                        Forms\Components\MarkdownEditor::make('content')
                             ->toolbarButtons([
                                 'undo',
                                 'redo',
@@ -50,7 +48,7 @@ class TemplateResource extends Resource
                             ->helperText('Voer hier uw XML template in')
                             ->required(),
                     ]),
-                Section::make('Extra\'s')
+                Forms\Components\Section::make('Extra\'s')
                     ->columnSpan(1)
                     ->schema([
                         Forms\Components\FileUpload::make('images')

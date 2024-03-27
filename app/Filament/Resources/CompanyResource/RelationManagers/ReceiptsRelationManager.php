@@ -1,46 +1,23 @@
 <?php
 
-namespace App\Filament\Resources;
+namespace App\Filament\Resources\CompanyResource\RelationManagers;
 
-use App\Filament\Resources\ReceiptResource\Pages;
-use App\Filament\Resources\ReceiptResource\RelationManagers;
-use App\Models\Receipt;
 use Filament\Forms;
 use Filament\Forms\Form;
-use Filament\Resources\Resource;
+use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
 
-class ReceiptResource extends Resource
+class ReceiptsRelationManager extends RelationManager
 {
-    protected static ?string $model = Receipt::class;
+    protected static string $relationship = 'receipts';
 
-    protected static ?string $navigationIcon = 'heroicon-o-document';
-
-    protected static ?string $navigationGroup = 'Input';
-
-    // public static function form(Form $form): Form
-    // {
-    //     return $form
-    //         ->schema([
-    //             Forms\Components\Select::make('company_id')
-    //                 ->relationship('company', 'name')
-    //                 ->required(),
-    //             Forms\Components\Select::make('endpoint_id')
-    //                 ->relationship('endpoint', 'name')
-    //                 ->required(),
-    //             Forms\Components\TextInput::make('order')
-    //                 ->required(),
-    //             Forms\Components\Toggle::make('printed')
-    //                 ->required(),
-    //         ]);
-    // }
-
-    public static function table(Table $table): Table
+    public function table(Table $table): Table
     {
         return $table
             ->poll('3s')
             ->defaultSort('id', 'desc')
+            ->recordTitleAttribute('confirmation_code')
             ->paginated([50, 100, 150, 200, 'all'])
             ->defaultPaginationPageOption(50)
             ->columns([
@@ -50,9 +27,6 @@ class ReceiptResource extends Resource
                 Tables\Columns\TextColumn::make('confirmation_code')
                     ->numeric()
                     ->searchable()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('company.name')
-                    ->numeric()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('endpoint.name')
                     ->sortable(),
@@ -77,21 +51,5 @@ class ReceiptResource extends Resource
                             ->rows(20),
                     ])
             ]);
-    }
-
-    public static function getRelations(): array
-    {
-        return [
-            //
-        ];
-    }
-
-    public static function getPages(): array
-    {
-        return [
-            'index' => Pages\ListReceipts::route('/'),
-            // 'create' => Pages\CreateReceipt::route('/create'),
-            // 'edit' => Pages\EditReceipt::route('/{record}/edit'),
-        ];
     }
 }

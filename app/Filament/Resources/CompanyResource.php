@@ -19,21 +19,21 @@ class CompanyResource extends Resource
 
     protected static ?string $navigationGroup = 'Input';
 
-    // public static function form(Form $form): Form
-    // {
-    //     return $form
-    //         ->schema([
-    //             Forms\Components\TextInput::make('id')
-    //                 ->required()
-    //                 ->numeric(),
-    //             Forms\Components\TextInput::make('guid')
-    //                 ->required()
-    //                 ->maxLength(200),
-    //             Forms\Components\TextInput::make('name')
-    //                 ->required()
-    //                 ->maxLength(60),
-    //         ]);
-    // }
+    public static function form(Form $form): Form
+    {
+        return $form
+            ->schema([
+                Forms\Components\TextInput::make('id')
+                    ->required()
+                    ->numeric(),
+                Forms\Components\TextInput::make('guid')
+                    ->required()
+                    ->maxLength(200),
+                Forms\Components\TextInput::make('name')
+                    ->required()
+                    ->maxLength(60),
+            ]);
+    }
 
     public static function table(Table $table): Table
     {
@@ -46,27 +46,13 @@ class CompanyResource extends Resource
                     ->searchable(),
                 Tables\Columns\TextColumn::make('name')
                     ->searchable(),
-            ])
-            ->filters([
-                //
-            ])
-            ->actions([
-                // Tables\Actions\EditAction::make(),
-            ])
-            ->bulkActions([
-                // Tables\Actions\BulkActionGroup::make([
-                //     Tables\Actions\DeleteBulkAction::make(),
-                // ]),
-            ])
-            ->emptyStateActions([
-                // Tables\Actions\CreateAction::make(),
             ]);
     }
 
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\ReceiptsRelationManager::class
         ];
     }
 
@@ -74,8 +60,7 @@ class CompanyResource extends Resource
     {
         return [
             'index' => Pages\ListCompanies::route('/'),
-            // 'create' => Pages\CreateCompany::route('/create'),
-            // 'edit' => Pages\EditCompany::route('/{record}/edit'),
+            'view' => Pages\ViewCompany::route('/{record}'),
         ];
     }
 }
