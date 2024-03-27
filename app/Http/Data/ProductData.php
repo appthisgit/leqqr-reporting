@@ -39,16 +39,16 @@ class ProductData extends Data
             $this->price / (100 + $this->vat_tarif) * $this->vat_tarif : 0;
     }
 
-    public function inFilters(bool $filterPrintable, ?string $filterZone): bool
+    public function inFilters(?bool $filterPrintable, ?string $filterZone): bool
     {
-        $printableCheck = !$filterPrintable || ($filterPrintable && $this->printable);
+        $printableCheck = $filterPrintable !== true || ($filterPrintable && $this->printable);
         $zoneCheck = empty($filterZone) || $filterZone == $this->zone;
 
         if (!$printableCheck)
         {
             Log::debug('Product skipped! "' . $this->name . '" is not set as printable');
         }
-        if (!$zoneCheck){
+        elseif (!$zoneCheck){
             Log::debug('Product skipped! "' . $this->name . '" is not in correct zone (product: "'.$this->zone.'", filter: "'.$filterZone.'")');
         }
 

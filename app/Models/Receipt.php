@@ -7,8 +7,6 @@ use App\Http\Data\OrderData;
 use App\Http\Data\ProductData;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Collection;
-use Spatie\LaravelData\DataCollection;
 
 class Receipt extends Model
 {
@@ -69,8 +67,11 @@ class Receipt extends Model
     {
         $productsCollection = $this->order->products->toCollection()->filter(function (ProductData $product) {
             if ($product->category) {
-                if ($this->filter_printable || $this->filter_zone) {
-                    return $product->inFilters($this->filter_printable, $this->filter_zone);
+                if ($this->endpoint->filter_printable || $this->endpoint->filter_zone) {
+                    return $product->inFilters(
+                        $this->endpoint->filter_printable, 
+                        $this->endpoint->filter_zone
+                    );
                 }
 
                 return true;

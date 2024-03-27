@@ -9,6 +9,7 @@ use App\Parsers\Template\Lines\ImageLine;
 use App\Parsers\Template\Lines\ReceiptRow;
 use App\Parsers\Template\Lines\TextLine;
 use Exception;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
 class SunmiParser extends TemplateParser
@@ -134,6 +135,7 @@ class SunmiParser extends TemplateParser
                     $this->setFont($textLine->font);
                     $this->setFontSize($textLine->fontSize);
 
+                    // Log::debug($textLine->getText());
                     $this->printer->appendText($textLine->getText() . "\n");
 
                     break;
@@ -153,12 +155,11 @@ class SunmiParser extends TemplateParser
             if ($line->margins->bottom > $this->receipt->settings->lineMargins->bottom) {
                 $this->printer->lineFeed($line->margins->bottom / 10);
             }
-
-            // Log::debug($line);
         }
 
         $this->printer->lineFeed(4);
         $this->printer->cutPaper(false);
+        // $succes = true;
         $succes = $this->printer->pushContent(
             $this->receipt->endpoint->target,
             sprintf("%s_%s", $this->receipt->endpoint->target, uniqid()),
