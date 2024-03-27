@@ -43,7 +43,11 @@ class Receipt extends Model
     protected $fillable = [
         'company_id',
         'endpoint_id',
+        'confirmation_code',
+        'order_id',
         'order',
+        'result_message',
+        'result_response',
     ];
 
     public function company(): BelongsTo
