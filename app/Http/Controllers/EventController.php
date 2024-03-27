@@ -31,16 +31,16 @@ class EventController extends Controller
                     'type' => $endpoint->type,
                 );
 
-                if (empty($endpoint->filter_terminal) || $endpoint->filter_terminal == $orderData->pin_terminal_id) {
+                $receipt = new Receipt([
+                    'confirmation_code' => $orderData->confirmation_code,
+                    'order_id' => $orderData->id,
+                    'order' => $orderData,
+                ]);
+                $receipt->endpoint()->associate($endpoint);
+                $receipt->company()->associate(Company::fromData($companyData));
+                $receipt->save();
 
-                    $receipt = new Receipt([
-                        'confirmation_code' => $orderData->confirmation_code,
-                        'order_id' => $orderData->id,
-                        'order' => $orderData,
-                    ]);
-                    $receipt->endpoint()->associate($endpoint);
-                    $receipt->company()->associate(Company::fromData($companyData));
-                    $receipt->save();
+                if (empty($endpoint->filter_terminal) || $endpoint->filter_terminal == $orderData->pin_terminal_id) {
 
                     if ($receipt->hasProducts()) {
                         $parser = null;
@@ -57,17 +57,22 @@ class EventController extends Controller
 
                             Log::debug('Sending parsed result to endpoint ' . $endpoint->name);
                             $receipt->result_message = "Parsed template and send";
-                            $receipt->result_response = $parser->send();
+                            $receipt->result_response = [
+                                "post_result" => $parser->send()
+                            ];
                         } 
                         catch (Exception $ex) {
                             Log::debug('Failed on endpoint ' . $endpoint->name);
                             Log::debug($ex->getMessage());
-                            $receipt->result_message = "Exception occurred";
-                            $receipt->result_response = $ex->getMessage();
+                            $receipt->result_message = "Exception";
+                            $receipt->result_response = [
+                                "Type" => get_class($ex),
+                                "message" => $ex->getMessage(),
+                            ];
                         }
                     }
                     else {
-                        $receipt->result_message = "No products left to print after filtering";
+                        $receipt->result_message = "No products after filtering";
                         $receipt->result_response = [
                             "filter_on_printable" => $endpoint->filter_printable,
                             "filter_on_zone" => $endpoint->filter_zone,
@@ -75,7 +80,7 @@ class EventController extends Controller
                     }
                 } 
                 else {
-                    $receipt->result_message = "Should not print on this endpoint after checking terminal";
+                    $receipt->result_message = "Printer not for terminal";
                     $receipt->result_response = [
                         "filter_on_terminal" => $endpoint->filter_terminal,
                         "ordered with_terminal" => $orderData->pin_terminal_id,
