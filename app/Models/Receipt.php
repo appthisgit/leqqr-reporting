@@ -57,6 +57,14 @@ class Receipt extends Model
         return $this->belongsTo(Endpoint::class);
     }
 
+    public function getRequiredProducts(): array
+    {
+        return $this->order->products
+            ->toCollection()
+            ->filter(fn (ProductData $product) => !($product->category))
+            ->all();
+    }
+
     public function getProductsFiltered(): array
     {
         $productsCollection = $this->order->products->toCollection()->filter(function (ProductData $product) {
