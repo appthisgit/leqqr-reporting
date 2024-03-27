@@ -41,23 +41,22 @@ class SunmiParser extends TemplateParser
     public function send()
     {
         if ($this->receipt->settings->singleProductTemplate) {
-            $products = $this->receipt->getProductsFiltered();
+            $products = $this->receipt->getProducts();
             $results = [];
 
             foreach ($products as $product) {
                 $printable = $this->parseProduct($product);
 
                 if (!empty($printable)) {
-                    $result[] = $this->print($printable, $product->amount);
+                    $results[] = $this->print($printable, $product->amount);
                 }
             }
 
             return $results;
-        } else {
+        } 
+        else {
             $printable = $this->parse();
-            if (!empty($printable->lines)) {
-                return $this->print($printable);
-            }
+            return $this->print($printable);
         }
     }
 
