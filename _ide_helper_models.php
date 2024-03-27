@@ -17,6 +17,8 @@ namespace App\Models{
  * @property int $id
  * @property string $guid
  * @property string $name
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Receipt> $receipts
+ * @property-read int|null $receipts_count
  * @method static \Illuminate\Database\Eloquent\Builder|Company newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Company newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Company query()

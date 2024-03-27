@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Http\Data\CompanyData;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Company extends Model
 {
@@ -28,6 +29,11 @@ class Company extends Model
      * @var bool
      */
     public $timestamps = false;
+
+    public function receipts(): HasMany
+    {
+        return $this->hasMany(Receipt::class);
+    }
 
     public function toData(): CompanyData
     {
