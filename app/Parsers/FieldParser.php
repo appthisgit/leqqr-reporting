@@ -21,6 +21,7 @@ class FieldParser
     protected VariationData $currentVariation;
     protected VariationValueData $currentVariationValue;
     protected QuestionData $currentQuestion;
+    protected int $lineNumber = 0;
 
     public function __construct(
         protected readonly Receipt $receipt,
@@ -132,7 +133,7 @@ class FieldParser
                 return Strings::isNotEmptyOrValueNull($this->currentQuestion->answer);
         }
 
-        throw new TemplateException("if key=\"$key\"", 'unknown key');
+        throw new TemplateException("if key=\"$key\"", 'unknown key', $this->lineNumber);
     }
 
 
@@ -180,7 +181,7 @@ class FieldParser
                 return $this->currentVatRow->vat_value;
         }
 
-        throw new TemplateException("price value=\"$key\"", 'unknown key');
+        throw new TemplateException("price value=\"$key\"", 'unknown key', $this->lineNumber);
     }
 
     protected function retrieveValue(string $key): string
@@ -292,13 +293,13 @@ class FieldParser
                 return $this->currentQuestion->answer;
         }
 
-        throw new TemplateException($key, 'is an unknown element');
+        throw new TemplateException($key, 'is an unknown element', $this->lineNumber);
     }
 
     protected function checkValue($value, string $command, string $message)
     {
         if (empty($value)) {
-            throw new TemplateException($command, $message);
+            throw new TemplateException($command, $message, $this->lineNumber);
         }
     }
 }
