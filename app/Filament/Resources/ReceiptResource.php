@@ -3,10 +3,8 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\ReceiptResource\Pages;
-use App\Filament\Resources\ReceiptResource\RelationManagers;
+use App\Filament\Tables\Components\Actions\ViewReceiptAction;
 use App\Models\Receipt;
-use Filament\Forms;
-use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -19,22 +17,6 @@ class ReceiptResource extends Resource
 
     protected static ?string $navigationGroup = 'Input';
 
-    // public static function form(Form $form): Form
-    // {
-    //     return $form
-    //         ->schema([
-    //             Forms\Components\Select::make('company_id')
-    //                 ->relationship('company', 'name')
-    //                 ->required(),
-    //             Forms\Components\Select::make('endpoint_id')
-    //                 ->relationship('endpoint', 'name')
-    //                 ->required(),
-    //             Forms\Components\TextInput::make('order')
-    //                 ->required(),
-    //             Forms\Components\Toggle::make('printed')
-    //                 ->required(),
-    //         ]);
-    // }
 
     public static function table(Table $table): Table
     {
@@ -69,29 +51,14 @@ class ReceiptResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->actions([
-                Tables\Actions\ViewAction::make()
-                    ->form([
-                        Forms\Components\TextInput::make('result_response'),
-                        Forms\Components\Textarea::make('order')
-                            ->formatStateUsing(fn (array $state) => json_encode($state, JSON_PRETTY_PRINT))
-                            ->rows(20),
-                    ])
+                ViewReceiptAction::make(),
             ]);
-    }
-
-    public static function getRelations(): array
-    {
-        return [
-            //
-        ];
     }
 
     public static function getPages(): array
     {
         return [
             'index' => Pages\ListReceipts::route('/'),
-            // 'create' => Pages\CreateReceipt::route('/create'),
-            // 'edit' => Pages\EditReceipt::route('/{record}/edit'),
         ];
     }
 }

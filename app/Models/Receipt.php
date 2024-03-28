@@ -46,6 +46,7 @@ class Receipt extends Model
         'confirmation_code',
         'order_id',
         'order',
+        'printed',
         'result_message',
         'result_response',
     ];

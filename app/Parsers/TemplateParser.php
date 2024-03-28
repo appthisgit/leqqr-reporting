@@ -122,6 +122,8 @@ class TemplateParser extends FieldParser
 
     private function parseNode(DOMNode $node)
     {
+        $this->lineNumber = $node->getLineNo();
+
         switch ($node->nodeName) {
             case 'line':
                 $this->setCurrentLine(new TextLine($this->receipt->settings), $node);
@@ -134,14 +136,14 @@ class TemplateParser extends FieldParser
             case 'image':
             case 'img':
                 if (empty($this->images)) {
-                    throw new TemplateException('image', 'No images uploaded');
+                    throw new TemplateException('image', 'No images uploaded', $this->lineNumber);
                 }
                 $img = array_shift($this->images);
                 $this->setCurrentLine(new ImageLine($img, $this->receipt->settings), $node);
                 break;
             case 'if':
                 if (empty($node->attributes->getNamedItem('key'))) {
-                    throw new TemplateException('if', 'doesn\'t contain the attribute "key" with a key for the statement');
+                    throw new TemplateException('if', 'doesn\'t contain the attribute "key" with a key for the statement', $this->lineNumber);
                 }
                 $ifValueNode = $node->attributes->getNamedItem('value');
                 $ifKey = $node->attributes->getNamedItem('key')->nodeValue;
@@ -156,7 +158,7 @@ class TemplateParser extends FieldParser
                 break;
             case 'foreach':
                 if (empty($node->attributes->getNamedItem('items'))) {
-                    throw new TemplateException('foreach', 'doesn\'t contain the attribute "items" with a key for the statement');
+                    throw new TemplateException('foreach', 'doesn\'t contain the attribute "items" with a key for the statement', $this->lineNumber);
                 }
 
                 switch ($node->attributes->getNamedItem('items')->nodeValue) {
@@ -196,7 +198,7 @@ class TemplateParser extends FieldParser
                         }
                         break;
                     default:
-                        throw new TemplateException('foreach items="' . $node->attributes->getNamedItem('items')->nodeValue . '"', 'unknown items value');
+                        throw new TemplateException('foreach items="' . $node->attributes->getNamedItem('items')->nodeValue . '"', 'unknown items value', $this->lineNumber);
                 }
                 break;
             case 'stripe':
@@ -206,16 +208,16 @@ class TemplateParser extends FieldParser
                 break;
             case 'item':
                 if (!($this->currentLine instanceof ReceiptRow)) {
-                    throw new TemplateException('item', 'found at unparsable location');
+                    throw new TemplateException('item', 'found at unparsable location', $this->lineNumber);
                 }
                 $this->parseChildren($node);
                 break;
             case 'price':
                 if (!($this->currentLine instanceof ReceiptRow)) {
-                    throw new TemplateException('price', 'found at unparsable location');
+                    throw new TemplateException('price', 'found at unparsable location', $this->lineNumber);
                 }
                 if (!$node->hasAttributes() || empty($node->attributes->getNamedItem('value'))) {
-                    throw new TemplateException('price', 'doesn\'t contain the attribute "value" with a key for a price value');
+                    throw new TemplateException('price', 'doesn\'t contain the attribute "value" with a key for a price value', $this->lineNumber);
                 }
 
                 $key = $node->attributes->getNamedItem('value')->nodeValue;
@@ -226,17 +228,17 @@ class TemplateParser extends FieldParser
                 break;
             case 'text':
                 if (!($this->currentLine instanceof TextLine)) {
-                    throw new TemplateException('text', 'trying to add text to a non textual line');
+                    throw new TemplateException('text', 'trying to add text to a non textual line', $this->lineNumber);
                 }
 
                 $this->currentLine->appendText($node->textContent);
                 break;
             default: // value nodes
                 if ($node->hasChildNodes()) {
-                    throw new TemplateException($node->nodeName, 'is unknown to have children');
+                    throw new TemplateException($node->nodeName, 'is unknown to have children', $this->lineNumber);
                 }
                 if (!($this->currentLine instanceof TextLine)) {
-                    throw new TemplateException('text', 'trying to add text to a non textual line');
+                    throw new TemplateException('text', 'trying to add text to a non textual line', $this->lineNumber);
                 }
                 if ($node->hasAttributes()) {
                     if ($node->attributes->getNamedItem('format')) {
@@ -245,11 +247,11 @@ class TemplateParser extends FieldParser
                             $format = $node->attributes->getNamedItem('format')->nodeValue;
                             $this->currentLine->appendText($date->format($format));
                         } else {
-                            throw new TemplateException($node->nodeName, 'has a format attribute which resulted in null');
+                            throw new TemplateException($node->nodeName, 'has a format attribute which resulted in null', $this->lineNumber);
                         }
                     }
                     else {
-                        throw new TemplateException($node->nodeName, 'is unknown to have attributes other than "format" for a date, move current attributes to <line>');
+                        throw new TemplateException($node->nodeName, 'is unknown to have attributes other than "format" for a date, move current attributes to <line>', $this->lineNumber);
                     }
                 }
                 else {
