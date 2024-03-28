@@ -2,8 +2,7 @@
 
 namespace App\Filament\Resources\CompanyResource\RelationManagers;
 
-use Filament\Forms;
-use Filament\Forms\Form;
+use App\Filament\Tables\Components\Actions\ViewReceiptAction;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -11,6 +10,12 @@ use Filament\Tables\Table;
 class ReceiptsRelationManager extends RelationManager
 {
     protected static string $relationship = 'receipts';
+
+    // So the Reprint action can be called
+    public function isReadOnly(): bool
+    {
+        return false;
+    }
 
     public function table(Table $table): Table
     {
@@ -43,13 +48,7 @@ class ReceiptsRelationManager extends RelationManager
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->actions([
-                Tables\Actions\ViewAction::make()
-                    ->form([
-                        Forms\Components\TextInput::make('result_response'),
-                        Forms\Components\Textarea::make('order')
-                            ->formatStateUsing(fn (array $state) => json_encode($state, JSON_PRETTY_PRINT))
-                            ->rows(20),
-                    ])
+                ViewReceiptAction::make(),
             ]);
     }
 }
