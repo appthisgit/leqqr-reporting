@@ -1,6 +1,8 @@
 <?php
 
-namespace App\Parsers\Template\Lines;
+namespace App\Parsers\Html\Lines;
+
+use App\Parsers\Template\Lines\TextLine;
 
 class Div extends TextLine
 {
