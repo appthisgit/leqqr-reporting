@@ -2,20 +2,20 @@
 
 namespace App\Parsers\Template\Lines;
 
-class Div extends Element
+class Div extends TextLine
 {
+    use HtmlElement;
+
     public function __construct(
         TextLine $textLine
     ) {
-        parent::__construct($textLine);
-    }
-
-    protected function formTag(string $formatting) {
-        return '<div' . $formatting . '>' . $this->value . '<div/>';
+        $this->copyAttributes($textLine);
     }
 
     public function getHtml(): string
     {
+        $this->prepareStyling();
+
         $this->setNonDefaultStyle('font', 'font-family');
         $this->setNonDefaultStyle('fontSize', 'font-size', 'px');
 
@@ -23,6 +23,6 @@ class Div extends Element
         $this->setNonDefaultClass('underlined');
         $this->setNonDefaultClass('inverted');
 
-        return parent::getHtml();
+        return '<div' . $this->implodeStyling() . '>' . $this->value . '<div/>';
     }
 }

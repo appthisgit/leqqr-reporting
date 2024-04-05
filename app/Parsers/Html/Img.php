@@ -2,27 +2,20 @@
 
 namespace App\Parsers\Template\Lines;
 
-class Div extends Element
+class Img extends ImageLine
 {
+    use HtmlElement;
+
     public function __construct(
         ImageLine $imageLine
     ) {
-        parent::__construct($imageLine);
-    }
-
-    protected function formTag(string $formatting) {
-        return '<img' . $formatting . ' src="'.$this->value.'" />';
+        $this->copyAttributes($imageLine);
     }
 
     public function getHtml(): string
     {
-        $this->setNonDefaultStyle('font', 'font-family');
-        $this->setNonDefaultStyle('fontSize', 'font-size', 'px');
+        $this->prepareStyling();
 
-        $this->setNonDefaultClass('bolded');
-        $this->setNonDefaultClass('underlined');
-        $this->setNonDefaultClass('inverted');
-
-        return parent::getHtml();
+        return '<img' . $this->implodeStyling() . ' src="'. $this->getImage() .'" />';
     }
 }

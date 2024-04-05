@@ -2,18 +2,15 @@
 
 namespace App\Parsers\Template\Lines;
 
-abstract class Element extends Line
+trait HtmlElement
 {
 
-    protected $styles = array();
-    protected $classes = array();
+    protected $styles;
+    protected $classes;
 
-    public function __construct(
-        Line $Line
-    ) {
-        parent::__construct($Line->defaults);
-
-        foreach ($Line as $attr => $value) {
+    protected function copyAttributes($line)
+    {
+        foreach ($line as $attr => $value) {
             $this->{$attr} = $value;
         }
     }
@@ -39,17 +36,21 @@ abstract class Element extends Line
         }
     }
 
-    protected abstract function formTag(string $formatting);
-
-    public function getHtml(): string
+    protected function prepareStyling()
     {
+        $this->styles = array();
+        $this->classes = array();
+
         $this->setNonDefaultSpacingStyle('top');
         $this->setNonDefaultSpacingStyle('right', 'padding');
         $this->setNonDefaultSpacingStyle('bottom');
         $this->setNonDefaultSpacingStyle('left', 'padding');
 
         $this->setNonDefaultClass('centered');
+    }
 
+    protected function implodeStyling(): string
+    {
         $formatting = '';
         if ($this->classes) {
             $formatting .= sprintf(' class="%s"', implode(' ', $this->classes));
@@ -57,14 +58,10 @@ abstract class Element extends Line
         if ($this->styles) {
             $formatting .= sprintf(' style="%s"', implode('; ', $this->styles));
         }
-
-        $tag = $this->formTag($formatting);
-
-        $this->styles = array();
-        $this->classes = array();
-
-        return $tag;
+        return $formatting;
     }
+
+    public abstract function getHtml(): string;
 
     public function __toString()
     {

@@ -6,6 +6,7 @@ use App\Models\Receipt;
 use App\Parsers\Template\Lines\Div;
 use App\Parsers\Template\Printable;
 use App\Parsers\Template\Lines\ImageLine;
+use App\Parsers\Template\Lines\Img;
 use App\Parsers\Template\Lines\ReceiptRow;
 use App\Parsers\Template\Lines\TextLine;
 use Exception;
@@ -58,8 +59,7 @@ class HtmlParser extends TemplateParser
 
                     break;
                 case ImageLine::class:
-
-
+                    $this->doc[] = new Img($line);
                     break;
                 default:
                     throw new Exception("how did you get here? >> " . get_class($line));
