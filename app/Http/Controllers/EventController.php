@@ -7,10 +7,11 @@ use App\Http\Data\OrderData;
 use App\Models\Company;
 use App\Models\Endpoint;
 use App\Models\Receipt;
+use App\Parsers\HtmlParser;
 use App\Parsers\SunmiParser;
-use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Exception;
 
 class EventController extends Controller
 {
@@ -57,6 +58,8 @@ class EventController extends Controller
                     case 'sunmi':
                         $parser = new SunmiParser($receipt);
                         break;
+                    case 'html':
+                        $parser = new HtmlParser($receipt);
                 }
 
                 try {
@@ -66,7 +69,7 @@ class EventController extends Controller
                     Log::debug('Sending parsed result to endpoint ' . $receipt->endpoint->name);
                     $receipt->result_message = "Parsed template and send";
                     $receipt->result_response = [
-                        "post_result" => $parser->send()
+                        $receipt->endpoint->type . "_result" => $parser->send()
                     ];
                 } catch (Exception $ex) {
                     Log::debug('Failed on endpoint ' . $receipt->endpoint->name);

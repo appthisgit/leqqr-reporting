@@ -9,20 +9,18 @@ abstract class Line
 {
     public bool $centered;
     public Margins $margins;
+    protected string $value;
 
     public function __construct(
-        protected PrintSettings $defaults
+        public PrintSettings $defaults
     ) {
-        $this->centered = $defaults->center;
         $this->margins = $defaults->lineMargins->copy();
+        $this->centered = false;
     }
 
     public function center() {
         $this->centered = true;
     }
 
-    public function __toString()
-    {
-        return get_class($this);
-    }
+    public abstract function __toString();
 }

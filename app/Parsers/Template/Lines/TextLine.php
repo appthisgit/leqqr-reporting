@@ -14,7 +14,6 @@ class TextLine extends Line
     public bool $underlined;
     public bool $wrapped;
     public bool $inverted;
-    protected string $text;
 
     public function __construct(
         PrintSettings $defaults,
@@ -22,23 +21,23 @@ class TextLine extends Line
         parent::__construct($defaults);
         $this->font = $defaults->font;
         $this->fontSize = $defaults->fontSize;
-        $this->bolded = $defaults->bold;
+        $this->bolded = false;
         $this->underlined = false;
         $this->wrapped = false;
         $this->inverted = false;
-        $this->text = '';
+        $this->value = '';
     }
 
     public function getText(): string
     {
         if ($this->inverted && $this->defaults->fontSize == $this->fontSize) {
-            return TextMods::pad($this->text, $this->defaults->widthCharAmount, $this->centered);
+            return TextMods::pad($this->value, $this->defaults->widthCharAmount, $this->centered);
         }
         if ($this->wrapped && $this->defaults->fontSize == $this->fontSize) {
-            return TextMods::wordwrap($this->text, $this->defaults->widthCharAmount);
+            return TextMods::wordwrap($this->value, $this->defaults->widthCharAmount);
         }
 
-        return $this->text;
+        return $this->value;
     }
 
     public function __toString()
@@ -66,8 +65,8 @@ class TextLine extends Line
         $this->inverted = true;
     }
 
-    public function appendText(string $text)
+    public function appendText(string $value)
     {
-        $this->text .= $text;
+        $this->value .= $value;
     }
 }

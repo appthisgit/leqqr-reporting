@@ -6,6 +6,7 @@ use App\Exceptions\TemplateException;
 use App\Helpers\ReceiptMods;
 use App\Http\Data\ProductData;
 use App\Models\Template;
+use App\Parsers\Template\FieldParser;
 use App\Parsers\Template\Lines\ImageLine;
 use App\Parsers\Template\Lines\Line;
 use App\Parsers\Template\Lines\ReceiptRow;
@@ -15,9 +16,8 @@ use DOMDocument;
 use DOMElement;
 use DOMNode;
 
-class TemplateParser extends FieldParser
+abstract class TemplateParser extends FieldParser
 {
-
     // Result
     private Printable $printable;
 
@@ -26,6 +26,7 @@ class TemplateParser extends FieldParser
     private Line $currentLine;
     private ?array $images;
 
+    public abstract function send();
 
     public function load(Template $template)
     {
@@ -139,7 +140,7 @@ class TemplateParser extends FieldParser
                     throw new TemplateException('image', 'No images uploaded', $this->lineNumber);
                 }
                 $img = array_shift($this->images);
-                $this->setCurrentLine(new ImageLine($img, $this->receipt->settings), $node);
+                $this->setCurrentLine(new ImageLine($this->receipt->settings, $img), $node);
                 break;
             case 'if':
                 if (empty($node->attributes->getNamedItem('key'))) {

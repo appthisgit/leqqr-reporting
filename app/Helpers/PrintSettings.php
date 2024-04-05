@@ -9,9 +9,6 @@ class PrintSettings
 
     public string $font = 'Lucida Console';
     public int $fontSize = 9;
-    public bool $bold = false;
-    public bool $center = false;
-
 
     public int $widthPaper = 217;
     public int $widthCharAmount = 46;

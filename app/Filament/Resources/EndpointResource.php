@@ -42,10 +42,11 @@ class EndpointResource extends Resource
                         Forms\Components\Select::make('type')
                             ->options([
                                 'sunmi' => 'Sunmi Cloudprinter',
+                                'html' => 'HTML',
                             ])
                             ->required(),
                         Forms\Components\TextInput::make('target')
-                            ->helperText('Het apparaat of email adres waarheen het resultaat wordt gestuurd')
+                            ->helperText('Sunmi: Printer sn | html: formaat')
                             ->required()
                             ->maxLength(100),
                     ]),

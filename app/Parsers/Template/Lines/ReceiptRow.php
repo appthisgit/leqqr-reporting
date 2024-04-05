@@ -24,9 +24,9 @@ class ReceiptRow extends TextLine
     public function getText(): string
     {
         if (empty($this->price)) {
-            return ReceiptMods::multipad($this->text, $this->widthCharAmount);
+            return ReceiptMods::multipad($this->value, $this->widthCharAmount);
         }
 
-        return ReceiptMods::formatPrice($this->text, $this->price, $this->widthCharAmount, $this->priceCharAmount);
+        return ReceiptMods::formatPrice($this->value, $this->price, $this->widthCharAmount, $this->priceCharAmount);
     }
 }

@@ -9,8 +9,6 @@ use App\Parsers\Template\Lines\ImageLine;
 use App\Parsers\Template\Lines\ReceiptRow;
 use App\Parsers\Template\Lines\TextLine;
 use Exception;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Storage;
 
 class SunmiParser extends TemplateParser
 {
@@ -53,7 +51,7 @@ class SunmiParser extends TemplateParser
             }
 
             return $results;
-        } 
+        }
         else {
             $printable = $this->parse();
             return $this->print($printable);
@@ -143,7 +141,7 @@ class SunmiParser extends TemplateParser
                     $imageLine = $line;
 
                     // $this->setCentered(true);
-                    $this->printer->appendImage(Storage::path('public/' . $imageLine->image), SunmiCloudPrinter::DIFFUSE_DITHER);
+                    $this->printer->appendImage( $imageLine->getImage(), SunmiCloudPrinter::DIFFUSE_DITHER);
 
                     break;
                 default:
