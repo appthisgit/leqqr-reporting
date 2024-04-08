@@ -26,8 +26,8 @@ class HtmlParser extends TemplateParser
         );
 
         $receipt->settings->printMargins->setAll(20);
-        $receipt->settings->lineMargins->top = 2;
-        $receipt->settings->lineMargins->bottom = 0;
+        $receipt->settings->lineMargins->top = 4;
+        $receipt->settings->lineMargins->bottom = 2;
     }
 
     public function send()
@@ -93,15 +93,15 @@ class HtmlParser extends TemplateParser
         $receipt_styles .= "\r\n" . sprintf('padding-left: %spx;', $this->receipt->settings->printMargins->left);
 
         $line_styles = '/* generated styles */';
-        $line_styles .= "\r\n" . sprintf('max-width: %sch;', $this->receipt->settings->widthCharAmount);
         $line_styles .= "\r\n" . sprintf('font-family: %s;', $this->receipt->settings->font);
         $line_styles .= "\r\n" . sprintf('font-size: %spx;', $this->receipt->settings->fontSize);
-        $line_styles .= "\r\n" . sprintf('padding-top: %srem;', $this->receipt->settings->lineMargins->top / 10);
+        $line_styles .= "\r\n" . sprintf('padding-top: %spx;', $this->receipt->settings->lineMargins->top);
         $line_styles .= "\r\n" . sprintf('padding-right: %spx;', $this->receipt->settings->lineMargins->right);
-        $line_styles .= "\r\n" . sprintf('padding-bottom: %srem;', $this->receipt->settings->lineMargins->bottom / 10);
+        $line_styles .= "\r\n" . sprintf('padding-bottom: %spx;', $this->receipt->settings->lineMargins->bottom);
         $line_styles .= "\r\n" . sprintf('padding-left: %spx;', $this->receipt->settings->lineMargins->left);
 
-        $price_styles = sprintf('width: %sch;', $this->receipt->settings->priceCharAmount + 2);
+        $price_styles = '/* generated styles */';
+        $price_styles .= "\r\n" . sprintf('width: %sch;', $this->receipt->settings->priceCharAmount + 2);
 
         return view('receipt', [
             'receipt_styles' => $receipt_styles,
