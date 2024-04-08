@@ -26,8 +26,8 @@ class HtmlParser extends TemplateParser
         );
 
         $receipt->settings->printMargins->setAll(20);
-        $receipt->settings->lineMargins->top = 4;
-        $receipt->settings->lineMargins->bottom = 2;
+        $receipt->settings->lineMargins->top = 3;
+        $receipt->settings->lineMargins->bottom = 3;
     }
 
     public function send()
