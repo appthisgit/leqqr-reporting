@@ -3,6 +3,7 @@
 namespace App\Parsers\Html;
 
 use App\Parsers\Template\Lines\ReceiptRow;
+use Str;
 
 class TableRow extends ReceiptRow
 {
@@ -21,9 +22,14 @@ class TableRow extends ReceiptRow
         $styling = $this->implodeStyling();
 
         if (empty($this->price)) {
-            return '<tr><td' . $styling . '>' . $this->value . '<td/><td' . $styling . '><td/></tr>';
+            return '<tr><td colspan="2"' . $styling . '>' . $this->value . '</td></tr>';
         }
 
-        return '<tr><td' . $styling . '>' . $this->value . '<td/><td' . $styling . '>€' . $this->price . '<td/></tr>';
+        $amount = Str::padLeft(
+            number_format($this->price, 2, ',', ''), 
+            $this->defaults->priceCharAmount,
+            ' '
+        );
+        return '<tr><td' . $styling . '>' . $this->value . '</></td><td' . $styling . ' class="price">€ ' . $amount . '</td></tr>';
     }
 }

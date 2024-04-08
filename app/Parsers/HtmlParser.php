@@ -2,6 +2,7 @@
 
 namespace App\Parsers;
 
+use App\Exceptions\TemplateException;
 use App\Models\Receipt;
 use App\Parsers\Html\Div;
 use App\Parsers\Html\Img;
@@ -15,7 +16,6 @@ use Exception;
 
 class HtmlParser extends TemplateParser
 {
-
     private array $doc;
 
     public function __construct(
@@ -24,29 +24,23 @@ class HtmlParser extends TemplateParser
         parent::__construct(
             $receipt
         );
+
+        $receipt->settings->printMargins->setAll(20);
+        $receipt->settings->lineMargins->top = 2;
+        $receipt->settings->lineMargins->bottom = 0;
     }
 
     public function send()
     {
         if ($this->receipt->settings->singleProductTemplate) {
-            $results = [];
 
-            foreach ($this->receipt->getProducts() as $product) {
-                $results[] = $this->print(
-                    $this->parseProduct($product),
-                    $product->amount
-                );
-            }
-
-            return $results;
+            throw new TemplateException('single-product-template="true"', "Not possible to use single product templates with this parser", 0);
         } else {
             return $this->print($this->parse());
         }
     }
 
-
-
-    private function print(Printable $printable, int $amount = 1)
+    private function print(Printable $printable)
     {
         $this->doc = array();
         $lastTable = null;
@@ -89,6 +83,31 @@ class HtmlParser extends TemplateParser
             $this->doc[] = $lastTable;
         }
 
-        return implode('\r\n', $this->doc);
+        $receipt_styles = '/* generated styles */';
+        $receipt_styles .= "\r\n" . sprintf('width: %sch;', $this->receipt->settings->widthCharAmount);
+        $receipt_styles .= "\r\n" . sprintf('font-family: %s;', $this->receipt->settings->font);
+        $receipt_styles .= "\r\n" . sprintf('font-size: %spx;', $this->receipt->settings->fontSize);
+        $receipt_styles .= "\r\n" . sprintf('padding-top: %spx;', $this->receipt->settings->printMargins->top);
+        $receipt_styles .= "\r\n" . sprintf('padding-right: %spx;', $this->receipt->settings->printMargins->right);
+        $receipt_styles .= "\r\n" . sprintf('padding-bottom: %spx;', $this->receipt->settings->printMargins->bottom);
+        $receipt_styles .= "\r\n" . sprintf('padding-left: %spx;', $this->receipt->settings->printMargins->left);
+
+        $line_styles = '/* generated styles */';
+        $line_styles .= "\r\n" . sprintf('max-width: %sch;', $this->receipt->settings->widthCharAmount);
+        $line_styles .= "\r\n" . sprintf('font-family: %s;', $this->receipt->settings->font);
+        $line_styles .= "\r\n" . sprintf('font-size: %spx;', $this->receipt->settings->fontSize);
+        $line_styles .= "\r\n" . sprintf('padding-top: %srem;', $this->receipt->settings->lineMargins->top / 10);
+        $line_styles .= "\r\n" . sprintf('padding-right: %spx;', $this->receipt->settings->lineMargins->right);
+        $line_styles .= "\r\n" . sprintf('padding-bottom: %srem;', $this->receipt->settings->lineMargins->bottom / 10);
+        $line_styles .= "\r\n" . sprintf('padding-left: %spx;', $this->receipt->settings->lineMargins->left);
+
+        $price_styles = sprintf('width: %sch;', $this->receipt->settings->priceCharAmount + 2);
+
+        return view('receipt', [
+            'receipt_styles' => $receipt_styles,
+            'line_styles' => $line_styles,
+            'price_styles' => $price_styles,
+            'receipt' => implode("\r\n", $this->doc)
+        ])->render();
     }
 }

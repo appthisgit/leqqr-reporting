@@ -3,7 +3,7 @@
 namespace App\Parsers\Template\Lines;
 
 use App\Helpers\Margins;
-use App\Helpers\PrintSettings;
+use App\Helpers\ReceiptSettings;
 
 abstract class Line
 {
@@ -12,7 +12,7 @@ abstract class Line
     protected string $value;
 
     public function __construct(
-        public PrintSettings $defaults
+        public ReceiptSettings $defaults
     ) {
         $this->margins = $defaults->lineMargins->copy();
         $this->centered = false;

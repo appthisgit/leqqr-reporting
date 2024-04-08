@@ -2,7 +2,7 @@
 
 namespace App\Parsers\Template\Lines;
 
-use App\Helpers\PrintSettings;
+use App\Helpers\ReceiptSettings;
 use App\Helpers\TextMods;
 
 class TextLine extends Line
@@ -16,7 +16,7 @@ class TextLine extends Line
     public bool $inverted;
 
     public function __construct(
-        PrintSettings $defaults,
+        ReceiptSettings $defaults,
     ) {
         parent::__construct($defaults);
         $this->font = $defaults->font;

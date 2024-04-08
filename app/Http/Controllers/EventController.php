@@ -34,7 +34,9 @@ class EventController extends Controller
                 $receipt->company()->associate(Company::fromData($companyData));
                 $receipt->save();
 
-                $results[] = $this->process($receipt);
+                // $results[] = $this->process($receipt);
+                $data = $this->process($receipt);
+                return $data['response']['html_result'];
             }
             Log::debug('Completed all endpoints for company ' . $companyData->id);
         }

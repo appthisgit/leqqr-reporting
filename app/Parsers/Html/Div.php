@@ -26,6 +26,6 @@ class Div extends TextLine
         $this->setNonDefaultClass('underlined');
         $this->setNonDefaultClass('inverted');
 
-        return '<div' . $this->implodeStyling() . '>' . $this->value . '<div/>';
+        return '<p' . $this->implodeStyling() . '>' . $this->value . '</p>';
     }
 }

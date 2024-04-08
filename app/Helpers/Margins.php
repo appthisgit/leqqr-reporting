@@ -6,11 +6,16 @@ class Margins
 {
 
     public function __construct(
-        public int $top,
-        public int $right,
-        public int $bottom,
-        public int $left,
+        public int $top = 0,
+        public int $right = 0,
+        public int $bottom = 0,
+        public int $left = 0,
     ) {
+    }
+
+    public function setAll(int $amount)
+    {
+        $this->top = $this->right = $this->bottom = $this->left = $amount;
     }
 
     public function copy(): Margins

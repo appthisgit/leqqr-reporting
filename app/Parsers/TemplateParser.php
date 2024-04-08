@@ -55,9 +55,6 @@ abstract class TemplateParser extends FieldParser
                 case 'receipt-width-char-amount':
                     $this->receipt->settings->widthCharAmount = $attribute->nodeValue;
                     break;
-                case 'receipt-width-paper':
-                    $this->receipt->settings->widthPaper = $attribute->nodeValue;
-                    break;
                 case 'stripe-char':
                     $this->receipt->settings->stripeChar = $attribute->nodeValue;
                     break;
@@ -75,20 +72,20 @@ abstract class TemplateParser extends FieldParser
                     break;
                 case 'margin-top':
                 case 'padding-top':
-                    $this->receipt->settings->paddings->top = $attribute->nodeValue;
+                    $this->receipt->settings->printMargins->top = $attribute->nodeValue;
                     break;
                 case 'margin-right':
                 case 'padding-right':
-                    $this->receipt->settings->paddings->right = $attribute->nodeValue;
+                    $this->receipt->settings->printMargins->right = $attribute->nodeValue;
                     break;
                 case 'margin-bottom':
                 case 'padding-bottom':
-                    $this->receipt->settings->paddings->bottom = $attribute->nodeValue;
+                    $this->receipt->settings->printMargins->bottom = $attribute->nodeValue;
                     break;
                 case 'margin-left':
                 case 'padding-left':
                 case 'inset':
-                    $this->receipt->settings->paddings->left = $attribute->nodeValue;
+                    $this->receipt->settings->printMargins->left = $attribute->nodeValue;
                     break;
             }
         }

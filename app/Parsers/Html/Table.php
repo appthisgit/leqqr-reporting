@@ -15,6 +15,6 @@ class Table
 
     public function getHtml(): string
     {
-        return '<table>'.implode('\r\n', $this->rows).'</table>';
+        return '<table>'.implode("\r\n", $this->rows).'</table>';
     }
 }
