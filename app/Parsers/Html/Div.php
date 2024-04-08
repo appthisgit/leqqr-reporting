@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Parsers\Html\Lines;
+namespace App\Parsers\Html;
 
 use App\Parsers\Template\Lines\TextLine;
 
@@ -11,6 +11,7 @@ class Div extends TextLine
     public function __construct(
         TextLine $textLine
     ) {
+        parent::__construct($textLine->defaults);
         $this->copyAttributes($textLine);
     }
 

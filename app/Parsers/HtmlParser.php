@@ -3,10 +3,10 @@
 namespace App\Parsers;
 
 use App\Models\Receipt;
-use App\Parsers\Html\Lines\Div;
-use App\Parsers\Html\Lines\Img;
-use App\Parsers\Html\Lines\Table;
-use App\Parsers\Html\Lines\TableRow;
+use App\Parsers\Html\Div;
+use App\Parsers\Html\Img;
+use App\Parsers\Html\Table;
+use App\Parsers\Html\TableRow;
 use App\Parsers\Template\Printable;
 use App\Parsers\Template\Lines\ImageLine;
 use App\Parsers\Template\Lines\ReceiptRow;
@@ -83,6 +83,10 @@ class HtmlParser extends TemplateParser
                     throw new Exception("how did you get here? >> " . get_class($line));
                     break;
             }
+        }
+
+        if ($lastTable) {
+            $this->doc[] = $lastTable;
         }
 
         return implode('\r\n', $this->doc);

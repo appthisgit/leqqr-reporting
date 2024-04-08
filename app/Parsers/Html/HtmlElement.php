@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Parsers\Html\Lines;
+namespace App\Parsers\Html;
 
 trait HtmlElement
 {
