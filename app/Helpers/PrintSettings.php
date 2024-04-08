@@ -20,4 +20,9 @@ class PrintSettings
         $this->lineMargins =  new Margins(2, 0, 0, 0);
         $this->paddings = new Paddings(0, 0, 0, 0);
     }
+
+    public function __toString()
+    {
+        return json_encode($this);
+    }
 }

@@ -22,4 +22,9 @@ class Margins
             $this->left
         );
     }
+
+    public function __toString()
+    {
+        return json_encode($this);
+    }
 }
