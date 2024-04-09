@@ -14,17 +14,9 @@ class OrderController extends Controller
 {
 
     /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        return response('', 403);
-    }
-
-    /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function __invoke(Request $request)
     {
         $endpoints = Endpoint::where('company_id', $request->company['id'])->get();
         $results = array();
@@ -46,8 +38,7 @@ class OrderController extends Controller
 
                 if (strtolower($receipt->endpoint->type) == 'sunmi') {
                     $parser->run($receipt);
-                }
-                else {
+                } else {
                     $parser->prepare($receipt);
                 }
 
@@ -57,29 +48,5 @@ class OrderController extends Controller
         }
 
         return response()->json($results, 200);
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(Receipt $receipt)
-    {
-        return response('', 403);
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, Receipt $receipt)
-    {
-        return response('', 403);
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(Receipt $receipt)
-    {
-        return response('', 403);
     }
 }

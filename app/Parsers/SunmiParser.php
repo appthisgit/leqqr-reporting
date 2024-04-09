@@ -156,7 +156,6 @@ class SunmiParser extends TemplateParser
 
         $this->printer->lineFeed(4);
         $this->printer->cutPaper(false);
-        // $succes = true;
         $succes = $this->printer->pushContent(
             $this->receipt->endpoint->target,
             sprintf("%s_%s", $this->receipt->endpoint->target, uniqid()),
@@ -167,10 +166,10 @@ class SunmiParser extends TemplateParser
         );
         $this->printer->clear();
 
-        if ($succes) {
-            return $this->printer->lastResult;
+        if (!$succes) {
+            throw new Exception($this->printer->lastError);
         }
 
-        return $this->printer->lastError;
+        return $this->printer->lastResult;
     }
 }

@@ -20,8 +20,9 @@ class ParseController extends Controller
         }
 
         return array(
+            'receipt' => $this->lastReceipt->id,
             'endpoint' => $this->lastReceipt->endpoint->name,
-            'type' => $this->lastReceipt->endpoint->type,
+            // 'type' => $this->lastReceipt->endpoint->type,
             'message' => $this->lastReceipt->result_message,
             'response' => $this->lastReceipt->result_response,
         );
