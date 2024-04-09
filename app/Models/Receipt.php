@@ -73,7 +73,7 @@ class Receipt extends Model
     }
 
     /**
-     * Retrieve all Products from the Order after filtering on printable and zone and order them according to settings 
+     * Retrieve all Products from the Order after filtering on printable and zone and order them according to settings
      */
     public function getProducts(): array
     {
@@ -82,7 +82,7 @@ class Receipt extends Model
                 if ($product->category) {
                     if ($this->endpoint->filter_printable || $this->endpoint->filter_zone) {
                         return $product->inFilters(
-                            $this->endpoint->filter_printable, 
+                            $this->endpoint->filter_printable,
                             $this->endpoint->filter_zone
                         );
                     }

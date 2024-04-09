@@ -49,7 +49,7 @@ class ParseController extends Controller
         $receipt->result_message = 'Prepared';
         $receipt->result_response = [
             'parser' => get_class($this->getParser()),
-            'result' => 'not run yet'
+            'result' => url("/api/receipts/{$receipt->id}")
         ];
 
         $receipt->save();
