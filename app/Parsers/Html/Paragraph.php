@@ -4,7 +4,7 @@ namespace App\Parsers\Html;
 
 use App\Parsers\Template\Lines\TextLine;
 
-class Div extends TextLine
+class Paragraph extends TextLine
 {
     use HtmlElement;
 

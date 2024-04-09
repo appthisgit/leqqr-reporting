@@ -4,11 +4,10 @@ namespace App\Parsers;
 
 use App\Exceptions\TemplateException;
 use App\Models\Receipt;
-use App\Parsers\Html\Div;
+use App\Parsers\Html\Paragraph;
 use App\Parsers\Html\Img;
 use App\Parsers\Html\Table;
 use App\Parsers\Html\TableRow;
-use App\Parsers\Template\Printable;
 use App\Parsers\Template\Lines\ImageLine;
 use App\Parsers\Template\Lines\ReceiptRow;
 use App\Parsers\Template\Lines\TextLine;
@@ -30,18 +29,13 @@ class HtmlParser extends TemplateParser
         $receipt->settings->lineMargins->bottom = 3;
     }
 
-    public function send()
+    public function run()
     {
         if ($this->receipt->settings->singleProductTemplate) {
-
-            throw new TemplateException('single-product-template="true"', "Not possible to use single product templates with this parser", 0);
-        } else {
-            return $this->print($this->parse());
+            throw new TemplateException('single-product-template="true"', "Not possible to use single product templates with HtmlParser", 0);
         }
-    }
 
-    private function print(Printable $printable)
-    {
+        $printable = $this->parse();
         $this->doc = array();
         $lastTable = null;
 
@@ -55,7 +49,7 @@ class HtmlParser extends TemplateParser
                         $lastTable = null;
                     }
 
-                    $this->doc[] =  new Div($line);
+                    $this->doc[] =  new Paragraph($line);
                     break;
 
                 case ImageLine::class:

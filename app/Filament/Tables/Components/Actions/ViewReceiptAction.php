@@ -14,8 +14,8 @@ class ViewReceiptAction extends Tables\Actions\ViewAction
         parent::setUp();
 
         $this->form([
-            Forms\Components\TextInput::make('result_message'),
-            Forms\Components\Textarea::make('result_response')
+            Forms\Components\TextInput::make('result_message', 'Parse message'),
+            Forms\Components\Textarea::make('result_response', 'Parse response')
                 ->formatStateUsing(fn ($state) => json_encode(json_decode($state), JSON_PRETTY_PRINT))
                 ->rows(6),
             Forms\Components\Textarea::make('order')

@@ -26,7 +26,7 @@ abstract class TemplateParser extends FieldParser
     private Line $currentLine;
     private ?array $images;
 
-    public abstract function send();
+    public abstract function run();
 
     public function load(Template $template)
     {
@@ -92,14 +92,14 @@ abstract class TemplateParser extends FieldParser
     }
 
 
-    public function parse(): Printable
+    protected function parse(): Printable
     {
         $this->printable = new Printable();
         $this->parseChildren($this->documentRoot);
         return $this->printable;
     }
 
-    public function parseProduct(ProductData $currentProduct): Printable
+    protected function parseProduct(ProductData $currentProduct): Printable
     {
         $this->printable = new Printable();
         $this->currentProduct = $currentProduct;

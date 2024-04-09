@@ -36,7 +36,7 @@ class SunmiParser extends TemplateParser
         $this->currentFontSize = null;
     }
 
-    public function send()
+    public function run()
     {
         if ($this->receipt->settings->singleProductTemplate) {
             $products = $this->receipt->getProducts();
@@ -168,8 +168,6 @@ class SunmiParser extends TemplateParser
         $this->printer->clear();
 
         if ($succes) {
-            $this->receipt->printed++;
-            $this->receipt->save();
             return $this->printer->lastResult;
         }
 
