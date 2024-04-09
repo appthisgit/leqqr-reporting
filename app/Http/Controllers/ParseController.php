@@ -7,7 +7,9 @@ use App\Parsers\HtmlParser;
 use App\Parsers\SunmiParser;
 use App\Parsers\TemplateParser;
 use Illuminate\Support\Facades\Log;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Exception;
+use Illuminate\Support\Facades\App;
 
 class ParseController extends Controller
 {
@@ -34,11 +36,40 @@ class ParseController extends Controller
             throw new Exception('please ParseController->run() first');
         }
 
-        if (!isset($this->lastReceipt->result_response['result'])) {
-            return response()->json($this->getResults(), 200);
-        }
+        $pdf = App::make('dompdf.wrapper');
+        $pdf->setPaper(array(0, 0, 164.44, 842.07), 'portrait');
 
-        return response($this->lastReceipt->result_response['result']);
+        $GLOBALS['bodyHeight'] = 0;
+        $GLOBALS['bodyWidth'] = 0;
+
+        $pdf->setCallbacks(
+            array(
+                'myCallbacks' => array(
+                    'event' => 'end_frame',
+                    'f' => function ($frame) {
+                        if (strtolower($frame->get_node()->nodeName) === "body") {
+                            $padding_box = $frame->get_padding_box();
+                            $GLOBALS['bodyHeight'] = $padding_box['h'];
+                            $GLOBALS['bodyWidth'] = $padding_box['w'];
+                        }
+                    }
+                )
+            )
+        );
+
+        $pdf->loadHTML($this->lastReceipt->result_response['result']);
+        $pdf->render();
+        unset($pdf);
+
+        $pdf = App::make('dompdf.wrapper');
+        $pdf->setPaper([0,0,$GLOBALS['bodyWidth'], $GLOBALS['bodyHeight']]);
+        $pdf->loadHTML($this->lastReceipt->result_response['result']);
+        $pdf->setOptions(array(
+            'isRemoteEnabled' => true,
+            'isHtml5ParserEnabled' => true
+        ));
+        $pdf->render();
+        return $pdf->stream();
     }
 
     public function prepare(Receipt $receipt)
