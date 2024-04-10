@@ -68,6 +68,7 @@
         }
 
         td.price {
+            vertical-align: top;
             {!! $table_price_styles !!}
         }
     </style>
