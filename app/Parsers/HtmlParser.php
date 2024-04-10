@@ -27,6 +27,7 @@ class HtmlParser extends TemplateParser
         $receipt->settings->printMargins->setAll(20);
         $receipt->settings->lineMargins->top = 3;
         $receipt->settings->lineMargins->bottom = 3;
+        $receipt->settings->font = 'Lucida Console';
     }
 
     public function run()
@@ -94,13 +95,17 @@ class HtmlParser extends TemplateParser
         $line_styles .= "\r\n" . sprintf('padding-bottom: %spx;', $this->receipt->settings->lineMargins->bottom);
         $line_styles .= "\r\n" . sprintf('padding-left: %spx;', $this->receipt->settings->lineMargins->left);
 
-        $price_styles = '/* generated styles */';
-        $price_styles .= "\r\n" . sprintf('width: %sch;', $this->receipt->settings->priceCharAmount + 2);
+        $table_cell_styles = '/* generated styles */';
+        // $table_cell_styles .= "\r\n" . sprintf('width: %sch;', $this->receipt->settings->widthCharAmount - ($this->receipt->settings->priceCharAmount + 2));
+
+        $table_price_styles = '/* generated styles */';
+        // $table_price_styles .= "\r\n" . sprintf('width: %sch;', $this->receipt->settings->priceCharAmount + 2);
 
         return view('receipt', [
             'receipt_styles' => $receipt_styles,
             'line_styles' => $line_styles,
-            'price_styles' => $price_styles,
+            'table_cell_styles' => $table_cell_styles,
+            'table_price_styles' => $table_price_styles,
             'receipt' => implode("\r\n", $this->doc)
         ])->render();
     }

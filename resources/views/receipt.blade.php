@@ -2,11 +2,10 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <title>Bon</title>
-
 
     <style>
         * {
@@ -14,17 +13,13 @@
             margin: 0;
         }
 
-        html {
-            background-color: rgb(123, 132, 135);
-        }
-
         body {
             background-color: #fff;
-            margin: 20px auto;
             {!! $receipt_styles !!}
         }
 
-        p, td {
+        p,
+        td {
             display: block;
             text-align: left;
             {!! $line_styles !!}
@@ -49,19 +44,20 @@
 
         table {
             width: 100%;
-            table-layout: fixed;
+            /* table-layout: fixed; */
             border-spacing: 0;
             border-collapse: collapse;
         }
 
         td {
-            width: auto;
+            /* border: 1px solid black; */
             display: table-cell;
             white-space: pre;
-            overflow: hidden;
+            {!! $table_cell_styles !!}
         }
+
         td.price {
-            {!! $price_styles !!}
+            {!! $table_price_styles !!}
         }
     </style>
 </head>

@@ -7,7 +7,6 @@ use App\Parsers\HtmlParser;
 use App\Parsers\SunmiParser;
 use App\Parsers\TemplateParser;
 use Illuminate\Support\Facades\Log;
-use Barryvdh\DomPDF\Facade\Pdf;
 use Exception;
 use Illuminate\Support\Facades\App;
 
@@ -36,39 +35,38 @@ class ParseController extends Controller
             throw new Exception('please ParseController->run() first');
         }
 
+        // return $this->lastReceipt->result_response['result'];
+
+        global $bodyHeight;
+        $bodyHeight = 0;
+
+        // First run to get body height
         $pdf = App::make('dompdf.wrapper');
-        $pdf->setPaper(array(0, 0, 164.44, 842.07), 'portrait');
-
-        $GLOBALS['bodyHeight'] = 0;
-        $GLOBALS['bodyWidth'] = 0;
-
         $pdf->setCallbacks(
             array(
                 'myCallbacks' => array(
                     'event' => 'end_frame',
                     'f' => function ($frame) {
                         if (strtolower($frame->get_node()->nodeName) === "body") {
+                            global $bodyHeight;
                             $padding_box = $frame->get_padding_box();
-                            $GLOBALS['bodyHeight'] = $padding_box['h'];
-                            $GLOBALS['bodyWidth'] = $padding_box['w'];
+
+                            $bodyHeight = $padding_box['h'];
                         }
                     }
                 )
             )
         );
-
         $pdf->loadHTML($this->lastReceipt->result_response['result']);
         $pdf->render();
         unset($pdf);
 
+        // Second run to set the correct paper sizes
         $pdf = App::make('dompdf.wrapper');
-        $pdf->setPaper([0,0,$GLOBALS['bodyWidth'], $GLOBALS['bodyHeight']]);
+        $pdf->setPaper([0, 0, 277, $bodyHeight]);
         $pdf->loadHTML($this->lastReceipt->result_response['result']);
-        $pdf->setOptions(array(
-            'isRemoteEnabled' => true,
-            'isHtml5ParserEnabled' => true
-        ));
         $pdf->render();
+
         return $pdf->stream();
     }
 

@@ -21,15 +21,17 @@ class TableRow extends ReceiptRow
         $this->prepareStyling();
         $styling = $this->implodeStyling();
 
+        $value = Str::padRight($this->value, empty($this->price) ? $this->widthCharAmount : $this->widthCharAmount - $this->priceCharAmount - 2);
+
         if (empty($this->price)) {
-            return '<tr><td colspan="2"' . $styling . '>' . $this->value . '</td></tr>';
+            return '<tr><td colspan="2"' . $styling . '>' . $value . '</td></tr>';
         }
 
         $amount = Str::padLeft(
-            number_format($this->price, 2, ',', ''), 
+            number_format($this->price, 2, ',', ''),
             $this->defaults->priceCharAmount,
             ' '
         );
-        return '<tr><td' . $styling . '>' . $this->value . '</></td><td' . $styling . ' class="price">€ ' . $amount . '</td></tr>';
+        return '<tr><td' . $styling . '>' . $value . '</></td><td' . $styling . ' class="price">€ ' . $amount . '</td></tr>';
     }
 }
