@@ -11,13 +11,11 @@
         @font-face {
             font-family: 'Roboto-Mono';
             src: url("{{ storage_path('fonts/roboto-mono-normal.ttf') }}") format("truetype");
-            font-style: normal;
         }
 
         @font-face {
             font-family: 'Roboto-Mono';
             src: url("{{ storage_path('fonts/roboto-mono-bold.ttf') }}") format("truetype");
-            font-style: normal;
             font-weight: bold;
         }
 
