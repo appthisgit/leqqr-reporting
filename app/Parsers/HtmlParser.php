@@ -25,9 +25,9 @@ class HtmlParser extends TemplateParser
         );
 
         $receipt->settings->printMargins->setAll(20);
-        $receipt->settings->lineMargins->top = 3;
-        $receipt->settings->lineMargins->bottom = 3;
-        $receipt->settings->font = 'Lucida Console';
+        $receipt->settings->lineMargins->top = 2;
+        $receipt->settings->lineMargins->bottom = 2;
+        $receipt->settings->font = 'Roboto-Mono';
     }
 
     public function run()
