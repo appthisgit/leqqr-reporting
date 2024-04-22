@@ -25,12 +25,11 @@ class TextLine extends Line
     public function getText(): string
     {
         if ($this->inverted && $this->defaults->fontSize == $this->fontSize) {
-            return $this->text;
-            // return TextMods::pad($this->text, $this->defaults->widthCharAmount, $this->centered);
+            return TextMods::pad(
+                $this->text, 
+                $this->defaults->widthCharAmount, 
+                $this->centered ? STR_PAD_BOTH : STR_PAD_RIGHT);
         }
-        // if ($this->wrapped && $this->defaults->fontSize == $this->fontSize) {
-        //     return TextMods::wordwrap($this->value, $this->defaults->widthCharAmount);
-        // }
 
         return $this->text;
     }

@@ -22,6 +22,9 @@ class TableCell
 
     public function getText(): string
     {
+        if ($this->center()) {
+            $this->pad_type = STR_PAD_BOTH;
+        }
         return TextMods::pad($this->text, $this->length, $this->pad_type);
     }
 }
