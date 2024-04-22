@@ -2,14 +2,14 @@
 
 namespace App\Parsers\Template\Lines;
 
-use App\Helpers\PrintSettings;
+use App\Helpers\ReceiptSettings;
 use Illuminate\Support\Facades\Storage;
 
 class ImageLine extends Line
 {
 
     public function __construct(
-        PrintSettings $defaults,
+        ReceiptSettings $defaults,
         private string $image,
     ) {
         parent::__construct($defaults);
