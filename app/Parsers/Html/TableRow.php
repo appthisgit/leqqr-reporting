@@ -2,36 +2,35 @@
 
 namespace App\Parsers\Html;
 
-use App\Parsers\Template\Lines\ReceiptRow;
-use Str;
+use App\Parsers\Template\Lines\TableLine;
 
-class TableRow extends ReceiptRow
+class TableRow extends TableLine
 {
     use HtmlElement;
 
     public function __construct(
-        ReceiptRow $receiptRow
+        TableLine $TableLine
     ) {
-        parent::__construct($receiptRow->defaults);
-        $this->copyAttributes($receiptRow);
+        parent::__construct($TableLine->defaults);
+        $this->copyAttributes($TableLine);
     }
 
     public function getHtml(): string
     {
         $this->prepareStyling();
-        $styling = $this->implodeStyling();
 
-        $value = Str::padRight($this->value, empty($this->price) ? $this->widthCharAmount : $this->widthCharAmount - $this->priceCharAmount - 2);
+        $tds = '';
+        $prependValue = '';
+        foreach ($this->cells as $cell) {
+            $tds .= '<td>'. $prependValue . $cell->getText() . '</td>';
 
-        if (empty($this->price)) {
-            return '<tr><td colspan="2"' . $styling . '>' . $value . '</td></tr>';
+            // $this->setBold($cell->bolded);
+            // $this->setUnderline($cell->underlined);
         }
 
-        $amount = Str::padLeft(
-            number_format($this->price, 2, ',', ''),
-            $this->defaults->priceCharAmount,
-            ' '
+        return sprintf('<tr%s>%s</tr>',
+            $this->implodeStyling(),
+            $tds
         );
-        return '<tr><td' . $styling . '>' . $value . '</></td><td' . $styling . ' class="price">€ ' . $amount . '</td></tr>';
     }
 }

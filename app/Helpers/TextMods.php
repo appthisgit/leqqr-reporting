@@ -27,7 +27,7 @@ class TextMods
         $values = array();
 
         // value doesn't fit inside maxLength
-        if (strlen($value) > $maxLength) {
+        if (strlen($value) > $maxLength && $maxLength > 0) {
 
             $line = '';
             $words = explode("\\s+", str_replace('-', '- ', trim($value)));
@@ -44,6 +44,7 @@ class TextMods
                 }
                 // Doesn't fit because the word is longer than the whole line
                 elseif (strlen($word) > $maxLength) {
+                    
                     // Loop until the word is completely written to lines
                     while (strlen($word) > $maxLength) {
 

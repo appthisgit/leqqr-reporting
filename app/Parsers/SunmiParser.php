@@ -6,7 +6,8 @@ use App\Models\Receipt;
 use App\Parsers\Template\Printable;
 use App\Parsers\Sunmi\SunmiCloudPrinter;
 use App\Parsers\Template\Lines\ImageLine;
-use App\Parsers\Template\Lines\ReceiptRow;
+use App\Parsers\Template\Lines\TableCell;
+use App\Parsers\Template\Lines\TableLine;
 use App\Parsers\Template\Lines\TextLine;
 use Exception;
 
@@ -58,37 +59,6 @@ class SunmiParser extends TemplateParser
         }
     }
 
-    private function setInverted(bool $inverted)
-    {
-        if ($this->currentInverted != $inverted)
-        {
-            $this->printer->setBlackWhiteReverseMode($inverted);
-            $this->currentInverted = $inverted;
-        }
-    }
-
-    private function setCentered(bool $center)
-    {
-        if ($this->currentCentered != $center) {
-            $this->printer->setAlignment($center ?
-                SunmiCloudPrinter::ALIGN_CENTER : SunmiCloudPrinter::ALIGN_LEFT);
-            $this->currentCentered = $center;
-        }
-    }
-    private function setBold(bool $bold)
-    {
-        if ($this->currentBold != $bold) {
-            $this->printer->setPrintModes($bold, false, false);
-            $this->currentBold = $bold;
-        }
-    }
-    private function setUnderline(bool $underline)
-    {
-        if ($this->currentUnderlined != $underline) {
-            $this->printer->setUnderlineMode($underline ? 2 : 0);
-            $this->currentUnderlined = $underline;
-        }
-    }
     private function setFont(string $font)
     {
         $selectFont = ($font == 'Monospaced') ? 0 : 1;
@@ -106,6 +76,28 @@ class SunmiParser extends TemplateParser
         }
     }
 
+    private function setFormatting(TextLine|TableCell $item)
+    {
+        if ($this->currentInverted != $item->inverted)
+        {
+            $this->printer->setBlackWhiteReverseMode($item->inverted);
+            $this->currentInverted = $item->inverted;
+        }
+        if ($this->currentCentered != $item->centered) {
+            $this->printer->setAlignment($item->centered ?
+                SunmiCloudPrinter::ALIGN_CENTER : SunmiCloudPrinter::ALIGN_LEFT);
+            $this->currentCentered = $item->centered;
+        }
+        if ($this->currentBold != $item->bolded) {
+            $this->printer->setPrintModes($item->bolded, false, false);
+            $this->currentBold = $item->bolded;
+        }
+        if ($this->currentUnderlined != $item->underlined) {
+            $this->printer->setUnderlineMode($item->underlined ? 2 : 0);
+            $this->currentUnderlined = $item->underlined;
+        }
+    }
+
     private function print(Printable $printable, int $amount = 1)
     {
         foreach ($printable->lines as $line) {
@@ -116,19 +108,10 @@ class SunmiParser extends TemplateParser
 
             switch (get_class($line)) {
                 case TextLine::class:
-                case ReceiptRow::class:
-
                     /** @var \App\Parsers\Template\Lines\TextLine */
                     $textLine = $line;
 
-                    if ($textLine->margins->top > $this->receipt->settings->lineMargins->top) {
-                        $this->printer->lineFeed($textLine->margins->top / 10);
-                    }
-
-                    $this->setInverted($textLine->inverted);
-                    $this->setCentered($textLine->centered);
-                    $this->setBold($textLine->bolded);
-                    $this->setUnderline($textLine->underlined);
+                    $this->setFormatting($textLine);
                     $this->setFont($textLine->font);
                     $this->setFontSize($textLine->fontSize);
 
@@ -136,11 +119,23 @@ class SunmiParser extends TemplateParser
                     $this->printer->appendText($textLine->getText() . "\n");
 
                     break;
+                case TableLine::class:
+                    /** @var \App\Parsers\Template\Lines\TableLine */
+                    $tableLine = $line;
+
+                    $prependValue = '';
+                    foreach ($tableLine->cells as $cell) {
+                        $this->setFormatting($cell);
+                        $this->printer->appendText($prependValue . $cell->getText());
+                        $prependValue = ' ';
+                    }
+
+                    $this->printer->appendText("\n");
+                    break;
                 case ImageLine::class:
                     /** @var \App\Parsers\Template\Lines\ImageLine */
                     $imageLine = $line;
 
-                    // $this->setCentered(true);
                     $this->printer->appendImage( $imageLine->getImage(), SunmiCloudPrinter::DIFFUSE_DITHER);
 
                     break;

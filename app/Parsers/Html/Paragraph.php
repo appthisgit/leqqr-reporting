@@ -22,10 +22,11 @@ class Paragraph extends TextLine
         $this->setNonDefaultStyle('font', 'font-family');
         $this->setNonDefaultStyle('fontSize', 'font-size', 'px');
 
+        $this->setNonDefaultClass('centered');
         $this->setNonDefaultClass('bolded');
         $this->setNonDefaultClass('underlined');
         $this->setNonDefaultClass('inverted');
 
-        return '<p' . $this->implodeStyling() . '>' . $this->value . '</p>';
+        return '<p' . $this->implodeStyling() . '>' . $this->text . '</p>';
     }
 }

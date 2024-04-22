@@ -35,7 +35,12 @@ class ParseController extends Controller
             throw new Exception('please ParseController->run() first');
         }
 
-        // return $this->lastReceipt->result_response['result'];
+        $result = $this->lastReceipt->result_response['result'];
+
+        if (is_array($result))
+        {
+            return response()->json($result);
+        }
 
         global $bodyHeight;
         $bodyHeight = 0;
@@ -57,14 +62,14 @@ class ParseController extends Controller
                 )
             )
         );
-        $pdf->loadHTML($this->lastReceipt->result_response['result']);
+        $pdf->loadHTML($result);
         $pdf->render();
         unset($pdf);
 
         // Second run to set the correct paper sizes
         $pdf = App::make('dompdf.wrapper');
         $pdf->setPaper([0, 0, 277, $bodyHeight]);
-        $pdf->loadHTML($this->lastReceipt->result_response['result']);
+        $pdf->loadHTML($result);
         $pdf->render();
 
         return $pdf->stream();

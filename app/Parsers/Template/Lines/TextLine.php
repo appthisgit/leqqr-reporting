@@ -7,66 +7,31 @@ use App\Helpers\TextMods;
 
 class TextLine extends Line
 {
+    use FormattedText;
 
     public string $font;
     public int $fontSize;
-    public bool $bolded;
-    public bool $underlined;
-    public bool $wrapped;
-    public bool $inverted;
 
     public function __construct(
         ReceiptSettings $defaults,
+        string $text = ''
     ) {
         parent::__construct($defaults);
         $this->font = $defaults->font;
         $this->fontSize = $defaults->fontSize;
-        $this->bolded = false;
-        $this->underlined = false;
-        $this->wrapped = false;
-        $this->inverted = false;
-        $this->value = '';
+        $this->text = $text;
     }
 
     public function getText(): string
     {
         if ($this->inverted && $this->defaults->fontSize == $this->fontSize) {
-            return TextMods::pad($this->value, $this->defaults->widthCharAmount, $this->centered);
+            return $this->text;
+            // return TextMods::pad($this->text, $this->defaults->widthCharAmount, $this->centered);
         }
-        if ($this->wrapped && $this->defaults->fontSize == $this->fontSize) {
-            return TextMods::wordwrap($this->value, $this->defaults->widthCharAmount);
-        }
+        // if ($this->wrapped && $this->defaults->fontSize == $this->fontSize) {
+        //     return TextMods::wordwrap($this->value, $this->defaults->widthCharAmount);
+        // }
 
-        return $this->value;
-    }
-
-    public function __toString()
-    {
-        return $this->getText();
-    }
-
-    public function setBold()
-    {
-        $this->bolded = true;
-    }
-
-    public function setUnderlined()
-    {
-        $this->underlined = true;
-    }
-
-    public function setWordwrap()
-    {
-        $this->wrapped = true;
-    }
-
-    public function setInverted()
-    {
-        $this->inverted = true;
-    }
-
-    public function appendText(string $value)
-    {
-        $this->value .= $value;
+        return $this->text;
     }
 }

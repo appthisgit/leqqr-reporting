@@ -45,8 +45,6 @@ trait HtmlElement
         $this->setNonDefaultSpacingStyle('right', 'padding');
         $this->setNonDefaultSpacingStyle('bottom');
         $this->setNonDefaultSpacingStyle('left', 'padding');
-
-        $this->setNonDefaultClass('centered');
     }
 
     protected function implodeStyling(): string

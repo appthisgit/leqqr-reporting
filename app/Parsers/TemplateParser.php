@@ -9,12 +9,13 @@ use App\Models\Template;
 use App\Parsers\Template\FieldParser;
 use App\Parsers\Template\Lines\ImageLine;
 use App\Parsers\Template\Lines\Line;
-use App\Parsers\Template\Lines\ReceiptRow;
+use App\Parsers\Template\Lines\TableLine;
 use App\Parsers\Template\Lines\TextLine;
 use App\Parsers\Template\Printable;
 use DOMDocument;
 use DOMElement;
 use DOMNode;
+use Illuminate\Support\Facades\Log;
 
 abstract class TemplateParser extends FieldParser
 {
@@ -128,7 +129,7 @@ abstract class TemplateParser extends FieldParser
                 $this->parseChildren($node);
                 break;
             case 'row':
-                $this->setCurrentLine(new ReceiptRow($this->receipt->settings), $node);
+                $this->setCurrentLine(new TableLine($this->receipt->settings), $node);
                 $this->parseChildren($node);
                 break;
             case 'image':
@@ -205,13 +206,13 @@ abstract class TemplateParser extends FieldParser
                 $this->setCurrentLine($stripe, $node);
                 break;
             case 'item':
-                if (!($this->currentLine instanceof ReceiptRow)) {
+                if (!($this->currentLine instanceof TableLine)) {
                     throw new TemplateException('item', 'found at unparsable location', $this->lineNumber);
                 }
                 $this->parseChildren($node);
                 break;
             case 'price':
-                if (!($this->currentLine instanceof ReceiptRow)) {
+                if (!($this->currentLine instanceof TableLine)) {
                     throw new TemplateException('price', 'found at unparsable location', $this->lineNumber);
                 }
                 if (!$node->hasAttributes() || empty($node->attributes->getNamedItem('value'))) {
@@ -220,12 +221,12 @@ abstract class TemplateParser extends FieldParser
 
                 $key = $node->attributes->getNamedItem('value')->nodeValue;
 
-                /** @var ReceiptRow */
+                /** @var TableLine */
                 $currentRow = $this->currentLine;
-                $currentRow->price = $this->retrievePrice($key);
+                $currentRow->appendPrice($this->retrievePrice($key));
                 break;
             case 'text':
-                if (!($this->currentLine instanceof TextLine)) {
+                if (!($this->currentLine instanceof TextLine || $this->currentLine instanceof TableLine)) {
                     throw new TemplateException('text', 'trying to add text to a non textual line', $this->lineNumber);
                 }
 
@@ -235,24 +236,22 @@ abstract class TemplateParser extends FieldParser
                 if ($node->hasChildNodes()) {
                     throw new TemplateException($node->nodeName, 'is unknown to have children', $this->lineNumber);
                 }
-                if (!($this->currentLine instanceof TextLine)) {
+                if (!($this->currentLine instanceof TextLine || $this->currentLine instanceof TableLine)) {
                     throw new TemplateException('text', 'trying to add text to a non textual line', $this->lineNumber);
                 }
                 if ($node->hasAttributes()) {
                     if ($node->attributes->getNamedItem('format')) {
-                        $date = \DateTime::createFromFormat('Y-m-d H:i:s' ,$this->retrieveValue($node->nodeName));
+                        $date = \DateTime::createFromFormat('Y-m-d H:i:s', $this->retrieveValue($node->nodeName));
                         if ($date) {
                             $format = $node->attributes->getNamedItem('format')->nodeValue;
                             $this->currentLine->appendText($date->format($format));
                         } else {
                             throw new TemplateException($node->nodeName, 'has a format attribute which resulted in null', $this->lineNumber);
                         }
-                    }
-                    else {
+                    } else {
                         throw new TemplateException($node->nodeName, 'is unknown to have attributes other than "format" for a date, move current attributes to <line>', $this->lineNumber);
                     }
-                }
-                else {
+                } else {
                     $this->currentLine->appendText($this->retrieveValue($node->nodeName));
                 }
 
@@ -275,9 +274,6 @@ abstract class TemplateParser extends FieldParser
                 $v = $attribute->nodeValue;
 
                 switch ($attribute->nodeName) {
-                    case 'wordwrap':
-                        $textLine->wrapped = $v;
-                        break;
                     case 'font-size':
                         $textLine->fontSize = $v;
                         break;
@@ -296,14 +292,15 @@ abstract class TemplateParser extends FieldParser
                     case 'inverted':
                         $textLine->inverted = $v;
                         break;
+                    case 'center':
+                    case 'centered':
+                        $line->centered = $v;
+                        break;
                 }
             }
 
             switch ($attribute->nodeName) {
-                case 'center':
-                case 'centered':
-                    $line->centered = $v;
-                    break;
+
                 case 'margin-top':
                     $line->margins->top = $v;
                     break;

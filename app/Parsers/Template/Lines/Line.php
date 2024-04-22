@@ -7,20 +7,17 @@ use App\Helpers\ReceiptSettings;
 
 abstract class Line
 {
-    public bool $centered;
     public Margins $margins;
-    protected string $value;
 
     public function __construct(
         public ReceiptSettings $defaults
     ) {
         $this->margins = $defaults->lineMargins->copy();
-        $this->centered = false;
+        
     }
-
-    public function center() {
-        $this->centered = true;
+    
+    public function __toString()
+    {
+        return get_class($this) . ': ' . json_encode($this);
     }
-
-    public abstract function __toString();
 }

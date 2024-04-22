@@ -9,7 +9,7 @@ use App\Parsers\Html\Img;
 use App\Parsers\Html\Table;
 use App\Parsers\Html\TableRow;
 use App\Parsers\Template\Lines\ImageLine;
-use App\Parsers\Template\Lines\ReceiptRow;
+use App\Parsers\Template\Lines\TableLine;
 use App\Parsers\Template\Lines\TextLine;
 use Exception;
 
@@ -61,7 +61,7 @@ class HtmlParser extends TemplateParser
 
                     $this->doc[] = new Img($line);
                     break;
-                case ReceiptRow::class:
+                case TableLine::class:
                     if ($lastTable == null) {
                         $lastTable = new Table();
                     }
