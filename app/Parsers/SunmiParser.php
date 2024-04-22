@@ -115,7 +115,6 @@ class SunmiParser extends TemplateParser
                     $this->setFont($textLine->font);
                     $this->setFontSize($textLine->fontSize);
 
-                    // Log::debug($textLine->getText());
                     $this->printer->appendText($textLine->getText() . "\n");
 
                     break;
@@ -123,11 +122,9 @@ class SunmiParser extends TemplateParser
                     /** @var \App\Parsers\Template\Lines\TableLine */
                     $tableLine = $line;
 
-                    $prependValue = '';
                     foreach ($tableLine->cells as $cell) {
                         $this->setFormatting($cell);
-                        $this->printer->appendText($prependValue . $cell->getText());
-                        $prependValue = ' ';
+                        $this->printer->appendText($cell->getText());
                     }
 
                     $this->printer->appendText("\n");

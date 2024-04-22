@@ -2,6 +2,8 @@
 
 namespace App\Parsers\Template\Lines;
 
+use App\Helpers\TextMods;
+
 class TableCell
 {
 
@@ -9,30 +11,18 @@ class TableCell
 
     public function __construct(
         string $text,
-        public int $length = 1,
-        public string $pad = 'right'
+        public int $length = -1,
+        public int $pad_type = STR_PAD_RIGHT
     ) {
+        if ($length < 0) {
+            $this->length = mb_strlen($text);
+        }
+        
         $this->text = $text;
-    }
-
-    public function alignRight()
-    {
-        $this->pad = 'left';
     }
 
     public function getText(): string
     {
-        // TODO: make this work
-        switch ($this->pad) {
-            case 'right':
-                return $this->text;
-            case 'left':
-                return $this->text;
-            case 'both':
-            case 'none':
-            default:
-                // TODO: make this
-                return $this->text;
-        }
+        return TextMods::pad($this->text, $this->length, $this->pad_type);
     }
 }
