@@ -33,9 +33,8 @@ class EndpointResource extends Resource
                             ->required()
                             ->maxLength(255),
                         Forms\Components\TextInput::make('company_id')
-                            ->helperText('Bij welke company ID behoort dit endpoint')
-                            ->numeric()
-                            ->required(),
+                            ->helperText('Bij welke company ID behoort dit endpoint (leeg voor alle)')
+                            ->numeric(),
                         Forms\Components\Select::make('template_id')
                             ->relationship('template', 'name')
                             ->required(),

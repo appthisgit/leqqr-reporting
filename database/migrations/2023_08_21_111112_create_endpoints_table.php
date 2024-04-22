@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('endpoints', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('company_id'); //TODO make nullable and null used ALWAYS
+            $table->bigInteger('company_id');
             $table->foreignId('template_id')
                 ->constrained()
                 ->onUpdate('cascade')
