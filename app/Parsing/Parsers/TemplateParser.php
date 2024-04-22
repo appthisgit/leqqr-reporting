@@ -1,17 +1,17 @@
 <?php
 
-namespace App\Parsers;
+namespace App\Parsing\Parsers;
 
 use App\Exceptions\TemplateException;
 use App\Http\Data\ProductData;
 use App\Models\Template;
-use App\Parsers\Template\FieldParser;
-use App\Parsers\Template\Lines\DividerLine;
-use App\Parsers\Template\Lines\ImageLine;
-use App\Parsers\Template\Lines\Line;
-use App\Parsers\Template\Lines\TableLine;
-use App\Parsers\Template\Lines\TextLine;
-use App\Parsers\Template\Printable;
+use App\Parsing\Parsers\Template\FieldParser;
+use App\Parsing\Parsers\Template\Lines\DividerLine;
+use App\Parsing\Parsers\Template\Lines\ImageLine;
+use App\Parsing\Parsers\Template\Lines\Line;
+use App\Parsing\Parsers\Template\Lines\TableLine;
+use App\Parsing\Parsers\Template\Lines\TextLine;
+use App\Parsing\Parsers\Template\Printable;
 use DOMDocument;
 use DOMElement;
 use DOMNode;

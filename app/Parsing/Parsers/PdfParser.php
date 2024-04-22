@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Parsers;
+namespace App\Parsing\Parsers;
 
 use App\Models\Receipt;
 use Illuminate\Support\Facades\App;

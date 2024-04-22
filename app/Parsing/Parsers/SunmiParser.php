@@ -1,15 +1,15 @@
 <?php
 
-namespace App\Parsers;
+namespace App\Parsing\Parsers;
 
 use App\Models\Receipt;
-use App\Parsers\Template\Printable;
-use App\Parsers\Sunmi\SunmiCloudPrinter;
-use App\Parsers\Template\Lines\DividerLine;
-use App\Parsers\Template\Lines\ImageLine;
-use App\Parsers\Template\Lines\TableCell;
-use App\Parsers\Template\Lines\TableLine;
-use App\Parsers\Template\Lines\TextLine;
+use App\Parsing\Parsers\Template\Printable;
+use App\Parsing\Parsers\Sunmi\SunmiCloudPrinter;
+use App\Parsing\Parsers\Template\Lines\DividerLine;
+use App\Parsing\Parsers\Template\Lines\ImageLine;
+use App\Parsing\Parsers\Template\Lines\TableCell;
+use App\Parsing\Parsers\Template\Lines\TableLine;
+use App\Parsing\Parsers\Template\Lines\TextLine;
 use Exception;
 
 class SunmiParser extends TemplateParser
@@ -115,7 +115,7 @@ class SunmiParser extends TemplateParser
             switch (get_class($line)) {
                 case DividerLine::class:
                 case TextLine::class:
-                    /** @var \App\Parsers\Template\Lines\TextLine */
+                    /** @var \App\Parsing\Parsers\Template\Lines\TextLine */
                     $textLine = $line;
 
                     $this->setFormatting($textLine);
@@ -126,7 +126,7 @@ class SunmiParser extends TemplateParser
 
                     break;
                 case TableLine::class:
-                    /** @var \App\Parsers\Template\Lines\TableLine */
+                    /** @var \App\Parsing\Parsers\Template\Lines\TableLine */
                     $tableLine = $line;
 
                     foreach ($tableLine->cells as $cell) {
@@ -137,7 +137,7 @@ class SunmiParser extends TemplateParser
                     $this->printer->appendText("\n");
                     break;
                 case ImageLine::class:
-                    /** @var \App\Parsers\Template\Lines\ImageLine */
+                    /** @var \App\Parsing\Parsers\Template\Lines\ImageLine */
                     $imageLine = $line;
 
                     $this->printer->appendImage( $imageLine->getImage(), SunmiCloudPrinter::DIFFUSE_DITHER);

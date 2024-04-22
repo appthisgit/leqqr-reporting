@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Parsers\Template;
+namespace App\Parsing\Parsers\Template;
 
 use App\Exceptions\TemplateException;
 use App\Helpers\Strings;

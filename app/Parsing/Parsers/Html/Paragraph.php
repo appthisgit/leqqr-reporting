@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Parsers\Html;
+namespace App\Parsing\Parsers\Html;
 
-use App\Parsers\Template\Lines\TextLine;
+use App\Parsing\Parsers\Template\Lines\TextLine;
 
 class Paragraph extends TextLine
 {

@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Parsers\Html;
+namespace App\Parsing\Parsers\Html;
 
-use App\Parsers\Template\Lines\ImageLine;
+use App\Parsing\Parsers\Template\Lines\ImageLine;
 
 class Img extends ImageLine
 {

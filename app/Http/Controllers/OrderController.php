@@ -7,6 +7,7 @@ use App\Http\Data\OrderData;
 use App\Models\Company;
 use App\Models\Endpoint;
 use App\Models\Receipt;
+use App\Parsing\ReceiptProcessor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
@@ -18,11 +19,10 @@ class OrderController extends Controller
      */
     public function __invoke(Request $request)
     {
-        $endpoints = Endpoint::where('company_id', $request->company['id'])->get();
+        $endpoints = Endpoint::whereCompanyId($request->company['id'])->get();
         $results = array();
 
         if (count($endpoints)) {
-            $parser = new ParseController();
             $orderData = OrderData::from($request->order);
             $companyData = CompanyData::from($request->company);
 
@@ -36,13 +36,15 @@ class OrderController extends Controller
                 $receipt->company()->associate(Company::fromData($companyData));
                 $receipt->save();
 
-                if (!$parser->runOutputIsResponse()) {
-                    $parser->run($receipt);
+                $processor = new ReceiptProcessor($receipt);
+
+                if (!$processor->parser->runOutputIsResponse()) {
+                    $processor->parse();
                 } else {
-                    $parser->prepare($receipt);
+                    $processor->prepare();
                 }
 
-                $results[] = $parser->getResults();
+                $results[] = $processor->getResults();
             }
             Log::debug('Completed all endpoints for company ' . $companyData->id);
         }

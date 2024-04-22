@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Receipt;
+use App\Parsing\ReceiptProcessor;
 
 class ReceiptController extends Controller
 {
@@ -11,8 +12,8 @@ class ReceiptController extends Controller
      */
     public function __invoke(Receipt $receipt)
     {
-        $parser = new ParseController();
-        $parser->run($receipt);
-        return $parser->getResponse();
+        $processor = new ReceiptProcessor($receipt);
+        $processor->parse();
+        return $processor->getResponse();
     }
 }

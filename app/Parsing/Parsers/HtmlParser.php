@@ -1,17 +1,17 @@
 <?php
 
-namespace App\Parsers;
+namespace App\Parsing\Parsers;
 
 use App\Exceptions\TemplateException;
 use App\Models\Receipt;
-use App\Parsers\Html\Paragraph;
-use App\Parsers\Html\Img;
-use App\Parsers\Html\Table;
-use App\Parsers\Html\TableRow;
-use App\Parsers\Template\Lines\DividerLine;
-use App\Parsers\Template\Lines\ImageLine;
-use App\Parsers\Template\Lines\TableLine;
-use App\Parsers\Template\Lines\TextLine;
+use App\Parsing\Parsers\Html\Paragraph;
+use App\Parsing\Parsers\Html\Img;
+use App\Parsing\Parsers\Html\Table;
+use App\Parsing\Parsers\Html\TableRow;
+use App\Parsing\Parsers\Template\Lines\DividerLine;
+use App\Parsing\Parsers\Template\Lines\ImageLine;
+use App\Parsing\Parsers\Template\Lines\TableLine;
+use App\Parsing\Parsers\Template\Lines\TextLine;
 use Exception;
 
 class HtmlParser extends TemplateParser

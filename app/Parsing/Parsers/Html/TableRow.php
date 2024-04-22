@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Parsers\Html;
+namespace App\Parsing\Parsers\Html;
 
-use App\Parsers\Template\Lines\TableLine;
+use App\Parsing\Parsers\Template\Lines\TableLine;
 
 class TableRow extends TableLine
 {

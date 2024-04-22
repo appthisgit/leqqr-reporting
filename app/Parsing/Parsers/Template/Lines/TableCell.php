@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Parsers\Template\Lines;
+namespace App\Parsing\Parsers\Template\Lines;
 
 use App\Helpers\TextMods;
 

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Parsers\Sunmi;
+namespace App\Parsing\Parsers\Sunmi;
 
 class SunmiCloudPrinter
 {
