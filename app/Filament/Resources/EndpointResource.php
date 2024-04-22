@@ -43,6 +43,7 @@ class EndpointResource extends Resource
                             ->options([
                                 'sunmi' => 'Sunmi Cloudprinter',
                                 'html' => 'HTML',
+                                'pdf' => 'PDF',
                             ])
                             ->required(),
                         Forms\Components\TextInput::make('target')

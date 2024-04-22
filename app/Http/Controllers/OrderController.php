@@ -36,7 +36,7 @@ class OrderController extends Controller
                 $receipt->company()->associate(Company::fromData($companyData));
                 $receipt->save();
 
-                if (strtolower($receipt->endpoint->type) == 'sunmi') {
+                if (!$parser->runOutputIsResponse()) {
                     $parser->run($receipt);
                 } else {
                     $parser->prepare($receipt);

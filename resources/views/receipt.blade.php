@@ -10,12 +10,12 @@
     <style>
         @font-face {
             font-family: 'Roboto-Mono';
-            src: url("{{ storage_path('fonts/roboto-mono-normal.ttf') }}") format("truetype");
+            src: url("{{ $font_path }}/fonts/roboto-mono-normal.ttf") format("truetype");
         }
 
         @font-face {
             font-family: 'Roboto-Mono';
-            src: url("{{ storage_path('fonts/roboto-mono-bold.ttf') }}") format("truetype");
+            src: url("{{ $font_path }}/fonts/roboto-mono-bold.ttf") format("truetype");
             font-weight: bold;
         }
 
@@ -64,12 +64,10 @@
             /* border: 1px solid black; */
             display: table-cell;
             white-space: pre;
-            {!! $table_cell_styles !!}
         }
 
         td.price {
             vertical-align: top;
-            {!! $table_price_styles !!}
         }
     </style>
 </head>

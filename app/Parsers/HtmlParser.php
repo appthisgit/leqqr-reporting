@@ -17,10 +17,10 @@ use Exception;
 class HtmlParser extends TemplateParser
 {
     private array $doc;
-    private ?Table $lastTable;
 
     public function __construct(
-        Receipt $receipt
+        Receipt $receipt,
+        private $font_path
     ) {
         parent::__construct(
             $receipt
@@ -30,6 +30,11 @@ class HtmlParser extends TemplateParser
         $receipt->settings->lineMargins->top = 2;
         $receipt->settings->lineMargins->bottom = 2;
         $receipt->settings->font = 'Roboto-Mono';
+    }
+
+    public function runOutputIsResponse(): bool
+    {
+        return true;
     }
 
     public function run()
@@ -92,17 +97,10 @@ class HtmlParser extends TemplateParser
         $line_styles .= "\r\n" . sprintf('padding-bottom: %spx;', $this->receipt->settings->lineMargins->bottom);
         $line_styles .= "\r\n" . sprintf('padding-left: %spx;', $this->receipt->settings->lineMargins->left);
 
-        $table_cell_styles = '/* generated styles */';
-        // $table_cell_styles .= "\r\n" . sprintf('width: %sch;', $this->receipt->settings->widthCharAmount - ($this->receipt->settings->priceCharAmount + 2));
-
-        $table_price_styles = '/* generated styles */';
-        // $table_price_styles .= "\r\n" . sprintf('width: %sch;', $this->receipt->settings->priceCharAmount + 2);
-
         return view('receipt', [
             'receipt_styles' => $receipt_styles,
             'line_styles' => $line_styles,
-            'table_cell_styles' => $table_cell_styles,
-            'table_price_styles' => $table_price_styles,
+            'font_path' => $this->font_path,
             'receipt' => implode("\r\n", $this->doc)
         ])->render();
     }

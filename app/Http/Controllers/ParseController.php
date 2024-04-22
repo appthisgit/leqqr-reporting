@@ -4,84 +4,53 @@ namespace App\Http\Controllers;
 
 use App\Models\Receipt;
 use App\Parsers\HtmlParser;
+use App\Parsers\PdfParser;
 use App\Parsers\SunmiParser;
 use App\Parsers\TemplateParser;
 use Illuminate\Support\Facades\Log;
 use Exception;
-use Illuminate\Support\Facades\App;
 
 class ParseController extends Controller
 {
-    private ?Receipt $lastReceipt = null;
+    private ?Receipt $receipt = null;
+    private $resultResponse;
 
     public function getResults(): array
     {
-        if (!$this->lastReceipt) {
+        if (!$this->receipt) {
             throw new Exception('No parser has run yet. ParseController->run() first');
         }
 
         return array(
-            'receipt' => $this->lastReceipt->id,
-            'endpoint' => $this->lastReceipt->endpoint->name,
-            // 'type' => $this->lastReceipt->endpoint->type,
-            'message' => $this->lastReceipt->result_message,
-            'response' => $this->lastReceipt->result_response,
+            'receipt' => $this->receipt->id,
+            'endpoint' => $this->receipt->endpoint->name,
+            'message' => $this->receipt->result_message,
+            'response' => $this->receipt->result_response,
         );
     }
 
     public function getResponse()
     {
-        if (!$this->lastReceipt) {
+        if (!$this->receipt) {
             throw new Exception('please ParseController->run() first');
         }
 
-        $result = $this->lastReceipt->result_response['result'];
-
-        if (is_array($result))
-        {
-            return response()->json($result);
+        if (is_array($this->resultResponse)) {
+            return response()->json($this->resultResponse);
         }
 
-        global $bodyHeight;
-        $bodyHeight = 0;
-
-        // First run to get body height
-        $pdf = App::make('dompdf.wrapper');
-        $pdf->setCallbacks(
-            array(
-                'myCallbacks' => array(
-                    'event' => 'end_frame',
-                    'f' => function ($frame) {
-                        if (strtolower($frame->get_node()->nodeName) === "body") {
-                            global $bodyHeight;
-                            $padding_box = $frame->get_padding_box();
-
-                            $bodyHeight = $padding_box['h'];
-                        }
-                    }
-                )
-            )
-        );
-        $pdf->loadHTML($result);
-        $pdf->render();
-        unset($pdf);
-
-        // Second run to set the correct paper sizes
-        $pdf = App::make('dompdf.wrapper');
-        $pdf->setPaper([0, 0, 277, $bodyHeight]);
-        $pdf->loadHTML($result);
-        $pdf->render();
-
-        return $pdf->stream();
+        return $this->resultResponse;
     }
+
 
     public function prepare(Receipt $receipt)
     {
-        $this->lastReceipt = $receipt;
+        $this->receipt = $receipt;
 
         Log::debug('Preparing for endpoint ' . $receipt->endpoint->name);
         $receipt->result_message = 'Prepared';
         $receipt->result_response = [
+            'type' => strtolower($this->receipt->endpoint->type),
             'parser' => get_class($this->getParser()),
             'result' => url("/api/receipts/{$receipt->id}")
         ];
@@ -93,7 +62,7 @@ class ParseController extends Controller
 
     public function run(Receipt $receipt): ?ParseController
     {
-        $this->lastReceipt = $receipt;
+        $this->receipt = $receipt;
 
         if (empty($receipt->endpoint->filter_terminal) || $receipt->endpoint->filter_terminal == $receipt->order->pin_terminal_id) {
 
@@ -105,17 +74,20 @@ class ParseController extends Controller
                     $parser->load($receipt->endpoint->template);
 
                     Log::debug('Sending parsed result to endpoint ' . $receipt->endpoint->name);
+                    $this->resultResponse = $parser->run();
                     $receipt->printed++;
                     $receipt->result_message = 'Completed';
                     $receipt->result_response = [
+                        'type' => $this->receipt->endpoint->type,
                         'parser' => get_class($parser),
-                        'result' => $parser->run()
+                        'result' => $parser->runOutputIsResponse() ? "[response object]" : $this->resultResponse
                     ];
                 } catch (Exception $ex) {
                     Log::debug('Failed on endpoint ' . $receipt->endpoint->name);
                     Log::debug($ex->getMessage());
                     $receipt->result_message = 'Failed';
                     $receipt->result_response = [
+                        'type' => $this->receipt->endpoint->type,
                         'parser' => get_class($parser),
                         'result' => [
                             'Exception' => get_class($ex),
@@ -156,11 +128,13 @@ class ParseController extends Controller
 
     private function getParser(): ?TemplateParser
     {
-        switch (strtolower($this->lastReceipt->endpoint->type)) {
+        switch ($this->receipt->endpoint->type) {
             case 'sunmi':
-                return new SunmiParser($this->lastReceipt);
+                return new SunmiParser($this->receipt);
             case 'html':
-                return new HtmlParser($this->lastReceipt);
+                return new HtmlParser($this->receipt, public_path());
+            case 'pdf':
+                return new PdfParser($this->receipt, storage_path());
         }
 
         return null;
