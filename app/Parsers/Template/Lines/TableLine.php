@@ -33,7 +33,7 @@ class TableLine extends Line
     {
         if (count($this->cells) == 0) {
             $length = $this->defaults->widthCharAmount;
-            $length -= 3;                                    // ' € '
+            $length -= 2;                                    // ' €'xxx,xx
             $length -= $this->defaults->priceCharAmount;
             $this->cells[] = new TableCell('', $length);
         }
@@ -46,7 +46,7 @@ class TableLine extends Line
      */
     public function appendPrice(float $price)
     {
-        $this->cells[] = new TableCell(' € ');
+        $this->cells[] = new TableCell(' €');
         $this->cells[] = new TableCell(
             number_format($price, 2, ',', ''),
             $this->defaults->priceCharAmount,
