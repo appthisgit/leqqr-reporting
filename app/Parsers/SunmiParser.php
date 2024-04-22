@@ -5,6 +5,7 @@ namespace App\Parsers;
 use App\Models\Receipt;
 use App\Parsers\Template\Printable;
 use App\Parsers\Sunmi\SunmiCloudPrinter;
+use App\Parsers\Template\Lines\DividerLine;
 use App\Parsers\Template\Lines\ImageLine;
 use App\Parsers\Template\Lines\TableCell;
 use App\Parsers\Template\Lines\TableLine;
@@ -107,6 +108,7 @@ class SunmiParser extends TemplateParser
             }
 
             switch (get_class($line)) {
+                case DividerLine::class:
                 case TextLine::class:
                     /** @var \App\Parsers\Template\Lines\TextLine */
                     $textLine = $line;

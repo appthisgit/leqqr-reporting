@@ -3,10 +3,10 @@
 namespace App\Parsers;
 
 use App\Exceptions\TemplateException;
-use App\Helpers\ReceiptMods;
 use App\Http\Data\ProductData;
 use App\Models\Template;
 use App\Parsers\Template\FieldParser;
+use App\Parsers\Template\Lines\DividerLine;
 use App\Parsers\Template\Lines\ImageLine;
 use App\Parsers\Template\Lines\Line;
 use App\Parsers\Template\Lines\TableLine;
@@ -15,7 +15,6 @@ use App\Parsers\Template\Printable;
 use DOMDocument;
 use DOMElement;
 use DOMNode;
-use Illuminate\Support\Facades\Log;
 
 abstract class TemplateParser extends FieldParser
 {
@@ -201,8 +200,7 @@ abstract class TemplateParser extends FieldParser
                 }
                 break;
             case 'stripe':
-                $stripe = new TextLine($this->receipt->settings);
-                $stripe->appendText(ReceiptMods::divider($this->receipt->settings->stripeChar, $this->receipt->settings->widthCharAmount));
+                $stripe = new DividerLine($this->receipt->settings);
                 $this->setCurrentLine($stripe, $node);
                 break;
             case 'item':

@@ -8,6 +8,7 @@ use App\Parsers\Html\Paragraph;
 use App\Parsers\Html\Img;
 use App\Parsers\Html\Table;
 use App\Parsers\Html\TableRow;
+use App\Parsers\Template\Lines\DividerLine;
 use App\Parsers\Template\Lines\ImageLine;
 use App\Parsers\Template\Lines\TableLine;
 use App\Parsers\Template\Lines\TextLine;
@@ -16,6 +17,7 @@ use Exception;
 class HtmlParser extends TemplateParser
 {
     private array $doc;
+    private ?Table $lastTable;
 
     public function __construct(
         Receipt $receipt
@@ -42,23 +44,18 @@ class HtmlParser extends TemplateParser
 
         foreach ($printable->lines as $line) {
 
+            if (get_class($line) != TableLine::class && $lastTable != null) {
+                $this->doc[] = $lastTable;
+                $lastTable = null;
+            }
+
             switch (get_class($line)) {
-
+                case DividerLine::class:
                 case TextLine::class:
-                    if ($lastTable != null) {
-                        $this->doc[] = $lastTable;
-                        $lastTable = null;
-                    }
-
                     $this->doc[] =  new Paragraph($line);
                     break;
 
                 case ImageLine::class:
-                    if ($lastTable != null) {
-                        $this->doc[] = $lastTable;
-                        $lastTable = null;
-                    }
-
                     $this->doc[] = new Img($line);
                     break;
                 case TableLine::class:
