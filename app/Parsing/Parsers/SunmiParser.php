@@ -46,7 +46,7 @@ class SunmiParser extends TemplateParser
     public function run()
     {
         if ($this->receipt->settings->singleProductTemplate) {
-            $products = $this->receipt->getProducts($this->receipt->settings->sort);
+            $products = $this->receipt->getProducts();
             $results = [];
 
             foreach ($products as $product) {

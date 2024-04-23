@@ -30,15 +30,15 @@ class OrderController extends Controller
             $order = new Order([
                 'id' => $orderData->id,
                 'confirmation_code' => $orderData->confirmation_code,
-                'order' => $orderData,
+                'data' => $orderData,
             ]);
+            $order->company()->associate(Company::fromData($companyData));
             $order->save();
 
             foreach ($endpoints as $endpoint) {
                 $receipt = new Receipt();
                 $receipt->order()->associate($order);
                 $receipt->endpoint()->associate($endpoint);
-                $receipt->company()->associate(Company::fromData($companyData));
                 $receipt->save();
 
                 $processor = new ReceiptProcessor($receipt);

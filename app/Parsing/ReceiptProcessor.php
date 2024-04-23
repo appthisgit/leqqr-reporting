@@ -33,7 +33,7 @@ class ReceiptProcessor
     public function getResults(): array
     {
         if (!$this->output) {
-            throw new Exception('No parser has run yet. ParseController->run() first');
+            throw new Exception('No parser has run yet. ParseController->parse() first');
         }
 
         return array(

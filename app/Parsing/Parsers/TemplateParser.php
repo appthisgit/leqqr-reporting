@@ -163,7 +163,7 @@ abstract class TemplateParser extends FieldParser
 
                 switch ($node->attributes->getNamedItem('items')->nodeValue) {
                     case 'products':
-                        foreach ($this->receipt->getProducts($this->receipt->settings->sort) as $product) {
+                        foreach ($this->receipt->getProducts() as $product) {
                             $this->lastCategory = $this->currentProduct->category ?? null;
                             $this->currentProduct = $product;
                             $this->parseChildren($node);
