@@ -30,9 +30,9 @@ class Company extends Model
      */
     public $timestamps = false;
 
-    public function receipts(): HasMany
+    public function orders(): HasMany
     {
-        return $this->hasMany(Receipt::class);
+        return $this->hasMany(Order::class);
     }
 
     public function toData(): CompanyData

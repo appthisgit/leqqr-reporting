@@ -163,7 +163,7 @@ abstract class TemplateParser extends FieldParser
 
                 switch ($node->attributes->getNamedItem('items')->nodeValue) {
                     case 'products':
-                        foreach ($this->receipt->getProducts() as $product) {
+                        foreach ($this->receipt->getProducts($this->receipt->settings->sort) as $product) {
                             $this->lastCategory = $this->currentProduct->category ?? null;
                             $this->currentProduct = $product;
                             $this->parseChildren($node);
@@ -176,7 +176,7 @@ abstract class TemplateParser extends FieldParser
                         }
                         break;
                     case 'taxes':
-                        foreach ($this->receipt->order->vat->rows_vat as $vat) {
+                        foreach ($this->receipt->order->data->vat->rows_vat as $vat) {
                             $this->currentVatRow = $vat;
                             $this->parseChildren($node);
                         }
@@ -192,7 +192,7 @@ abstract class TemplateParser extends FieldParser
                         }
                         break;
                     case 'questions':
-                        foreach ($this->receipt->order->questions as $questionData) {
+                        foreach ($this->receipt->order->data->questions as $questionData) {
                             $this->currentQuestion = $questionData;
                             $this->parseChildren($node);
                         }

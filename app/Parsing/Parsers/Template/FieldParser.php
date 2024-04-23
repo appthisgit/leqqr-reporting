@@ -32,55 +32,55 @@ class FieldParser
     {
         switch ($key) {
             case 'is_delivery':
-                return $this->receipt->order->isDelivery();
+                return $this->receipt->order->data->isDelivery();
             case 'is_pickup':
-                return $this->receipt->order->isPickup();
+                return $this->receipt->order->data->isPickup();
             case 'is_eat_in':
-                return !$this->receipt->order->isDelivery() && !$this->receipt->order->isPickup();
+                return !$this->receipt->order->data->isDelivery() && !$this->receipt->order->data->isPickup();
             case 'has_tablenumer':
-                return !Strings::isEmptyOrValueNull($this->receipt->order->table_nr);
+                return !Strings::isEmptyOrValueNull($this->receipt->order->data->table_nr);
             case 'has_buzzer':
-                return !Strings::isEmptyOrValueNull($this->receipt->order->buzzer_nr);
+                return !Strings::isEmptyOrValueNull($this->receipt->order->data->buzzer_nr);
             case 'has_customer_name':
-                return !Strings::isEmptyOrValueNull($this->receipt->order->name);
+                return !Strings::isEmptyOrValueNull($this->receipt->order->data->name);
             case 'has_customer_phone':
-                return !Strings::isEmptyOrValueNull($this->receipt->order->phone);
+                return !Strings::isEmptyOrValueNull($this->receipt->order->data->phone);
             case 'has_customer_email':
-                return !Strings::isEmptyOrValueNull($this->receipt->order->email);
+                return !Strings::isEmptyOrValueNull($this->receipt->order->data->email);
             case 'has_notes':
-                return !Strings::isEmptyOrValueNull($this->receipt->order->notes);
+                return !Strings::isEmptyOrValueNull($this->receipt->order->data->notes);
             case 'has_transaction_costs':
-                return !empty($this->receipt->order->price_transaction);
+                return !empty($this->receipt->order->data->price_transaction);
             case 'has_discounts':
-                return !empty($this->receipt->order->price_discount);
+                return !empty($this->receipt->order->data->price_discount);
             case 'has_taxes':
-                return !empty($this->receipt->order->vat->order_vat > 0);
+                return !empty($this->receipt->order->data->vat->order_vat > 0);
             case 'is_method_cash':
-                return $this->receipt->order->payment_method == 'cash';
+                return $this->receipt->order->data->payment_method == 'cash';
             case 'is_method_account':
-                return $this->receipt->order->payment_method == 'account';
+                return $this->receipt->order->data->payment_method == 'account';
             case 'is_method_online':
-                return $this->receipt->order->payment_method == 'ideal' || $this->receipt->order->payment_method == 'online';
+                return $this->receipt->order->data->payment_method == 'ideal' || $this->receipt->order->data->payment_method == 'online';
             case 'is_method_pin':
-                return $this->receipt->order->payment_method == 'pin';
+                return $this->receipt->order->data->payment_method == 'pin';
             case 'is_method_cikam':
-                return $this->receipt->order->payment_method == 'cikam';
+                return $this->receipt->order->data->payment_method == 'cikam';
             case 'is_origin_kiosk':
-                return $this->receipt->order->origin == 'kiosk';
+                return $this->receipt->order->data->origin == 'kiosk';
             case 'is_origin_online':
-                return $this->receipt->order->origin == 'online';
+                return $this->receipt->order->data->origin == 'online';
             case 'is_method_other':
-                return $this->receipt->order->payment_method != 'cash'
-                    && $this->receipt->order->payment_method != 'account'
-                    && $this->receipt->order->payment_method != 'ideal'
-                    && $this->receipt->order->payment_method != 'online'
-                    && $this->receipt->order->payment_method != 'pin'
-                    && $this->receipt->order->payment_method != 'cikam';
+                return $this->receipt->order->data->payment_method != 'cash'
+                    && $this->receipt->order->data->payment_method != 'account'
+                    && $this->receipt->order->data->payment_method != 'ideal'
+                    && $this->receipt->order->data->payment_method != 'online'
+                    && $this->receipt->order->data->payment_method != 'pin'
+                    && $this->receipt->order->data->payment_method != 'cikam';
             case 'subtotal_is_different_than_total':
-                return $this->receipt->order->price_total > $this->receipt->order->price_subtotal;
+                return $this->receipt->order->data->price_total > $this->receipt->order->data->price_subtotal;
             case 'is_pin_terminal_id':
                 $this->checkValue($value, "if key=\"$key\"", 'doesn\'t have a value!');
-                return $this->receipt->order->pin_terminal_id == $value;
+                return $this->receipt->order->data->pin_terminal_id == $value;
 
                 // Product
             case 'no_product_kitchen_info':
@@ -124,7 +124,7 @@ class FieldParser
 
                 // Question
             case 'has_questions':
-                return count($this->receipt->order->questions);
+                return count($this->receipt->order->data->questions);
             case 'no_question_answer':
                 $this->checkValue($this->currentQuestion, "if key=\"$key\"",  'can\'t be accessed outside of variation loop');
                 return Strings::isEmptyOrValueNull($this->currentQuestion->answer);
@@ -141,15 +141,15 @@ class FieldParser
     {
         switch ($key) {
             case 'subtotal':
-                return $this->receipt->order->price_subtotal;
+                return $this->receipt->order->data->price_subtotal;
             case 'transaction_costs':
-                return $this->receipt->order->price_transaction;
+                return $this->receipt->order->data->price_transaction;
             case 'discount_amount':
-                return $this->receipt->order->price_discount;
+                return $this->receipt->order->data->price_discount;
             case 'tax_total':
-                return $this->receipt->order->vat->order_vat;
+                return $this->receipt->order->data->vat->order->data_vat;
             case 'total';
-                return $this->receipt->order->price_total;
+                return $this->receipt->order->data->price_total;
 
                 // Product
             case 'product_price':
@@ -196,38 +196,38 @@ class FieldParser
             case 'order_id':
                 return $this->receipt->order->id;
             case 'order_date':
-                return $this->receipt->order->created_at;
+                return $this->receipt->order->data->created_at;
             case 'company_name':
                 return $this->receipt->company->name;
             case 'order_number':
-                return $this->receipt->order->confirmation_code;
+                return $this->receipt->order->data->confirmation_code;
             case 'order_ready_date':
-                return $this->receipt->order->order_ready;
+                return $this->receipt->order->data->order_ready;
             case 'tablenumber':
-                return $this->receipt->order->table_nr;
+                return $this->receipt->order->data->table_nr;
             case 'buzzernumber':
-                return $this->receipt->order->buzzer_nr;
+                return $this->receipt->order->data->buzzer_nr;
             case 'customer_name':
-                return $this->receipt->order->name;
+                return $this->receipt->order->data->name;
             case 'customer_phone':
-                return $this->receipt->order->phone;
+                return $this->receipt->order->data->phone;
             case 'customer_email':
-                return $this->receipt->order->email;
+                return $this->receipt->order->data->email;
             case 'customer_adress':
-                return $this->receipt->order->address;
+                return $this->receipt->order->data->address;
             case 'customer_postal':
-                return $this->receipt->order->postal;
+                return $this->receipt->order->data->postal;
             case 'customer_city':
-                return $this->receipt->order->city;
+                return $this->receipt->order->data->city;
             case 'order_notes':
-                return $this->receipt->order->notes;
+                return $this->receipt->order->data->notes;
             case 'order_origin':
-                return $this->receipt->order->origin;
+                return $this->receipt->order->data->origin;
             case 'payment_method':
-                return $this->receipt->order->payment_method;
+                return $this->receipt->order->data->payment_method;
             case 'pin_receipt':
-                return $this->receipt->order->hasPinTransactionReceipt()
-                    ? $this->receipt->order->pin_transaction_receipt : '-- No pin receipt --';
+                return $this->receipt->order->data->hasPinTransactionReceipt()
+                    ? $this->receipt->order->data->pin_transaction_receipt : '-- No pin receipt --';
 
                 // Product
             case 'product_tax_tarif':

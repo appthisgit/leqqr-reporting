@@ -78,7 +78,7 @@ class ReceiptProcessor
     public function parse(): self
     {
 
-        if (empty($this->receipt->endpoint->filter_terminal) || $this->receipt->endpoint->filter_terminal == $this->receipt->order->pin_terminal_id) {
+        if (empty($this->receipt->endpoint->filter_terminal) || $this->receipt->endpoint->filter_terminal == $this->receipt->order->data->pin_terminal_id) {
 
             if ($this->receipt->hasProducts()) {
 
@@ -122,14 +122,14 @@ class ReceiptProcessor
             $this->receipt->result_response = [
                 'result' => [
                     'filter_on_terminal' => $this->receipt->endpoint->filter_terminal,
-                    'ordered with_terminal' => $this->receipt->order->pin_terminal_id,
+                    'ordered with_terminal' => $this->receipt->order->data->pin_terminal_id,
                 ]
             ];
 
             Log::debug(sprintf(
                 'Filter terminal %s does not equal order %s for endpoint %s',
                 $this->receipt->endpoint->filter_terminal,
-                $this->receipt->order->pin_terminal_id,
+                $this->receipt->order->data->pin_terminal_id,
                 $this->receipt->endpoint->name
             ));
         }

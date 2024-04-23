@@ -6,6 +6,7 @@ use App\Http\Data\CompanyData;
 use App\Http\Data\OrderData;
 use App\Models\Company;
 use App\Models\Endpoint;
+use App\Models\Order;
 use App\Models\Receipt;
 use App\Parsing\ReceiptProcessor;
 use Illuminate\Http\Request;
@@ -26,12 +27,16 @@ class OrderController extends Controller
             $orderData = OrderData::from($request->order);
             $companyData = CompanyData::from($request->company);
 
+            $order = new Order([
+                'id' => $orderData->id,
+                'confirmation_code' => $orderData->confirmation_code,
+                'order' => $orderData,
+            ]);
+            $order->save();
+
             foreach ($endpoints as $endpoint) {
-                $receipt = new Receipt([
-                    'confirmation_code' => $orderData->confirmation_code,
-                    'order_id' => $orderData->id,
-                    'order' => $orderData,
-                ]);
+                $receipt = new Receipt();
+                $receipt->order()->associate($order);
                 $receipt->endpoint()->associate($endpoint);
                 $receipt->company()->associate(Company::fromData($companyData));
                 $receipt->save();
