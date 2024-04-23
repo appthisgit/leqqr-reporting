@@ -19,7 +19,7 @@ class OrderController extends Controller
      */
     public function __invoke(Request $request)
     {
-        $endpoints = Endpoint::whereCompanyId($request->company['id'])->get();
+        $endpoints = Endpoint::whereCompanyId($request->company['id'])->orWhereNull('company_id')->get();
         $results = array();
 
         if (count($endpoints)) {
