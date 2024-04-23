@@ -17,8 +17,8 @@ namespace App\Models{
  * @property int $id
  * @property string $guid
  * @property string $name
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Receipt> $receipts
- * @property-read int|null $receipts_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Order> $orders
+ * @property-read int|null $orders_count
  * @method static \Illuminate\Database\Eloquent\Builder|Company newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Company newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Company query()
@@ -34,7 +34,7 @@ namespace App\Models{
  * App\Models\Endpoint
  *
  * @property int $id
- * @property int $company_id
+ * @property string|null $company_id
  * @property int $template_id
  * @property string $name
  * @property string $type
@@ -66,30 +66,46 @@ namespace App\Models{
 
 namespace App\Models{
 /**
- * App\Models\Receipt
+ * App\Models\Order
  *
  * @property int $id
  * @property int $company_id
+ * @property int $confirmation_code
+ * @property \Spatie\LaravelData\Contracts\BaseData|null $data
+ * @property-read \App\Models\Company $company
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Receipt> $receipts
+ * @property-read int|null $receipts_count
+ * @method static \Illuminate\Database\Eloquent\Builder|Order newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Order newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder|Order query()
+ * @method static \Illuminate\Database\Eloquent\Builder|Order whereCompanyId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Order whereConfirmationCode($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Order whereData($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Order whereId($value)
+ */
+	class Order extends \Eloquent {}
+}
+
+namespace App\Models{
+/**
+ * App\Models\Receipt
+ *
+ * @property int $id
  * @property int $endpoint_id
  * @property int $order_id
- * @property int $confirmation_code
- * @property \Spatie\LaravelData\Contracts\BaseData|null $order
  * @property int $printed
- * @property mixed|null $result_response
  * @property string|null $result_message
+ * @property mixed|null $result_response
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
- * @property-read \App\Models\Company $company
  * @property-read \App\Models\Endpoint $endpoint
+ * @property-read \App\Models\Order $order
  * @method static \Illuminate\Database\Eloquent\Builder|Receipt newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Receipt newQuery()
  * @method static \Illuminate\Database\Eloquent\Builder|Receipt query()
- * @method static \Illuminate\Database\Eloquent\Builder|Receipt whereCompanyId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Receipt whereConfirmationCode($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Receipt whereCreatedAt($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Receipt whereEndpointId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Receipt whereId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Receipt whereOrder($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Receipt whereOrderId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Receipt wherePrinted($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Receipt whereResultMessage($value)

@@ -19,7 +19,7 @@ class TemplateResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'name';
 
-    protected static ?string $navigationGroup = 'Output';
+    protected static ?string $navigationGroup = 'Settings';
 
     public static function getGloballySearchableAttributes(): array
     {

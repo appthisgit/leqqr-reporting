@@ -17,7 +17,7 @@ class CompanyResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-building-storefront';
 
-    protected static ?string $navigationGroup = 'Input';
+    protected static ?string $navigationGroup = 'IO';
 
     public static function form(Form $form): Form
     {
@@ -52,7 +52,7 @@ class CompanyResource extends Resource
     public static function getRelations(): array
     {
         return [
-            RelationManagers\ReceiptsRelationManager::class
+            RelationManagers\OrdersRelationManager::class
         ];
     }
 

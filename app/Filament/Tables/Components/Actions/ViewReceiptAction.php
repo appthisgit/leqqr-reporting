@@ -2,8 +2,8 @@
 
 namespace App\Filament\Tables\Components\Actions;
 
-use App\Http\Controllers\EventController;
 use App\Models\Receipt;
+use App\Parsing\ReceiptProcessor;
 use Filament\Tables;
 use Filament\Forms;
 
@@ -34,8 +34,8 @@ class ViewReceiptAction extends Tables\Actions\ViewAction
                     return $data;
                 })
                 ->after(function (Receipt $replica): void {
-                    $controller = new EventController();
-                    $controller->process($replica);
+                    $controller = new ReceiptProcessor($replica);
+                    $controller->parse();
                 })
                 ->cancelParentActions(),
         ]);
