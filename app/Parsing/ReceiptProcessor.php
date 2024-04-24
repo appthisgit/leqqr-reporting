@@ -18,14 +18,11 @@ class ReceiptProcessor
     public function __construct(
         private Receipt $receipt
     ) {
-        switch ($this->receipt->endpoint->type) {
-            case 'sunmi':
-                $this->parser = new SunmiParser($this->receipt);
-            case 'html':
-                $this->parser =  new HtmlParser($this->receipt, public_path());
-            case 'pdf':
-                $this->parser =  new PdfParser($this->receipt, storage_path());
-        }
+        $this->parser = match ($this->receipt->endpoint->type) {
+            'sunmi' => new SunmiParser($this->receipt),
+            'html' => new HtmlParser($this->receipt, ''),
+            'pdf' => new PdfParser($this->receipt, storage_path()),
+        };
     }
 
 
