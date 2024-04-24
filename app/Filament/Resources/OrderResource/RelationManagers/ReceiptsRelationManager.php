@@ -27,7 +27,13 @@ class ReceiptsRelationManager extends RelationManager
                 Tables\Columns\TextColumn::make('endpoint.name')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('result_message')
-                    ->badge(),
+                    ->sortable()
+                    ->badge()
+                    ->color(fn (string $state): string => match ($state) {
+                        'Completed' => 'success',
+                        'Processing' => 'warning',
+                        default => 'danger',
+                    }),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable(),
