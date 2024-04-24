@@ -83,7 +83,6 @@ class ReceiptProcessor
 
                     Log::debug('Sending parsed result to endpoint ' . $this->receipt->endpoint->name);
                     $this->output = $this->parser->run();
-                    $this->receipt->printed++;
                     $this->receipt->result_message = 'Completed';
                     $this->receipt->result_response = [
                         'parser' => get_class($this->parser),

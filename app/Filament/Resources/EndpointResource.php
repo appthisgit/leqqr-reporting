@@ -29,7 +29,7 @@ class EndpointResource extends Resource
                     ->schema([
                         Forms\Components\TextInput::make('name')
                             ->label('Naam')
-                            ->helperText('Eigen bedachte naam')
+                            ->helperText('Naam om dit endpoint te identificeren')
                             ->required()
                             ->maxLength(255),
                         Forms\Components\TextInput::make('company_id')
@@ -44,11 +44,31 @@ class EndpointResource extends Resource
                                 'html' => 'HTML',
                                 'pdf' => 'PDF',
                             ])
+                            ->live()
                             ->required(),
+
+                        Forms\Components\Select::make('target')
+                            ->visible(fn (\Filament\Forms\Get $get): bool => $get('type') == 'html')
+                            ->helperText('Kies formaat')
+                            ->options([
+                                '80mm' => '80mm',
+                            ])
+                            ->required(),
+
+                        Forms\Components\Select::make('target')
+                            ->visible(fn (\Filament\Forms\Get $get): bool => $get('type') == 'pdf')
+                            ->helperText('Kies formaat')
+                            ->options([
+                                'A4' => 'A4',
+                                '80mm' => '80mm',
+                            ])
+                            ->required(),
+
                         Forms\Components\TextInput::make('target')
-                            ->helperText('Sunmi: Printer sn | html: formaat')
-                            ->required()
-                            ->maxLength(100),
+                            ->visible(fn (\Filament\Forms\Get $get): bool => $get('type') == 'sunmi')
+                            ->helperText('Printer SN')
+                            ->maxLength(100)
+                            ->required(),
                     ]),
                 Section::make('Filters')
                     ->columnSpan(1)
@@ -64,7 +84,7 @@ class EndpointResource extends Resource
                         Forms\Components\Toggle::make('filter_printable')
                             ->label('Printable')
                             ->helperText('Filteren op "printable" producten'),
-                ]),
+                    ]),
             ]);
     }
 
@@ -77,7 +97,7 @@ class EndpointResource extends Resource
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('company_id')
-                    ->numeric()
+                    ->default('All')
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('template.name')
@@ -96,15 +116,15 @@ class EndpointResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('filter_zone')
-                ->label('Zone')
+                    ->label('Zone')
                     ->placeholder('Leeg')
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\IconColumn::make('filter_printable')
-                ->label('Printable')
+                    ->label('Printable')
                     ->boolean()
                     ->searchable()
-            ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Aangemaakt')
                     ->dateTime()
@@ -134,13 +154,6 @@ class EndpointResource extends Resource
             ->emptyStateActions([
                 Tables\Actions\CreateAction::make(),
             ]);
-    }
-
-    public static function getRelations(): array
-    {
-        return [
-            //
-        ];
     }
 
     public static function getPages(): array

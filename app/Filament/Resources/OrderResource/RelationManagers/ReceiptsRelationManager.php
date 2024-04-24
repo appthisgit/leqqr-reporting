@@ -26,8 +26,6 @@ class ReceiptsRelationManager extends RelationManager
             ->columns([
                 Tables\Columns\TextColumn::make('endpoint.name')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('printed')
-                    ->numeric(),
                 Tables\Columns\TextColumn::make('result_message')
                     ->badge(),
                 Tables\Columns\TextColumn::make('created_at')
@@ -41,7 +39,11 @@ class ReceiptsRelationManager extends RelationManager
             ->filters([
                 //
             ])
-            ->headerActions([])
-            ->actions([]);
+            ->actions([
+                Tables\Actions\Action::make('view')
+                    ->url(fn ($record): string => route('filament.admin.resources.receipts.view', ['record' => $record]))
+                    ->icon('heroicon-s-eye')
+                    ->iconButton(),
+            ]);
     }
 }

@@ -36,7 +36,7 @@ class TemplateResource extends Resource
                     ->schema([
                         Forms\Components\TextInput::make('name')
                             ->label('Naam')
-                            ->helperText('Eigen bedachte naam')
+                            ->helperText('naam om deze template te identificeren')
                             ->required()
                             ->maxLength(255),
                         Forms\Components\MarkdownEditor::make('content')

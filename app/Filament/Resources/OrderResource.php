@@ -15,7 +15,7 @@ class OrderResource extends Resource
 {
     protected static ?string $model = Order::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
+    protected static ?string $navigationIcon = 'heroicon-o-shopping-cart';
 
     protected static ?string $navigationGroup = 'IO';
 
@@ -23,16 +23,19 @@ class OrderResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('id')
-                    ->numeric(),
-                Forms\Components\TextInput::make('confirmation_code')
-                    ->numeric(),
-                Forms\Components\Select::make('company_id')
-                    ->relationship(name: 'company', titleAttribute: 'name'),
-                Forms\Components\Textarea::make('data')
-                    ->formatStateUsing(fn (array $state) => json_encode($state, JSON_PRETTY_PRINT))
-                    ->rows(15),
-            ]);
+                Forms\Components\Section::make()
+                    ->columnSpan(2)
+                    ->schema([
+                        Forms\Components\TextInput::make('id')
+                            ->numeric(),
+                        Forms\Components\TextInput::make('confirmation_code')
+                            ->numeric(),
+                        Forms\Components\Textarea::make('data')
+                            ->formatStateUsing(fn (array $state) => json_encode($state, JSON_PRETTY_PRINT))
+                            ->rows(15),
+                    ]),
+            ])
+            ;
     }
 
     public static function table(Table $table): Table
@@ -57,8 +60,7 @@ class OrderResource extends Resource
             ])
             ->filters([
                 //
-            ])
-            ->actions([]);
+            ]);
     }
 
     public static function getRelations(): array

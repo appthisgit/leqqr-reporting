@@ -49,10 +49,10 @@ class OrderController extends Controller
                     $results[] = $this->ProcessOrder($order, $endpoint)->getResults();
                 }
             }
-            Log::debug('Completed all endpoints for company ' . $companyData->id);
+            Log::debug('Completed all direct parse endpoints for company ' . $companyData->id);
         }
 
-        return response()->json($results, 200);
+        return response()->json($results);
     }
 
     /**

@@ -34,7 +34,6 @@ class Receipt extends Model
         'order_id',
         'endpoint_id',
         'order',
-        'printed',
         'result_message',
         'result_response',
     ];
