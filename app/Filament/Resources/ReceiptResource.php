@@ -27,8 +27,8 @@ class ReceiptResource extends Resource
                     ->schema([
                         Forms\Components\DateTimePicker::make('created_at'),
                         Forms\Components\DateTimePicker::make('updated_at'),
-                        Forms\Components\TextInput::make('result_message'),
-                        Forms\Components\Textarea::make('result_response', 'Parse response')
+                        Forms\Components\TextInput::make('status'),
+                        Forms\Components\Textarea::make('response')
                             ->formatStateUsing(fn ($state) => json_encode(json_decode($state), JSON_PRETTY_PRINT))
                             ->rows(15),
                     ]),
@@ -57,12 +57,13 @@ class ReceiptResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('endpoint.name')
                     ->sortable(),
-                Tables\Columns\TextColumn::make('result_message')
+                Tables\Columns\TextColumn::make('status')
                     ->sortable()
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
                         'Completed' => 'success',
-                        'Processing' => 'warning',
+                        'Done' => 'gray',
+                        'Parsing..' => 'warning',
                         default => 'danger',
                     }),
                 Tables\Columns\TextColumn::make('created_at')

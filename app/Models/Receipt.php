@@ -34,8 +34,8 @@ class Receipt extends Model
         'order_id',
         'endpoint_id',
         'order',
-        'result_message',
-        'result_response',
+        'status',
+        'response',
     ];
 
     public function endpoint(): BelongsTo

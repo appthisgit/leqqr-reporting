@@ -78,7 +78,9 @@ class OrderController extends Controller
      */
     private function ProcessOrder(Order $order, Endpoint $endpoint): ReceiptProcessor
     {
-        $receipt = new Receipt();
+        $receipt = new Receipt([
+            'status' => 'Parsing..'
+        ]);
         $receipt->order()->associate($order);
         $receipt->endpoint()->associate($endpoint);
         $receipt->save();

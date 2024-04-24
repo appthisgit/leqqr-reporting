@@ -93,9 +93,8 @@ namespace App\Models{
  * @property int $id
  * @property int $endpoint_id
  * @property int $order_id
- * @property int $printed
- * @property string|null $result_message
- * @property mixed|null $result_response
+ * @property string|null $status
+ * @property mixed|null $response
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\Endpoint $endpoint
@@ -107,9 +106,8 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|Receipt whereEndpointId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Receipt whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Receipt whereOrderId($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Receipt wherePrinted($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Receipt whereResultMessage($value)
- * @method static \Illuminate\Database\Eloquent\Builder|Receipt whereResultResponse($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Receipt whereResponse($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Receipt whereStatus($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Receipt whereUpdatedAt($value)
  */
 	class Receipt extends \Eloquent {}

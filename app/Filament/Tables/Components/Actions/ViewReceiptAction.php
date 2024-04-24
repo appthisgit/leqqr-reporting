@@ -14,8 +14,8 @@ class ViewReceiptAction extends Tables\Actions\ViewAction
         parent::setUp();
 
         $this->form([
-            Forms\Components\TextInput::make('result_message', 'Parse message'),
-            Forms\Components\Textarea::make('result_response', 'Parse response')
+            Forms\Components\TextInput::make('status'),
+            Forms\Components\Textarea::make('response')
                 ->formatStateUsing(fn ($state) => json_encode(json_decode($state), JSON_PRETTY_PRINT))
                 ->rows(6),
             Forms\Components\Textarea::make('order')
@@ -27,7 +27,7 @@ class ViewReceiptAction extends Tables\Actions\ViewAction
             Tables\Actions\ReplicateAction::make()
                 ->requiresConfirmation()
                 ->label('Reprint')
-                ->excludeAttributes(['printed', 'result_message', 'result_response'])
+                ->excludeAttributes(['printed', 'status', 'response'])
                 ->mutateRecordDataUsing(function (array $data): array {
                     $data['user_id'] = auth()->id();
 

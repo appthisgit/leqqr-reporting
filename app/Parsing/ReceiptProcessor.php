@@ -35,8 +35,8 @@ class ReceiptProcessor
         return array(
             'receipt' => $this->receipt->id,
             'endpoint' => $this->receipt->endpoint->name,
-            'message' => $this->receipt->result_message,
-            'response' => $this->receipt->result_response,
+            'status' => $this->receipt->status,
+            'response' => $this->receipt->response,
         );
     }
 
@@ -59,8 +59,8 @@ class ReceiptProcessor
         Log::debug('Preparing for endpoint ' . $this->receipt->endpoint->name);
         $this->output = url("/api/receipts/{$this->receipt->id}");
 
-        $this->receipt->result_message = 'Prepared';
-        $this->receipt->result_response = [
+        $this->receipt->status = 'Prepared';
+        $this->receipt->response = [
             'parser' => get_class($this->parser),
             'result' => $this->output
         ];
@@ -83,8 +83,8 @@ class ReceiptProcessor
 
                     Log::debug('Sending parsed result to endpoint ' . $this->receipt->endpoint->name);
                     $this->output = $this->parser->run();
-                    $this->receipt->result_message = 'Completed';
-                    $this->receipt->result_response = [
+                    $this->receipt->status = 'Completed';
+                    $this->receipt->response = [
                         'parser' => get_class($this->parser),
                         'result' => is_array($this->output) ? $this->output : "[object]"
                     ];
@@ -96,15 +96,15 @@ class ReceiptProcessor
                         'file' => $ex->getFile(),
                         'line' => $ex->getLine(),
                     ];
-                    $this->receipt->result_message = 'Failed';
-                    $this->receipt->result_response = [
+                    $this->receipt->status = 'Failed';
+                    $this->receipt->response = [
                         'parser' => get_class($this->parser),
                         'result' => $this->output
                     ];
                 }
             } else {
-                $this->receipt->result_message = 'No products after filtering';
-                $this->receipt->result_response = [
+                $this->receipt->status = 'Done';
+                $this->receipt->response = [
                     'result' => [
                         'filter_on_printable' => $this->receipt->endpoint->filter_printable,
                         'filter_on_zone' => $this->receipt->endpoint->filter_zone,
@@ -112,8 +112,8 @@ class ReceiptProcessor
                 ];
             }
         } else {
-            $this->receipt->result_message = 'Should not print on this device';
-            $this->receipt->result_response = [
+            $this->receipt->status = 'Done';
+            $this->receipt->response = [
                 'result' => [
                     'filter_on_terminal' => $this->receipt->endpoint->filter_terminal,
                     'ordered with_terminal' => $this->receipt->order->data->pin_terminal_id,
