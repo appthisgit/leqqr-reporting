@@ -9,14 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Receipt extends Model
 {
-
-    /**
-     * The relations to eager load on every query.
-     *
-     * @var array
-     */
-    protected $with = ['order', 'endpoint'];
-
+    
     public ReceiptSettings $settings;
     private $products = null;
 
@@ -39,7 +32,6 @@ class Receipt extends Model
      */
     protected $fillable = [
         'order_id',
-        'company_id',
         'endpoint_id',
         'order',
         'printed',

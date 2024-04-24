@@ -19,5 +19,6 @@ use Illuminate\Support\Facades\Route;
 //     return $request->user();
 // });
 
-Route::post('/print', OrderController::class);
+Route::post('/orders', [OrderController::class, 'store']);
+Route::get('/orders/{order}/{format}', [OrderController::class, 'show']);
 Route::get('/receipts/{receipt}', ReceiptController::class);

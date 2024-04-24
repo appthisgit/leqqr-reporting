@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Order extends Model
 {
+    
     /**
      * Indicates if the IDs are auto-incrementing.
      *

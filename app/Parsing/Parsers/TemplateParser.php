@@ -26,8 +26,6 @@ abstract class TemplateParser extends FieldParser
     private Line $currentLine;
     private ?array $images;
 
-    public abstract function runOutputIsResponse(): bool;
-
     public abstract function run();
 
     public function load(Template $template)

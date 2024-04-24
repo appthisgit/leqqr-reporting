@@ -17,8 +17,7 @@ class ReceiptProcessor
 
     public function __construct(
         private Receipt $receipt
-    )
-    {     
+    ) {
         switch ($this->receipt->endpoint->type) {
             case 'sunmi':
                 $this->parser = new SunmiParser($this->receipt);
@@ -65,7 +64,6 @@ class ReceiptProcessor
 
         $this->receipt->result_message = 'Prepared';
         $this->receipt->result_response = [
-            'type' => strtolower($this->receipt->endpoint->type),
             'parser' => get_class($this->parser),
             'result' => $this->output
         ];
@@ -91,21 +89,21 @@ class ReceiptProcessor
                     $this->receipt->printed++;
                     $this->receipt->result_message = 'Completed';
                     $this->receipt->result_response = [
-                        'type' => $this->receipt->endpoint->type,
                         'parser' => get_class($this->parser),
-                        'result' => $this->parser->runOutputIsResponse() ? "[response object]" : $this->output 
+                        'result' => is_array($this->output) ? $this->output : "[object]"
                     ];
                 } catch (Exception $ex) {
                     Log::debug('Failed on endpoint ' . $this->receipt->endpoint->name);
-                    Log::debug($ex->getMessage());
+                    $this->output = [
+                        'Exception' => get_class($ex),
+                        'message' => $ex->getMessage(),
+                        'file' => $ex->getFile(),
+                        'line' => $ex->getLine(),
+                    ];
                     $this->receipt->result_message = 'Failed';
                     $this->receipt->result_response = [
-                        'type' => $this->receipt->endpoint->type,
                         'parser' => get_class($this->parser),
-                        'result' => [
-                            'Exception' => get_class($ex),
-                            'message' => $ex->getMessage(),
-                        ]
+                        'result' => $this->output
                     ];
                 }
             } else {
@@ -138,5 +136,4 @@ class ReceiptProcessor
 
         return $this;
     }
-
 }

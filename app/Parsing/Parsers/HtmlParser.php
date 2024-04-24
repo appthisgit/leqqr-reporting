@@ -32,11 +32,6 @@ class HtmlParser extends TemplateParser
         $receipt->settings->font = 'Roboto-Mono';
     }
 
-    public function runOutputIsResponse(): bool
-    {
-        return true;
-    }
-
     public function run()
     {
         if ($this->receipt->settings->singleProductTemplate) {

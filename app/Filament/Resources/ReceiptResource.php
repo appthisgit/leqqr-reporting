@@ -32,13 +32,19 @@ class ReceiptResource extends Resource
                         Forms\Components\TextInput::make('id'),
                         Forms\Components\TextInput::make('confirmation_code'),
                     ]),
-                Forms\Components\Select::make('endpoint_id')
-                    ->relationship(name: 'endpoint', titleAttribute: 'name'),
+                Forms\Components\Fieldset::make('Endpoint')
+                    ->relationship('endpoint')
+                    ->schema([
+                        Forms\Components\TextInput::make('name'),
+                        Forms\Components\TextInput::make('type'),
+                    ]),
                 Forms\Components\DateTimePicker::make('created_at'),
                 Forms\Components\DateTimePicker::make('updated_at'),
                 Forms\Components\TextInput::make('result_message'),
-                Forms\Components\TextInput::make('result_response'),
                 Forms\Components\TextInput::make('printed')->numeric(),
+                Forms\Components\Textarea::make('result_response', 'Parse response')
+                    ->formatStateUsing(fn ($state) => json_encode(json_decode($state), JSON_PRETTY_PRINT))
+                    ->rows(6),
             ]);
     }
 

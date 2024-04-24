@@ -18,7 +18,7 @@ class OrderController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function __invoke(Request $request)
+    public function store(Request $request)
     {
         $endpoints = Endpoint::whereCompanyId($request->company['id'])->orWhereNull('company_id')->get();
         $results = array();
@@ -27,33 +27,65 @@ class OrderController extends Controller
             $orderData = OrderData::from($request->order);
             $companyData = CompanyData::from($request->company);
 
-            $order = new Order([
-                'id' => $orderData->id,
-                'confirmation_code' => $orderData->confirmation_code,
-                'data' => $orderData,
-            ]);
+            $order = Order::firstOrNew(
+                ['id' => $orderData->id],
+                [
+                    'id' => $orderData->id,
+                    'confirmation_code' => $orderData->confirmation_code,
+                    'data' => $orderData,
+                ]
+            );
             $order->company()->associate(Company::fromData($companyData));
             $order->save();
 
             foreach ($endpoints as $endpoint) {
-                $receipt = new Receipt();
-                $receipt->order()->associate($order);
-                $receipt->endpoint()->associate($endpoint);
-                $receipt->save();
 
-                $processor = new ReceiptProcessor($receipt);
-
-                if (!$processor->parser->runOutputIsResponse()) {
-                    $processor->parse();
-                } else {
-                    $processor->prepare();
+                // Only direct proces certain types
+                if (match ($endpoint->type) {
+                    'pdf' => false,
+                    'html' => false,
+                    'sunmi' => true
+                }) {
+                    $results[] = $this->ProcessOrder($order, $endpoint)->getResults();
                 }
-
-                $results[] = $processor->getResults();
             }
             Log::debug('Completed all endpoints for company ' . $companyData->id);
         }
 
         return response()->json($results, 200);
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(Order $order, string $format)
+    {
+        $endpoint = Endpoint::whereCompanyId($order->company->id)
+            ->orWhereNull('company_id')
+            ->where('type', $format)
+            ->orderBy('company_id', 'desc')
+            ->first();
+
+        if ($endpoint) {
+            return $this->ProcessOrder($order, $endpoint)->getResponse();
+        }
+
+        return response("No endpoint has been found for this format", 404);
+    }
+
+    /**
+     * Process the order, make a receipt and process it
+     */
+    private function ProcessOrder(Order $order, Endpoint $endpoint): ReceiptProcessor
+    {
+        $receipt = new Receipt();
+        $receipt->order()->associate($order);
+        $receipt->endpoint()->associate($endpoint);
+        $receipt->save();
+
+        $processor = new ReceiptProcessor($receipt);
+        $processor->parse();
+
+        return $processor;
     }
 }

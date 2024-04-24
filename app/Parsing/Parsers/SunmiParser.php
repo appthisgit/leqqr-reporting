@@ -38,11 +38,6 @@ class SunmiParser extends TemplateParser
         $this->currentFontSize = null;
     }
 
-    public function runOutputIsResponse(): bool
-    {
-        return false;
-    }
-
     public function run()
     {
         if ($this->receipt->settings->singleProductTemplate) {
