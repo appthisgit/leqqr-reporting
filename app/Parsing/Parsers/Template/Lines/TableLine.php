@@ -2,6 +2,7 @@
 
 namespace App\Parsing\Parsers\Template\Lines;
 
+use App\Helpers\Alignment;
 use App\Helpers\ReceiptSettings;
 use App\Helpers\TextMods;
 
@@ -9,6 +10,7 @@ class TableLine extends Line
 {
     public TableCell $currentCell;
     public array $cells;
+    public Alignment $alignment = Alignment::left;
     public bool $bolded = false;
     public bool $underlined = false;
     public bool $inverted = false;
@@ -51,6 +53,7 @@ class TableLine extends Line
     {
         if (count($this->cells) == 1) {
             $this->addCell(new TableCell($this->defaults));
+            $this->currentCell->alignment = Alignment::right;
         }
 
         $this->currentCell->appendText('€' .

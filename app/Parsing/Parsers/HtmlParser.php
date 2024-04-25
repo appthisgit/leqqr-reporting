@@ -32,8 +32,8 @@ class HtmlParser extends TemplateParser
             $receipt->settings->lineMargins->top = 2;
             $receipt->settings->lineMargins->bottom = 2;
         } else {
-            $receipt->settings->printMargins->setAll(40);
-            $receipt->settings->lineMargins->set(4, 8, 4, 8);
+            $receipt->settings->printMargins->setAll(30);
+            $receipt->settings->lineMargins->set(2, 8, 4, 8);
         }
 
         $receipt->settings->font = 'Roboto-Mono';
@@ -88,7 +88,7 @@ class HtmlParser extends TemplateParser
             $receipt_styles .= "\r\n" . sprintf('width: %sch;', $this->receipt->settings->widthCharAmount);
         } else {
             //A4
-            $receipt_styles .= "\r\n" . 'width: 21cm;';
+            $receipt_styles .= "\r\n" . 'width: calc(21cm - 60px);';
         }
         $receipt_styles .= "\r\n" . sprintf('font-family: %s;', $this->receipt->settings->font);
         $receipt_styles .= "\r\n" . sprintf('font-size: %spx;', $this->receipt->settings->fontSize);

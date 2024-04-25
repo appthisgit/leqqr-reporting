@@ -296,6 +296,10 @@ abstract class TemplateParser extends FieldParser
 
         /** @var TableLine */
         $tableLine = ($object instanceof TableLine) ? $object : false;
+        if (!$formattedTextObject)
+        {
+            $formattedTextObject = $tableLine;
+        }
 
         /** @var TableCell */
         $tableCell = ($object instanceof TableCell) ? $object : false;
@@ -327,7 +331,7 @@ abstract class TemplateParser extends FieldParser
                         break;
                     case 'center':
                     case 'centered':
-                        $formattedTextObject->center();
+                        $formattedTextObject->alignment = ($v) ? Alignment::center : Alignment::left;
                         break;
                 }
             }
@@ -354,22 +358,6 @@ abstract class TemplateParser extends FieldParser
                         break;
                     case 'font':
                         $textLine->font = $v;
-                        break;
-                }
-            }
-            if ($tableLine) {
-                switch ($attribute->nodeName) {
-                    case 'bold':
-                    case 'bolded':
-                        $tableLine->bolded = $v;
-                        break;
-                    case 'underline':
-                    case 'underlined':
-                        $tableLine->underlined = $v;
-                        break;
-                    case 'invert':
-                    case 'inverted':
-                        $tableLine->inverted = $v;
                         break;
                 }
             }

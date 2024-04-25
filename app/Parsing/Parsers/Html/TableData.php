@@ -18,6 +18,7 @@ class TableData extends HtmlElement
     public function getHtml(): string
     {
         $this->setMargins($this->tableLine);
+        $this->setAlignment($this->tableLine->alignment);
         $this->setAlignment($this->tableCell->alignment);
 
         $this->toggleClass($this->tableLine, 'bolded');

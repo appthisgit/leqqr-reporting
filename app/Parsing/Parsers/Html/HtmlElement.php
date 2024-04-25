@@ -4,6 +4,7 @@ namespace App\Parsing\Parsers\Html;
 
 use App\Helpers\Alignment;
 use App\Parsing\Parsers\Template\Lines\Line;
+use Log;
 
 abstract class HtmlElement
 {
@@ -32,6 +33,7 @@ abstract class HtmlElement
      */
     protected function setAlignment(Alignment $alignment) {
         if ($alignment != Alignment::left) {
+            Log::debug($alignment->name);
             $this->addAttribute('class', 'align-' . $alignment->name);
         }
     }
