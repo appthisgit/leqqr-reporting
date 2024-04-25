@@ -154,7 +154,7 @@ class FieldParser
                 // Product
             case 'product_price':
                 $this->checkValue($this->currentProduct, "price value=\"$key\"",  'can\'t be accessed outside of product loop');
-                return $this->currentProduct ?? 0;
+                return $this->currentProduct->price;
             case 'product_subtotal':
                 $this->checkValue($this->currentProduct, "price value=\"$key\"",  'can\'t be accessed outside of product loop');
                 return $this->currentProduct->subtotal;

@@ -19,36 +19,40 @@ class PdfParser extends HtmlParser
     }
 
     public function run()
-    {
+    { 
         $html = parent::run();
 
-        global $bodyHeight;
-        $bodyHeight = 0;
+        if ($this->receipt->endpoint->target == '80mm') {
+            global $bodyHeight;
+            $bodyHeight = 0;
 
-        // First run to get body height
-        $pdf = App::make('dompdf.wrapper');
-        $pdf->setCallbacks(
-            array(
-                'myCallbacks' => array(
-                    'event' => 'end_frame',
-                    'f' => function ($frame) {
-                        if (strtolower($frame->get_node()->nodeName) === "body") {
-                            global $bodyHeight;
-                            $padding_box = $frame->get_padding_box();
+            // First run to get body height
+            $pdf = App::make('dompdf.wrapper');
+            $pdf->setCallbacks(
+                array(
+                    'myCallbacks' => array(
+                        'event' => 'end_frame',
+                        'f' => function ($frame) {
+                            if (strtolower($frame->get_node()->nodeName) === "body") {
+                                global $bodyHeight;
+                                $padding_box = $frame->get_padding_box();
 
-                            $bodyHeight = $padding_box['h'];
+                                $bodyHeight = $padding_box['h'];
+                            }
                         }
-                    }
+                    )
                 )
-            )
-        );
-        $pdf->loadHTML($html);
-        $pdf->render();
-        unset($pdf);
+            );
+            $pdf->loadHTML($html);
+            $pdf->render();
+            unset($pdf);
+        }
 
         // Second run to set the correct paper sizes
         $pdf = App::make('dompdf.wrapper');
-        $pdf->setPaper([0, 0, 277, $bodyHeight]);
+        if ($this->receipt->endpoint->target == '80mm') {
+            $pdf->setPaper([0, 0, 277, $bodyHeight]);
+        }
         $pdf->loadHTML($html);
         $pdf->render();
 

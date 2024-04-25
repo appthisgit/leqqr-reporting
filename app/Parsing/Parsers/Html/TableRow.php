@@ -17,20 +17,13 @@ class TableRow extends TableLine
 
     public function getHtml(): string
     {
-        $this->prepareStyling();
-
-        $tds = '';
-        $prependValue = '';
+        $tds = array();
         foreach ($this->cells as $cell) {
-            $tds .= '<td>'. $prependValue . $cell->getText() . '</td>';
-
-            // $this->setBold($cell->bolded);
-            // $this->setUnderline($cell->underlined);
+            $tds[] = new TableData($cell, $this);
         }
 
-        return sprintf('<tr%s>%s</tr>',
-            $this->implodeStyling(),
-            $tds
+        return sprintf('<tr>%s</tr>',
+            implode("\r\n", $tds)
         );
     }
 }

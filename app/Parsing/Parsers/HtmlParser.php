@@ -4,6 +4,7 @@ namespace App\Parsing\Parsers;
 
 use App\Exceptions\TemplateException;
 use App\Models\Receipt;
+use App\Parsing\Parsers\Html\HorizontalRule;
 use App\Parsing\Parsers\Html\Paragraph;
 use App\Parsing\Parsers\Html\Img;
 use App\Parsing\Parsers\Html\Table;
@@ -51,10 +52,11 @@ class HtmlParser extends TemplateParser
 
             switch (get_class($line)) {
                 case DividerLine::class:
+                    $this->doc[] =  new HorizontalRule($line);
+                    break;
                 case TextLine::class:
                     $this->doc[] =  new Paragraph($line);
                     break;
-
                 case ImageLine::class:
                     $this->doc[] = new Img($line);
                     break;
@@ -76,7 +78,13 @@ class HtmlParser extends TemplateParser
         }
 
         $receipt_styles = '/* generated styles */';
-        $receipt_styles .= "\r\n" . sprintf('width: %sch;', $this->receipt->settings->widthCharAmount);
+        if ($this->receipt->endpoint->target == '80mm') {
+            $receipt_styles .= "\r\n" . sprintf('width: %sch;', $this->receipt->settings->widthCharAmount);
+        }
+        else { 
+            //A4
+            $receipt_styles .= "\r\n" . 'width: 21cm;';
+        }
         $receipt_styles .= "\r\n" . sprintf('font-family: %s;', $this->receipt->settings->font);
         $receipt_styles .= "\r\n" . sprintf('font-size: %spx;', $this->receipt->settings->fontSize);
         $receipt_styles .= "\r\n" . sprintf('padding-top: %spx;', $this->receipt->settings->printMargins->top);

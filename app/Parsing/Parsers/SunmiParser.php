@@ -124,9 +124,16 @@ class SunmiParser extends TemplateParser
                     /** @var \App\Parsing\Parsers\Template\Lines\TableLine */
                     $tableLine = $line;
 
+                    $first = true;
                     foreach ($tableLine->cells as $cell) {
                         $this->setFormatting($cell);
+                        if (!$first) {
+                            //TODO: check this with the spacing thingy
+                            $this->printer->appendText(' ');
+                            $cell->maxLength--;
+                        }
                         $this->printer->appendText($cell->getText());
+                        $first = false;
                     }
 
                     $this->printer->appendText("\n");

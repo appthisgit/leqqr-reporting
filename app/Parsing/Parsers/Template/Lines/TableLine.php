@@ -3,10 +3,15 @@
 namespace App\Parsing\Parsers\Template\Lines;
 
 use App\Helpers\ReceiptSettings;
+use App\Helpers\TextMods;
 
 class TableLine extends Line
 {
+    public TableCell $currentCell;
     public array $cells;
+    public bool $bolded = false;
+    public bool $underlined = false;
+    public bool $inverted = false;
 
     public function __construct(
         ReceiptSettings $defaults,
@@ -16,14 +21,11 @@ class TableLine extends Line
         $this->cells = [];
     }
 
-    public function addCell(TableCell $cell)
+    public function addCell(TableCell $col)
     {
-        $this->cells[] = $cell;
-    }
+        $this->currentCell = $col;
 
-    public function addCells(TableCell ...$cells)
-    {
-        array_push($this->cells, $cells);
+        $this->cells[] = $this->currentCell;
     }
 
     /**
@@ -35,10 +37,11 @@ class TableLine extends Line
             $length = $this->defaults->widthCharAmount;
             $length -= 2;                                    // ' €'xxx,xx
             $length -= $this->defaults->priceCharAmount;
-            $this->cells[] = new TableCell('', $length);
+
+            $this->addCell(new TableCell($this->defaults, '', $length));
         }
 
-        $this->cells[0]->appendText($text);
+        $this->currentCell->appendText($text);
     }
 
     /**
@@ -46,12 +49,16 @@ class TableLine extends Line
      */
     public function appendPrice(float $price)
     {
-        $this->cells[] = new TableCell(' €');
-        $this->cells[] = new TableCell(
-            number_format($price, 2, ',', ''),
-            $this->defaults->priceCharAmount,
-            STR_PAD_LEFT
+        if (count($this->cells) == 1) {
+            $this->addCell(new TableCell($this->defaults));
+        }
+
+        $this->currentCell->appendText('€' .
+            TextMods::pad(
+                number_format($price, 2, ',', ''),
+                $this->defaults->priceCharAmount,
+                STR_PAD_LEFT
+            )
         );
     }
-
 }

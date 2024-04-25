@@ -17,16 +17,16 @@ class Paragraph extends TextLine
 
     public function getHtml(): string
     {
-        $this->prepareStyling();
+        $this->prepareAttributes();
 
-        $this->setNonDefaultStyle('font', 'font-family');
-        $this->setNonDefaultStyle('fontSize', 'font-size', 'px');
+        $this->addNonDefaultStyle('font', 'font-family');
+        $this->addNonDefaultStyle('fontSize', 'font-size', 'px');
 
-        $this->setNonDefaultClass('centered');
-        $this->setNonDefaultClass('bolded');
-        $this->setNonDefaultClass('underlined');
-        $this->setNonDefaultClass('inverted');
+        $this->addNonDefaultClass('centered');
+        $this->addNonDefaultClass('bolded');
+        $this->addNonDefaultClass('underlined');
+        $this->addNonDefaultClass('inverted');
 
-        return '<p' . $this->implodeStyling() . '>' . $this->text . '</p>';
+        return '<p' . $this->formatAttributes() . '>' . $this->text . '</p>';
     }
 }

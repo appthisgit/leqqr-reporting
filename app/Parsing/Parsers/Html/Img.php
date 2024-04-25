@@ -16,9 +16,9 @@ class Img extends ImageLine
 
     public function getHtml(): string
     {
-        $this->prepareStyling();
-        $this->setNonDefaultClass('centered');
+        $this->prepareAttributes();
+        $this->addNonDefaultClass('centered');
 
-        return '<img' . $this->implodeStyling() . ' src="'. $this->getImage() .'" />';
+        return '<img' . $this->formatAttributes() . ' src="'. $this->getImage() .'" />';
     }
 }

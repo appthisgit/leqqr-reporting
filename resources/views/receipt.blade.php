@@ -36,6 +36,12 @@
             {!! $line_styles !!}
         }
 
+        hr {
+            margin: 10px 0;
+            border-style: dashed;
+            border-color: #bcbbbe;
+        }
+
         .centered {
             text-align: center !important;
         }

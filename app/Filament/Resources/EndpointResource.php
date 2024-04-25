@@ -51,6 +51,7 @@ class EndpointResource extends Resource
                             ->visible(fn (\Filament\Forms\Get $get): bool => $get('type') == 'html')
                             ->helperText('Kies formaat')
                             ->options([
+                                'A4' => 'A4',
                                 '80mm' => '80mm',
                             ])
                             ->required(),

@@ -4,9 +4,7 @@ namespace App\Parsing\Parsers\Html;
 
 trait HtmlElement
 {
-
-    protected $styles;
-    protected $classes;
+    protected $attributes;
 
     protected function copyAttributes($line)
     {
@@ -15,46 +13,50 @@ trait HtmlElement
         }
     }
 
-    protected function setNonDefaultSpacingStyle(string $property, string $type = 'margin')
+    private function addNonDefaultSpacingStyle(string $property, string $type = 'margin')
     {
         if ($this->margins->{$property} != $this->defaults->lineMargins->{$property}) {
-            $this->styles[] = $type . '-' . $property . ':' . $this->margins->{$property} . 'px';
+            $this->attributes['style'][] = $type . '-' . $property . ':' . $this->margins->{$property} . 'px';
         }
     }
 
-    protected function setNonDefaultStyle(string $property, string $style, string $unit = '')
+    protected function addNonDefaultStyle(string $property, string $style, string $unit = '')
     {
         if ($this->{$property} != $this->defaults->{$property}) {
-            $this->styles[] = $style . ':' . $this->{$property} . $unit;
+            $this->attributes['style'][] = $style . ':' . $this->{$property} . $unit;
         }
     }
 
-    protected function setNonDefaultClass(string $property)
+    protected function addNonDefaultClass(string $property)
     {
         if ($this->{$property}) {
-            $this->classes[] = $property;
+            $this->attributes['class'][] = $property;
         }
     }
 
-    protected function prepareStyling()
+    protected function addAttribute(string $attribute, string $value)
     {
-        $this->styles = array();
-        $this->classes = array();
-
-        $this->setNonDefaultSpacingStyle('top');
-        $this->setNonDefaultSpacingStyle('right', 'padding');
-        $this->setNonDefaultSpacingStyle('bottom');
-        $this->setNonDefaultSpacingStyle('left', 'padding');
+        $this->attributes[$attribute] = $value;
     }
 
-    protected function implodeStyling(): string
+    protected function prepareAttributes()
+    {
+        $this->attributes = array();
+
+        $this->addNonDefaultSpacingStyle('top');
+        $this->addNonDefaultSpacingStyle('right', 'padding');
+        $this->addNonDefaultSpacingStyle('bottom');
+        $this->addNonDefaultSpacingStyle('left', 'padding');
+    }
+
+    protected function formatAttributes(): string
     {
         $formatting = '';
-        if ($this->classes) {
-            $formatting .= sprintf(' class="%s"', implode(' ', $this->classes));
-        }
-        if ($this->styles) {
-            $formatting .= sprintf(' style="%s"', implode('; ', $this->styles));
+        foreach ($this->attributes as $key => $value) {
+            if (is_array($value)) {
+                $value = implode(($key == 'style') ? ';' : ' ', $value);
+            }
+            $formatting .= sprintf(' %s="%s"', $key, $value);
         }
         return $formatting;
     }

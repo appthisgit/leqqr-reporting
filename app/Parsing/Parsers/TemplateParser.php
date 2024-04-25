@@ -9,12 +9,14 @@ use App\Parsing\Parsers\Template\FieldParser;
 use App\Parsing\Parsers\Template\Lines\DividerLine;
 use App\Parsing\Parsers\Template\Lines\ImageLine;
 use App\Parsing\Parsers\Template\Lines\Line;
+use App\Parsing\Parsers\Template\Lines\TableCell;
 use App\Parsing\Parsers\Template\Lines\TableLine;
 use App\Parsing\Parsers\Template\Lines\TextLine;
 use App\Parsing\Parsers\Template\Printable;
 use DOMDocument;
 use DOMElement;
 use DOMNode;
+use Illuminate\Support\Facades\Log;
 
 abstract class TemplateParser extends FieldParser
 {
@@ -203,6 +205,18 @@ abstract class TemplateParser extends FieldParser
                 $stripe = new DividerLine($this->receipt->settings);
                 $this->setCurrentLine($stripe, $node);
                 break;
+            case 'cell':
+                if (!($this->currentLine instanceof TableLine)) {
+                    throw new TemplateException('column', 'found at unparsable location', $this->lineNumber);
+                }
+
+                /** @var TableLine */
+                $tableLine = $this->currentLine;
+                $tableLine->addCell(new TableCell($this->receipt->settings));
+                $this->setAttributes($tableLine->currentCell, $node);
+
+                $this->parseChildren($node);
+                break;
             case 'item':
                 if (!($this->currentLine instanceof TableLine)) {
                     throw new TemplateException('item', 'found at unparsable location', $this->lineNumber);
@@ -220,8 +234,8 @@ abstract class TemplateParser extends FieldParser
                 $key = $node->attributes->getNamedItem('value')->nodeValue;
 
                 /** @var TableLine */
-                $currentRow = $this->currentLine;
-                $currentRow->appendPrice($this->retrievePrice($key));
+                $tableLine = $this->currentLine;
+                $tableLine->appendPrice($this->retrievePrice($key));
                 break;
             case 'text':
                 if (!($this->currentLine instanceof TextLine || $this->currentLine instanceof TableLine)) {
@@ -257,20 +271,74 @@ abstract class TemplateParser extends FieldParser
         }
     }
 
-
     private function setCurrentLine(Line $line, DOMNode $node)
     {
         $this->currentLine = $line;
         $this->printable->lines[] = $line;
+        $this->setAttributes($line, $node);
+    }
+
+    //TODO: This is very long, could this not be optimized more?
+    private function setAttributes($object, DOMNODE $node)
+    {
+        $formattedTextObject = false;
+        $usedTraits = class_uses($object);
+        if ($usedTraits) {
+            $formattedTextObject = (in_array('App\\Parsing\\Parsers\\Template\\Lines\\FormattedText', $usedTraits)) ? $object : false;
+        }
+
+        /** @var Line */
+        $line = ($object instanceof Line) ? $object : false;
+
+        /** @var TextLine */
+        $textLine = ($object instanceof TextLine) ? $object : false;
+
+        /** @var TableLine */
+        $tableLine = ($object instanceof TableLine) ? $object : false;
+
+        /** @var TableCell */
+        $tableCell = ($object instanceof TableCell) ? $object : false;
 
         foreach ($node->attributes as $attribute) {
+            $v = $attribute->nodeValue;
 
-            if ($line instanceof TextLine) {
-
-                /** @var TextLine */
-                $textLine = $line;
-                $v = $attribute->nodeValue;
-
+            if ($formattedTextObject) {
+                switch ($attribute->nodeName) {
+                    case 'bold':
+                    case 'bolded':
+                        $formattedTextObject->bolded = $v;
+                        break;
+                    case 'underline':
+                    case 'underlined':
+                        $formattedTextObject->underlined = $v;
+                        break;
+                    case 'invert':
+                    case 'inverted':
+                        $formattedTextObject->inverted = $v;
+                        break;
+                    case 'center':
+                    case 'centered':
+                        $formattedTextObject->centered = $v;
+                        break;
+                }
+            }
+            if ($line) {
+                switch ($attribute->nodeName) {
+                    case 'margin-top':
+                        $line->margins->top = $v;
+                        break;
+                    case 'margin-right':
+                        $line->margins->right = $v;
+                        break;
+                    case 'margin-bottom':
+                        $line->margins->bottom = $v;
+                        break;
+                    case 'margin-left':
+                        $line->margins->left = $v;
+                        break;
+                }
+            }
+            if ($textLine) {
                 switch ($attribute->nodeName) {
                     case 'font-size':
                         $textLine->fontSize = $v;
@@ -278,39 +346,30 @@ abstract class TemplateParser extends FieldParser
                     case 'font':
                         $textLine->font = $v;
                         break;
+                }
+            }
+            if ($tableLine) {
+                switch ($attribute->nodeName) {
                     case 'bold':
                     case 'bolded':
-                        $textLine->bolded = $v;
+                        $tableLine->bolded = $v;
                         break;
                     case 'underline':
                     case 'underlined':
-                        $textLine->underlined = $v;
+                        $tableLine->underlined = $v;
                         break;
                     case 'invert':
                     case 'inverted':
-                        $textLine->inverted = $v;
-                        break;
-                    case 'center':
-                    case 'centered':
-                        $line->centered = $v;
+                        $tableLine->inverted = $v;
                         break;
                 }
             }
-
-            switch ($attribute->nodeName) {
-
-                case 'margin-top':
-                    $line->margins->top = $v;
-                    break;
-                case 'margin-right':
-                    $line->margins->right = $v;
-                    break;
-                case 'margin-bottom':
-                    $line->margins->bottom = $v;
-                    break;
-                case 'margin-left':
-                    $line->margins->left = $v;
-                    break;
+            if ($tableCell) {
+                switch ($attribute->nodeName) {
+                    case 'span':
+                        $tableCell->span = $v;
+                        break;
+                }
             }
         }
     }
