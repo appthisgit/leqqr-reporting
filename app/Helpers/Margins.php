@@ -18,6 +18,14 @@ class Margins
         $this->top = $this->right = $this->bottom = $this->left = $amount;
     }
 
+    public function set(int $top, int $right, int $bottom, int $left)
+    {
+        $this->top = $top;
+        $this->right = $right;
+        $this->bottom = $bottom;
+        $this->left = $left;
+    }
+
     public function copy(): Margins
     {
         return new Margins(

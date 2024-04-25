@@ -3,6 +3,7 @@
 namespace App\Parsing\Parsers;
 
 use App\Exceptions\TemplateException;
+use App\Helpers\Alignment;
 use App\Http\Data\ProductData;
 use App\Models\Template;
 use App\Parsing\Parsers\Template\FieldParser;
@@ -316,9 +317,17 @@ abstract class TemplateParser extends FieldParser
                     case 'inverted':
                         $formattedTextObject->inverted = $v;
                         break;
+                    case 'align':
+                        $formattedTextObject->alignment = match($v) {
+                            'center' => Alignment::center,
+                            'centered' => Alignment::center,
+                            'right' => Alignment::right,
+                            default => Alignment::left
+                        };
+                        break;
                     case 'center':
                     case 'centered':
-                        $formattedTextObject->centered = $v;
+                        $formattedTextObject->center();
                         break;
                 }
             }

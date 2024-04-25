@@ -27,9 +27,15 @@ class HtmlParser extends TemplateParser
             $receipt
         );
 
-        $receipt->settings->printMargins->setAll(20);
-        $receipt->settings->lineMargins->top = 2;
-        $receipt->settings->lineMargins->bottom = 2;
+        if ($this->receipt->endpoint->target == '80mm') {
+            $receipt->settings->printMargins->setAll(20);
+            $receipt->settings->lineMargins->top = 2;
+            $receipt->settings->lineMargins->bottom = 2;
+        } else {
+            $receipt->settings->printMargins->setAll(40);
+            $receipt->settings->lineMargins->set(4, 8, 4, 8);
+        }
+
         $receipt->settings->font = 'Roboto-Mono';
     }
 
@@ -80,8 +86,7 @@ class HtmlParser extends TemplateParser
         $receipt_styles = '/* generated styles */';
         if ($this->receipt->endpoint->target == '80mm') {
             $receipt_styles .= "\r\n" . sprintf('width: %sch;', $this->receipt->settings->widthCharAmount);
-        }
-        else { 
+        } else {
             //A4
             $receipt_styles .= "\r\n" . 'width: 21cm;';
         }

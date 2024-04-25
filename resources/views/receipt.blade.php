@@ -42,8 +42,12 @@
             border-color: #bcbbbe;
         }
 
-        .centered {
+        .align-center {
             text-align: center !important;
+        }
+
+        .align-right {
+            text-align: right !important;
         }
 
         .bolded {

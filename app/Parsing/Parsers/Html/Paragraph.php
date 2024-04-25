@@ -15,13 +15,14 @@ class Paragraph extends HtmlElement
 
     public function getHtml(): string
     {
-        $this->addNonDefaultStyle($this->textLine, 'font', 'font-family');
-        $this->addNonDefaultStyle($this->textLine, 'fontSize', 'font-size', 'px');
+        $this->toggleStyle($this->textLine, 'font', 'font-family');
+        $this->toggleStyle($this->textLine, 'fontSize', 'font-size', 'px');
 
-        $this->addNonDefaultClass($this->textLine, 'centered');
-        $this->addNonDefaultClass($this->textLine, 'bolded');
-        $this->addNonDefaultClass($this->textLine, 'underlined');
-        $this->addNonDefaultClass($this->textLine, 'inverted');
+        $this->setAlignment($this->textLine->alignment);
+
+        $this->toggleClass($this->textLine, 'bolded');
+        $this->toggleClass($this->textLine, 'underlined');
+        $this->toggleClass($this->textLine, 'inverted');
 
         return '<p' . $this->formatAttributes() . '>' . $this->textLine->text . '</p>';
     }

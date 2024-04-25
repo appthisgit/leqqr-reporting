@@ -2,10 +2,11 @@
 
 namespace App\Parsing\Parsers\Template\Lines;
 
+use App\Helpers\Alignment;
 
 trait FormattedText
 {
-    public bool $centered = false;
+    public Alignment $alignment = Alignment::left;
     public bool $bolded = false;
     public bool $underlined = false;
     public bool $inverted = false;
@@ -14,7 +15,7 @@ trait FormattedText
     public abstract function getText(): string;
 
     public function center() {
-        $this->centered = true;
+        $this->alignment = Alignment::center;
     }
 
     public function setBold()

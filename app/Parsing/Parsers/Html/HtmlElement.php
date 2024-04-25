@@ -2,6 +2,7 @@
 
 namespace App\Parsing\Parsers\Html;
 
+use App\Helpers\Alignment;
 use App\Parsing\Parsers\Template\Lines\Line;
 
 abstract class HtmlElement
@@ -14,39 +15,62 @@ abstract class HtmlElement
         $this->attributes = array();
     }
 
-    private function addNonDefaultSpacingStyle(Line $line, string $property, string $type = 'padding')
+    /**
+     * Set the margins of this HtmlElement to the non default values of a Line object
+     */
+    protected function setMargins(Line $line)
     {
-        if ($line->margins->{$property} != $line->defaults->lineMargins->{$property}) {
-            $this->attributes['style'][] = $type . '-' . $property . ':' . $line->margins->{$property} . 'px';
+        foreach (['top', 'right', 'bottom', 'left'] as $direction) {
+            if ($line->margins->{$direction} != $line->defaults->lineMargins->{$direction}) {
+                $this->addAttribute('style', 'padding-' . $direction . ':' . $line->margins->{$direction} . 'px');
+            }
         }
     }
 
-    protected function addNonDefaultStyle(Line $line, string $property, string $style, string $unit = '')
+    /**
+     * Set the alignment of this HtmlElement
+     */
+    protected function setAlignment(Alignment $alignment) {
+        if ($alignment != Alignment::left) {
+            $this->addAttribute('class', 'align-' . $alignment->name);
+        }
+    }
+
+    /**
+     * Add a style for a property that isn't the same as default
+     */
+    protected function toggleStyle(Line $line, string $property, string $style, string $unit = '')
     {
         if ($line->{$property} != $line->defaults->{$property}) {
-            $this->attributes['style'][] = $style . ':' . $line->{$property} . $unit;
+            $this->addAttribute('style', $style . ':' . $line->{$property} . $unit);
         }
     }
 
-    protected function addNonDefaultClass(Line $line, string $property)
+    /**
+     * Add classes for properties which are true
+     */
+    protected function toggleClass(Line $line, string $property)
     {
         if ($line->{$property}) {
-            $this->attributes['class'][] = $property;
+            $this->addAttribute('class', $property);
         }
     }
 
+    /**
+     * Add a attribute to this HtmlElement
+     */
     protected function addAttribute(string $attribute, string $value)
     {
-        $this->attributes[$attribute] = $value;
+        $this->attributes[$attribute][] = $value;
     }
 
+    /**
+     * Format and return all attributes as an easy string
+     */
     protected function formatAttributes(): string
     {
         if ($this->line) {
-            $this->addNonDefaultSpacingStyle($this->line, 'top');
-            $this->addNonDefaultSpacingStyle($this->line, 'right');
-            $this->addNonDefaultSpacingStyle($this->line, 'bottom');
-            $this->addNonDefaultSpacingStyle($this->line, 'left');
+            $this->setMargins($this->line);
         }
 
         $formatting = '';

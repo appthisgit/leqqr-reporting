@@ -2,6 +2,7 @@
 
 namespace App\Parsing\Parsers;
 
+use App\Helpers\Alignment;
 use App\Models\Receipt;
 use App\Parsing\Parsers\Template\Printable;
 use App\Parsing\Parsers\Sunmi\SunmiCloudPrinter;
@@ -16,8 +17,8 @@ class SunmiParser extends TemplateParser
 {
 
     private SunmiCloudPrinter $printer;
+    private Alignment $currentAlignment;
     private ?bool $currentInverted;
-    private ?bool $currentCentered;
     private ?bool $currentBold;
     private ?bool $currentUnderlined;
     private ?int $currentFont;
@@ -30,8 +31,8 @@ class SunmiParser extends TemplateParser
             $receipt
         );
         $this->printer = new SunmiCloudPrinter(500);
+        $this->currentAlignment = Alignment::left;
         $this->currentInverted = null;
-        $this->currentCentered = null;
         $this->currentBold = null;
         $this->currentUnderlined = null;
         $this->currentFont = null;
@@ -84,10 +85,14 @@ class SunmiParser extends TemplateParser
             $this->printer->setBlackWhiteReverseMode($item->inverted);
             $this->currentInverted = $item->inverted;
         }
-        if ($this->currentCentered != $item->centered) {
-            $this->printer->setAlignment($item->centered ?
-                SunmiCloudPrinter::ALIGN_CENTER : SunmiCloudPrinter::ALIGN_LEFT);
-            $this->currentCentered = $item->centered;
+        if ($this->currentAlignment != $item->alignment) {
+            $this->printer->setAlignment(match ($item->alignment) {
+                Alignment::left => SunmiCloudPrinter::ALIGN_LEFT,
+                Alignment::center => SunmiCloudPrinter::ALIGN_CENTER,
+                Alignment::right => SunmiCloudPrinter::ALIGN_RIGHT,
+
+            });
+            $this->currentAlignment = $item->alignment;
         }
         if ($this->currentBold != $item->bolded) {
             $this->printer->setPrintModes($item->bolded, false, false);

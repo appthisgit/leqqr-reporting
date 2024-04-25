@@ -36,7 +36,6 @@ class TableCell extends Line
             $this->pad_type = STR_PAD_BOTH;
         }
 
-        //TODO: pad_type STR_PAD_NONE
         return TextMods::pad($this->text, $this->maxLength, $this->pad_type);
     }
 }
