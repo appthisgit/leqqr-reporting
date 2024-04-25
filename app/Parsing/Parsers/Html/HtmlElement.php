@@ -4,7 +4,6 @@ namespace App\Parsing\Parsers\Html;
 
 use App\Helpers\Alignment;
 use App\Parsing\Parsers\Template\Lines\Line;
-use Log;
 
 abstract class HtmlElement
 {
@@ -21,6 +20,7 @@ abstract class HtmlElement
      */
     protected function setMargins(Line $line)
     {
+        //TODO: the whole padding vs margin thingy so backgrounds of inverted cells don't do weird things
         foreach (['top', 'right', 'bottom', 'left'] as $direction) {
             if ($line->margins->{$direction} != $line->defaults->lineMargins->{$direction}) {
                 $this->addAttribute('style', 'padding-' . $direction . ':' . $line->margins->{$direction} . 'px');
@@ -33,7 +33,6 @@ abstract class HtmlElement
      */
     protected function setAlignment(Alignment $alignment) {
         if ($alignment != Alignment::left) {
-            Log::debug($alignment->name);
             $this->addAttribute('class', 'align-' . $alignment->name);
         }
     }

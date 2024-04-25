@@ -17,13 +17,16 @@ class TableData extends HtmlElement
 
     public function getHtml(): string
     {
-        $this->setMargins($this->tableLine);
+        $this->setMargins($this->tableLine);        
         $this->setAlignment($this->tableLine->alignment);
-        $this->setAlignment($this->tableCell->alignment);
-
         $this->toggleClass($this->tableLine, 'bolded');
         $this->toggleClass($this->tableLine, 'underlined');
         $this->toggleClass($this->tableLine, 'inverted');
+
+        $this->setAlignment($this->tableCell->alignment);
+        $this->toggleClass($this->tableCell, 'bolded');
+        $this->toggleClass($this->tableCell, 'underlined');
+        $this->toggleClass($this->tableCell, 'inverted');
 
         if ($this->tableCell->span > 1) {
             $this->addAttribute('colspan', $this->tableCell->span);
