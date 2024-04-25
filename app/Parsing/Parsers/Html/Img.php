@@ -4,21 +4,16 @@ namespace App\Parsing\Parsers\Html;
 
 use App\Parsing\Parsers\Template\Lines\ImageLine;
 
-class Img extends ImageLine
+class Img extends HtmlElement
 {
-    use HtmlElement;
-
     public function __construct(
-        ImageLine $imageLine
+        public ImageLine $imageLine
     ) {
-        $this->copyAttributes($imageLine);
+        parent::__construct($imageLine);
     }
 
     public function getHtml(): string
     {
-        $this->prepareAttributes();
-        $this->addNonDefaultClass('centered');
-
-        return '<img' . $this->formatAttributes() . ' src="'. $this->getImage() .'" />';
+        return '<img' . $this->formatAttributes() . ' src="'. $this->imageLine->getImage() .'" />';
     }
 }

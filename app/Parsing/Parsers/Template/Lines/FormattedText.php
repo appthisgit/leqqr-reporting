@@ -9,7 +9,7 @@ trait FormattedText
     public bool $bolded = false;
     public bool $underlined = false;
     public bool $inverted = false;
-    protected string $text = '';
+    public string $text = '';
 
     public abstract function getText(): string;
 

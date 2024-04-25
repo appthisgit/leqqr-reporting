@@ -4,22 +4,19 @@ namespace App\Parsing\Parsers\Html;
 
 use App\Parsing\Parsers\Template\Lines\TableLine;
 
-class TableRow extends TableLine
+class TableRow extends HtmlElement
 {
-    use HtmlElement;
-
     public function __construct(
-        TableLine $TableLine
+        private TableLine $TableLine
     ) {
-        parent::__construct($TableLine->defaults);
-        $this->copyAttributes($TableLine);
+        parent::__construct($TableLine);
     }
 
     public function getHtml(): string
     {
         $tds = array();
-        foreach ($this->cells as $cell) {
-            $tds[] = new TableData($cell, $this);
+        foreach ($this->TableLine->cells as $cell) {
+            $tds[] = new TableData($cell, $this->TableLine);
         }
 
         return sprintf('<tr>%s</tr>',

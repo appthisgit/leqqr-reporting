@@ -2,11 +2,13 @@
 
 namespace App\Parsing\Parsers\Html;
 
-class Table
+class Table extends HtmlElement
 {
-    use HtmlElement;
+    private array $rows;
 
-    public array $rows;
+    public function __construct() {
+        parent::__construct(null);
+    }
 
     public function addRow(TableRow $row)
     {

@@ -9,7 +9,7 @@ class TableCell extends Line
 {
     use FormattedText;
 
-    protected string $text = '';
+    public string $text = '';
     public int $span = 1;
 
     public function __construct(

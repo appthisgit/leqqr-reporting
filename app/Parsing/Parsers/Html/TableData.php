@@ -3,43 +3,32 @@
 namespace App\Parsing\Parsers\Html;
 
 use App\Parsing\Parsers\Template\Lines\TableCell;
-use Illuminate\Support\Facades\Log;
+use App\Parsing\Parsers\Template\Lines\TableLine;
 
-class TableData extends TableCell
+class TableData extends HtmlElement
 {
-    use HtmlElement;
 
     public function __construct(
-        TableCell $tableCell,
-        TableRow $parent
+        private TableCell $tableCell,
+        private TableLine $tableLine
     ) {
-        parent::__construct(
-            $tableCell->defaults,
-            $tableCell->text,
-            $tableCell->maxLength,
-            $tableCell->pad_type,
-        );
-        Log::debug($parent->bolded);
-        $this->copyAttributes($parent);
-        $this->copyAttributes($tableCell);
+        parent::__construct($tableCell);
     }
 
     public function getHtml(): string
     {
-        $this->prepareAttributes();
+        $this->addNonDefaultClass($this->tableLine, 'bolded');
+        $this->addNonDefaultClass($this->tableLine, 'underlined');
+        $this->addNonDefaultClass($this->tableLine, 'inverted');
 
-        $this->addNonDefaultClass('bolded');
-        $this->addNonDefaultClass('underlined');
-        $this->addNonDefaultClass('inverted');
-
-        if ($this->span > 1) {
-            $this->addAttribute('colspan', $this->span);
+        if ($this->tableCell->span > 1) {
+            $this->addAttribute('colspan', $this->tableCell->span);
         }
 
         return sprintf(
             '<td%s>%s</td>',
             $this->formatAttributes(),
-            $this->text
+            $this->tableCell->text
         );
     }
 }
