@@ -27,16 +27,22 @@ class HtmlParser extends TemplateParser
             $receipt
         );
 
-        if ($this->receipt->endpoint->target == '80mm') {
-            $receipt->settings->printMargins->setAll(20);
-            $receipt->settings->lineMargins->top = 2;
-            $receipt->settings->lineMargins->bottom = 2;
-        } else {
-            $receipt->settings->printMargins->setAll(30);
-            $receipt->settings->lineMargins->set(2, 8, 4, 8);
-        }
+        // Default (80mm)
+        $this->receipt->settings->font = 'Roboto-Mono';
+        $this->receipt->settings->printMargins->setAll(20);
+        $this->receipt->settings->lineMargins->top = 2;
+        $this->receipt->settings->lineMargins->bottom = 2;
+    }
 
-        $receipt->settings->font = 'Roboto-Mono';
+    protected function setSetting(string $property, string $value)
+    {
+        parent::setSetting($property, $value);
+
+        if ($property == 'paper-size' && strtolower($value) == 'a4') {
+            $this->receipt->settings->printMargins->setAll(30);
+            $this->receipt->settings->lineMargins->set(4, 8, 4, 8);
+            $this->receipt->settings->widthCharAmount = null;
+        }
     }
 
     public function run()
@@ -67,8 +73,11 @@ class HtmlParser extends TemplateParser
                     $this->doc[] = new Img($line);
                     break;
                 case TableLine::class:
+
+                    /** @var TableLine */
+                    $tableLine = $line;
                     if ($lastTable == null) {
-                        $lastTable = new Table();
+                        $lastTable = new Table($tableLine->width);
                     }
 
                     $lastTable->addRow(new TableRow($line));
@@ -84,12 +93,6 @@ class HtmlParser extends TemplateParser
         }
 
         $receipt_styles = '/* generated styles */';
-        if ($this->receipt->endpoint->target == '80mm') {
-            $receipt_styles .= "\r\n" . sprintf('width: %sch;', $this->receipt->settings->widthCharAmount);
-        } else {
-            //A4
-            $receipt_styles .= "\r\n" . 'width: calc(21cm - 60px);';
-        }
         $receipt_styles .= "\r\n" . sprintf('font-family: %s;', $this->receipt->settings->font);
         $receipt_styles .= "\r\n" . sprintf('font-size: %spx;', $this->receipt->settings->fontSize);
         $receipt_styles .= "\r\n" . sprintf('padding-top: %spx;', $this->receipt->settings->printMargins->top);
@@ -104,6 +107,19 @@ class HtmlParser extends TemplateParser
         $line_styles .= "\r\n" . sprintf('padding-right: %spx;', $this->receipt->settings->lineMargins->right);
         $line_styles .= "\r\n" . sprintf('padding-bottom: %spx;', $this->receipt->settings->lineMargins->bottom);
         $line_styles .= "\r\n" . sprintf('padding-left: %spx;', $this->receipt->settings->lineMargins->left);
+
+        switch (strtolower($this->receipt->settings->paperSize)) {
+            case '80mm':
+                $receipt_styles .= "\r\n" . sprintf('width: %sch;', $this->receipt->settings->widthCharAmount);
+                break;
+
+            case 'a4':
+            default:
+                $horizontalPadding = $this->receipt->settings->printMargins->left;
+                $horizontalPadding += $this->receipt->settings->printMargins->right;
+                $receipt_styles .= "\r\n" . sprintf('width: calc(21cm - %spx);', $horizontalPadding);
+                break;
+        }
 
         return view('receipt', [
             'receipt_styles' => $receipt_styles,

@@ -14,6 +14,7 @@ class TableLine extends Line
     public bool $bolded = false;
     public bool $underlined = false;
     public bool $inverted = false;
+    public string $width = "100%";
 
     public function __construct(
         ReceiptSettings $defaults,
@@ -26,7 +27,6 @@ class TableLine extends Line
     public function addCell(TableCell $col)
     {
         $this->currentCell = $col;
-
         $this->cells[] = $this->currentCell;
     }
 

@@ -64,7 +64,7 @@
         }
 
         table {
-            width: 100%;
+            /* width: 100%; */
             /* table-layout: fixed; */
             border-spacing: 0;
             border-collapse: collapse;

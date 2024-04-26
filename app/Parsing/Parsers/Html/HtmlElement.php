@@ -20,7 +20,6 @@ abstract class HtmlElement
      */
     protected function setMargins(Line $line)
     {
-        //TODO: the whole padding vs margin thingy so backgrounds of inverted cells don't do weird things
         foreach (['top', 'right', 'bottom', 'left'] as $direction) {
             if ($line->margins->{$direction} != $line->defaults->lineMargins->{$direction}) {
                 $this->addAttribute('style', 'padding-' . $direction . ':' . $line->margins->{$direction} . 'px');

@@ -4,6 +4,7 @@ namespace App\Parsing\Parsers;
 
 use App\Exceptions\TemplateException;
 use App\Helpers\Alignment;
+use App\Helpers\ReceiptSettings;
 use App\Http\Data\ProductData;
 use App\Models\Template;
 use App\Parsing\Parsers\Template\FieldParser;
@@ -17,7 +18,6 @@ use App\Parsing\Parsers\Template\Printable;
 use DOMDocument;
 use DOMElement;
 use DOMNode;
-use Illuminate\Support\Facades\Log;
 
 abstract class TemplateParser extends FieldParser
 {
@@ -28,6 +28,8 @@ abstract class TemplateParser extends FieldParser
     private DOMElement $documentRoot;
     private Line $currentLine;
     private ?array $images;
+
+    
 
     public abstract function run();
 
@@ -41,56 +43,63 @@ abstract class TemplateParser extends FieldParser
         $this->documentRoot = $doc->documentElement;
 
         foreach ($this->documentRoot->attributes as $attribute) {
-            switch ($attribute->nodeName) {
-                case 'products-sort':
-                    $this->receipt->settings->sort = $attribute->nodeValue;
-                    break;
-                case 'copyright-footer':
-                    $this->receipt->settings->copyrightFooter = $attribute->nodeValue;
-                    break;
-                case 'single-product-template':
-                    $this->receipt->settings->singleProductTemplate = $attribute->nodeValue;
-                    break;
-                case 'font-size':
-                    $this->receipt->settings->fontSize = $attribute->nodeValue;
-                    break;
-                case 'receipt-width':
-                case 'receipt-width-char-amount':
-                    $this->receipt->settings->widthCharAmount = $attribute->nodeValue;
-                    break;
-                case 'stripe-char':
-                    $this->receipt->settings->stripeChar = $attribute->nodeValue;
-                    break;
-                case 'default-line-margin-top':
-                    $this->receipt->settings->lineMargins->top = $attribute->nodeValue;
-                    break;
-                case 'default-line-margin-right':
-                    $this->receipt->settings->lineMargins->right = $attribute->nodeValue;
-                    break;
-                case 'default-line-margin-bottom':
-                    $this->receipt->settings->lineMargins->bottom = $attribute->nodeValue;
-                    break;
-                case 'default-line-margin-left':
-                    $this->receipt->settings->lineMargins->left = $attribute->nodeValue;
-                    break;
-                case 'margin-top':
-                case 'padding-top':
-                    $this->receipt->settings->printMargins->top = $attribute->nodeValue;
-                    break;
-                case 'margin-right':
-                case 'padding-right':
-                    $this->receipt->settings->printMargins->right = $attribute->nodeValue;
-                    break;
-                case 'margin-bottom':
-                case 'padding-bottom':
-                    $this->receipt->settings->printMargins->bottom = $attribute->nodeValue;
-                    break;
-                case 'margin-left':
-                case 'padding-left':
-                case 'inset':
-                    $this->receipt->settings->printMargins->left = $attribute->nodeValue;
-                    break;
-            }
+            $this->setSetting($attribute->nodeName, $attribute->nodeValue);
+        }
+    }
+
+    protected function setSetting(string $property, string $value) {
+        switch ($property) {
+            case 'products-sort':
+                $this->receipt->settings->sort = $value;
+                break;
+            case 'copyright-footer':
+                $this->receipt->settings->copyrightFooter = $value;
+                break;
+            case 'single-product-template':
+                $this->receipt->settings->singleProductTemplate = $value;
+                break;
+            case 'font-size':
+                $this->receipt->settings->fontSize = $value;
+                break;
+            case 'receipt-width':
+            case 'receipt-width-char-amount':
+                $this->receipt->settings->widthCharAmount = $value;
+                break;
+            case 'paper-size':
+                $this->receipt->settings->paperSize = $value;
+                break;
+            case 'stripe-char':
+                $this->receipt->settings->stripeChar = $value;
+                break;
+            case 'default-line-margin-top':
+                $this->receipt->settings->lineMargins->top = $value;
+                break;
+            case 'default-line-margin-right':
+                $this->receipt->settings->lineMargins->right = $value;
+                break;
+            case 'default-line-margin-bottom':
+                $this->receipt->settings->lineMargins->bottom = $value;
+                break;
+            case 'default-line-margin-left':
+                $this->receipt->settings->lineMargins->left = $value;
+                break;
+            case 'margin-top':
+            case 'padding-top':
+                $this->receipt->settings->printMargins->top = $value;
+                break;
+            case 'margin-right':
+            case 'padding-right':
+                $this->receipt->settings->printMargins->right = $value;
+                break;
+            case 'margin-bottom':
+            case 'padding-bottom':
+                $this->receipt->settings->printMargins->bottom = $value;
+                break;
+            case 'margin-left':
+            case 'padding-left':
+            case 'inset':
+                $this->receipt->settings->printMargins->left = $value;
+                break;
         }
     }
 
@@ -358,6 +367,13 @@ abstract class TemplateParser extends FieldParser
                         break;
                     case 'font':
                         $textLine->font = $v;
+                        break;
+                }
+            }
+            if ($tableLine) {
+                switch ($attribute->nodeName) {
+                    case 'width':
+                        $tableLine->width = $v;
                         break;
                 }
             }

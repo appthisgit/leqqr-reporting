@@ -35,7 +35,7 @@ class TableData extends HtmlElement
         return sprintf(
             '<td%s>%s</td>',
             $this->formatAttributes(),
-            $this->tableCell->text
+            $this->tableCell->getText()
         );
     }
 }

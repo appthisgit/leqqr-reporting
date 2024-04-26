@@ -2,6 +2,7 @@
 
 namespace App\Parsing\Parsers\Template\Lines;
 
+use App\Helpers\Alignment;
 use App\Helpers\ReceiptSettings;
 use App\Helpers\TextMods;
 
@@ -9,17 +10,17 @@ class TableCell extends Line
 {
     use FormattedText;
 
-    public string $text = '';
     public int $span = 1;
 
     public function __construct(
         ReceiptSettings $defaults,
         string $text = '',
         public int $maxLength = -1,
-        public int $pad_type = STR_PAD_RIGHT
+        Alignment $alignment = Alignment::left
     ) {
         parent::__construct($defaults);
         $this->text = $text;
+        $this->alignment = $alignment;
     }
 
     public function appendText(string $text)
@@ -29,13 +30,13 @@ class TableCell extends Line
 
     public function getText(): string
     {
+        if ($this->defaults->widthCharAmount == null) {
+            return $this->text;
+        }
         if ($this->maxLength < 0) {
             $this->maxLength = mb_strlen($this->text);
         }
-        if ($this->center()) {
-            $this->pad_type = STR_PAD_BOTH;
-        }
 
-        return TextMods::pad($this->text, $this->maxLength, $this->pad_type);
+        return TextMods::pad($this->text, $this->maxLength, $this->alignment->value);
     }
 }

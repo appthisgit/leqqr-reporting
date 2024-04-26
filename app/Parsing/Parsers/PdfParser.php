@@ -18,11 +18,20 @@ class PdfParser extends HtmlParser
         );
     }
 
+    protected function setSetting(string $property, string $value)
+    {
+        parent::setSetting($property, $value);
+
+        if ($property == 'paper-size' && strtolower($value) == 'a4') {
+            $this->receipt->settings->lineMargins->top = 2;
+        }
+    }
+
     public function run()
     { 
         $html = parent::run();
 
-        if ($this->receipt->endpoint->target == '80mm') {
+        if ($this->receipt->settings->paperSize == '80mm') {
             global $bodyHeight;
             $bodyHeight = 0;
 
@@ -50,7 +59,7 @@ class PdfParser extends HtmlParser
 
         // Second run to set the correct paper sizes
         $pdf = App::make('dompdf.wrapper');
-        if ($this->receipt->endpoint->target == '80mm') {
+        if ($this->receipt->settings->paperSize == '80mm') {
             $pdf->setPaper([0, 0, 277, $bodyHeight]);
         }
         $pdf->loadHTML($html);

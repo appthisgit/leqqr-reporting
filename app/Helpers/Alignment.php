@@ -2,9 +2,11 @@
 
 namespace App\Helpers;
 
-enum Alignment
+enum Alignment: int
 {
-    case left;
-    case center;
-    case right;
+    case left = STR_PAD_RIGHT;
+    case center = STR_PAD_BOTH;
+    case right = STR_PAD_LEFT;
+
+
 }

@@ -47,29 +47,9 @@ class EndpointResource extends Resource
                             ->live()
                             ->required(),
 
-                        Forms\Components\Select::make('target')
-                            ->visible(fn (\Filament\Forms\Get $get): bool => $get('type') == 'html')
-                            ->helperText('Kies formaat')
-                            ->options([
-                                'A4' => 'A4',
-                                '80mm' => '80mm',
-                            ])
-                            ->required(),
-
-                        Forms\Components\Select::make('target')
-                            ->visible(fn (\Filament\Forms\Get $get): bool => $get('type') == 'pdf')
-                            ->helperText('Kies formaat')
-                            ->options([
-                                'A4' => 'A4',
-                                '80mm' => '80mm',
-                            ])
-                            ->required(),
-
                         Forms\Components\TextInput::make('target')
-                            ->visible(fn (\Filament\Forms\Get $get): bool => $get('type') == 'sunmi')
-                            ->helperText('Printer SN')
-                            ->maxLength(100)
-                            ->required(),
+                            ->helperText(fn (\Filament\Forms\Get $get): string => $get('type') == 'sunmi' ? 'Printer SN' : 'Omschrijving (mag leeg blijven)')
+                            ->maxLength(100),
                     ]),
                 Section::make('Filters')
                     ->columnSpan(1)
@@ -108,6 +88,7 @@ class EndpointResource extends Resource
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('target')
+                    ->default('-')
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('filter_terminal')

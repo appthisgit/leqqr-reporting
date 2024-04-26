@@ -6,7 +6,9 @@ class Table extends HtmlElement
 {
     private array $rows;
 
-    public function __construct() {
+    public function __construct(
+        private string $width
+    ) {
         parent::__construct(null);
     }
 
@@ -17,6 +19,6 @@ class Table extends HtmlElement
 
     public function getHtml(): string
     {
-        return "<table>\r\n".implode("\r\n", $this->rows)."\r\n</table>";
+        return "<table style=\"width: $this->width\">\r\n" . implode("\r\n", $this->rows) . "\r\n</table>";
     }
 }

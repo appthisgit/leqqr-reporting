@@ -24,6 +24,6 @@ class Paragraph extends HtmlElement
         $this->toggleClass($this->textLine, 'underlined');
         $this->toggleClass($this->textLine, 'inverted');
 
-        return '<p' . $this->formatAttributes() . '>' . $this->textLine->text . '</p>';
+        return '<p' . $this->formatAttributes() . '>' . $this->textLine->getText() . '</p>';
     }
 }

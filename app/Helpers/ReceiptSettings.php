@@ -26,9 +26,14 @@ class ReceiptSettings
     public int $fontSize = 9;
 
     /**
+     * The size of the paper
+     */
+    public string $paperSize = '80mm';
+
+    /**
      * The max amount of characters in a line
      */
-    public int $widthCharAmount = 46;
+    public ?int $widthCharAmount = 46;
 
     /**
      * The amount of characters in a price column
