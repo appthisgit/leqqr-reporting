@@ -25,6 +25,15 @@ class Receipt extends Model
         $this->settings = new ReceiptSettings();
     }
 
+        /**
+     * The attributes that should be cast.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'response' => 'array',
+    ];
+
     /**
      * The attributes that are mass assignable.
      *

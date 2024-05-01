@@ -38,7 +38,7 @@ namespace App\Models{
  * @property int $template_id
  * @property string $name
  * @property string $type
- * @property string $target
+ * @property string|null $target
  * @property string|null $filter_terminal
  * @property string|null $filter_zone
  * @property bool $filter_printable
@@ -94,7 +94,7 @@ namespace App\Models{
  * @property int $endpoint_id
  * @property int $order_id
  * @property string|null $status
- * @property mixed|null $response
+ * @property array|null $response
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \App\Models\Endpoint $endpoint

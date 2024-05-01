@@ -29,7 +29,7 @@ class ReceiptResource extends Resource
                         Forms\Components\DateTimePicker::make('updated_at'),
                         Forms\Components\TextInput::make('status'),
                         Forms\Components\Textarea::make('response')
-                            ->formatStateUsing(fn ($state) => json_encode(json_decode($state), JSON_PRETTY_PRINT))
+                            ->formatStateUsing(fn ($state) => json_encode($state, JSON_PRETTY_PRINT))
                             ->rows(15),
                     ]),
                 // Forms\Components\TextInput::make('id')

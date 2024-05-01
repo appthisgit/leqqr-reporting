@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\OrderResource\RelationManagers;
 
+use App\Models\Receipt;
 use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Tables;
 use Filament\Tables\Table;
@@ -33,6 +34,7 @@ class ReceiptsRelationManager extends RelationManager
                         'Completed' => 'success',
                         'Done' => 'gray',
                         'Parsing..' => 'warning',
+                        'Prepared' => 'info',
                         default => 'danger',
                     }),
                 Tables\Columns\TextColumn::make('created_at')
@@ -47,6 +49,12 @@ class ReceiptsRelationManager extends RelationManager
                 //
             ])
             ->actions([
+                Tables\Actions\Action::make('Open')
+                    ->url(fn (Receipt $record): string => $record->response['result'])
+                    ->openUrlInNewTab()
+                    ->visible(fn(Receipt $record) => $record->status == 'Prepared')
+                    ->color('info')
+                    ->icon('heroicon-m-cpu-chip'),
                 Tables\Actions\Action::make('view')
                     ->url(fn ($record): string => route('filament.admin.resources.receipts.view', ['record' => $record]))
                     ->icon('heroicon-s-eye')

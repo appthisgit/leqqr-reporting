@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\ReceiptResource\Pages;
 
+use App\Filament\Custom\Actions\CreateReceiptAction;
 use App\Filament\Resources\ReceiptResource;
 use Filament\Resources\Pages\ViewRecord;
 use Filament\Actions;
@@ -28,6 +29,16 @@ class ViewReceipt extends ViewRecord
                 ->url(fn ($record): string => route('filament.admin.resources.endpoints.edit', ['record' => $record->endpoint_id]))
                 ->color('gray')
                 ->icon('heroicon-o-cpu-chip'),
+            CreateReceiptAction::make()
+                ->visible(fn () => $this->record->status != 'Prepared')
+                ->setOrderId($this->record->order_id)
+                ->redirectToModel(),
+            Actions\Action::make('Open')
+                ->url(fn (): string => $this->record->response['result'])
+                ->openUrlInNewTab()
+                ->visible(fn () => $this->record->status == 'Prepared')
+                ->color('info')
+                ->icon('heroicon-m-cpu-chip'),
         ];
     }
 }
