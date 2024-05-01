@@ -12,7 +12,6 @@ return new class extends Migration
         DB::update('UPDATE migrations SET migration = "2023_10_16_110813_update_endpoints_name" WHERE migration = "2023_10_16_110813_lengthen_endpoint_name"');
         DB::update('UPDATE migrations SET migration = "2023_10_16_111142_update_templates_name" WHERE migration = "2023_10_16_111142_lengthen_template_name"');
         DB::update('UPDATE migrations SET migration = "2024_03_27_130258_add_results_to_receipts" WHERE migration = "2024_03_27_130258_add_results_to_receipts_table"');
-        die('run migration again to continue!');
     }
 
     /**
