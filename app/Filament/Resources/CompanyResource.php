@@ -15,23 +15,26 @@ class CompanyResource extends Resource
 {
     protected static ?string $model = Company::class;
 
+    protected static ?string $recordTitleAttribute = 'name';
+
     protected static ?string $navigationIcon = 'heroicon-o-building-storefront';
 
-    protected static ?string $navigationGroup = 'Input';
+    protected static ?string $navigationGroup = 'IO';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                Forms\Components\TextInput::make('id')
-                    ->required()
-                    ->numeric(),
-                Forms\Components\TextInput::make('guid')
-                    ->required()
-                    ->maxLength(200),
-                Forms\Components\TextInput::make('name')
-                    ->required()
-                    ->maxLength(60),
+                Forms\Components\Section::make()
+                    ->columnSpan(2)
+                    ->schema([
+                        Forms\Components\TextInput::make('id')
+                            ->required()
+                            ->numeric(),
+                        Forms\Components\TextInput::make('guid')
+                            ->required()
+                            ->maxLength(200),
+                    ]),
             ]);
     }
 
@@ -42,9 +45,9 @@ class CompanyResource extends Resource
                 Tables\Columns\TextColumn::make('id')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('guid')
-                    ->searchable(),
                 Tables\Columns\TextColumn::make('name')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('guid')
                     ->searchable(),
             ]);
     }
@@ -52,7 +55,7 @@ class CompanyResource extends Resource
     public static function getRelations(): array
     {
         return [
-            RelationManagers\ReceiptsRelationManager::class
+            RelationManagers\OrdersRelationManager::class
         ];
     }
 

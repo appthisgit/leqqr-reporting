@@ -10,6 +10,11 @@ class Template extends Model
 {
     use HasFactory;
 
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
     protected $fillable = [
         'name',
         'zone',
@@ -17,6 +22,11 @@ class Template extends Model
         'images',
     ];
 
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
     protected $casts = [
         'images' => 'array',
     ];

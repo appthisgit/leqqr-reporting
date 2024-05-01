@@ -8,8 +8,19 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Company extends Model
 {
-
+    /**
+     * Indicates if the IDs are auto-incrementing.
+     *
+     * @var bool
+     */
     public $incrementing = false;
+
+    /**
+     * Indicates if the model should be timestamped.
+     *
+     * @var bool
+     */
+    public $timestamps = false;
 
     /**
      * The attributes that are mass assignable.
@@ -23,16 +34,9 @@ class Company extends Model
     ];
 
 
-    /**
-     * Indicates if the model should be timestamped.
-     *
-     * @var bool
-     */
-    public $timestamps = false;
-
-    public function receipts(): HasMany
+    public function orders(): HasMany
     {
-        return $this->hasMany(Receipt::class);
+        return $this->hasMany(Order::class);
     }
 
     public function toData(): CompanyData

@@ -1,6 +1,7 @@
 <?php
 
-use Illuminate\Http\Request;
+use App\Http\Controllers\OrderController;
+use App\Http\Controllers\ReceiptController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -18,4 +19,6 @@ use Illuminate\Support\Facades\Route;
 //     return $request->user();
 // });
 
-Route::post('/print', 'App\Http\Controllers\EventController@printOrder');
+Route::post('/orders', [OrderController::class, 'store']);
+Route::get('/orders/{order}/{format}', [OrderController::class, 'show']);
+Route::get('/receipts/{receipt}', ReceiptController::class);

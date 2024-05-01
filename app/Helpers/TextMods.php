@@ -8,11 +8,11 @@ class TextMods
 {
     const SPACE = 1;
 
-    public static function pad(string $text, int $length, bool $center = false): string
+    public static function pad(string $text, int $length, int $pad_type = STR_PAD_RIGHT): string
     {
         $lines = array();
         foreach (TextMods::wordwrap_toArray($text, $length) as $line) {
-            $lines[] = str_pad($line, $length, ' ', ($center) ? STR_PAD_BOTH : STR_PAD_RIGHT);
+            $lines[] = str_pad($line, $length, ' ', $pad_type);
         }
         return implode("\r\n", $lines);
     }
@@ -22,12 +22,12 @@ class TextMods
         return implode("\r\n", self::wordwrap_toArray($value, $maxLength));
     }
 
-    public static function wordwrap_toArray(string $value, int $maxLength): array
+    private static function wordwrap_toArray(string $value, int $maxLength): array
     {
         $values = array();
 
         // value doesn't fit inside maxLength
-        if (strlen($value) > $maxLength) {
+        if (mb_strlen($value) > $maxLength && $maxLength > 0) {
 
             $line = '';
             $words = explode("\\s+", str_replace('-', '- ', trim($value)));
@@ -35,7 +35,7 @@ class TextMods
 
             foreach ($words as $word) {
                 // Fits in the line
-                if (strlen($line) + strlen($word) + self::SPACE <= $maxLength) {
+                if (mb_strlen($line) + mb_strlen($word) + self::SPACE <= $maxLength) {
                     $line .= ((!empty($line) && !$lastWasLine) ? ' ' : '') . $word;
 
                     if (Str::endsWith($word, '-')) {
@@ -43,20 +43,21 @@ class TextMods
                     }
                 }
                 // Doesn't fit because the word is longer than the whole line
-                elseif (strlen($word) > $maxLength) {
+                elseif (mb_strlen($word) > $maxLength) {
+                    
                     // Loop until the word is completely written to lines
-                    while (strlen($word) > $maxLength) {
+                    while (mb_strlen($word) > $maxLength) {
 
                         // check if there's space for two characters in the current line
-                        if (strlen($line) + self::SPACE + 2 <= $maxLength) {
+                        if (mb_strlen($line) + self::SPACE + 2 <= $maxLength) {
                             // calc available character places
                             $availableCharacters = $maxLength;
                             if (!empty($line)) {
-                                $availableCharacters -= strlen($line) + self::SPACE;
+                                $availableCharacters -= mb_strlen($line) + self::SPACE;
                             }
 
                             // fits the (rest) of the word within the available characters left
-                            if ($availableCharacters >= strlen($word)) {
+                            if ($availableCharacters >= mb_strlen($word)) {
                                 /**
                                  * Write the (rest) of the word to the current line
                                  * don't save the currentLine, possible room left
@@ -109,44 +110,46 @@ class TextMods
         return $values;
     }
 
-    public static function multipad(string $value, $length): string
-    {
-        return implode("\r\n", self::multipad_array($value, $length));
-    }
 
-    public static function multipad_array(string $value, $length): array
-    {
-        $lines = array();
 
-        // value already too long
-        if (strlen($value) > $length) {
-            /**
-             * Wordwrap without amount, and shorter width re-add amount pad
-             * first line right pad other lines left to match after amount
-             */
-            $value_exploded = explode("\\s+", $value);
-            $toPadString = $value_exploded[0];
-            $amountPadLeft = strlen($value_exploded[0] + self::SPACE);
+    // public static function multipad(string $value, $length): string
+    // {
+    //     return implode("\r\n", self::multipad_array($value, $length));
+    // }
 
-            // string started with a space, so the first values was ""
-            if (empty($toPadString) && count($value_exploded) >= 2)
-            {
-                $toPadString = ' ' . $value_exploded[1];
-                $amountPadLeft = strlen($toPadString) + self::SPACE;
-            }
+    // public static function multipad_array(string $value, $length): array
+    // {
+    //     $lines = array();
 
-            $lines = self::wordwrap_toArray(substr($value, $amountPadLeft), $length - $amountPadLeft);
-            $lines[0] = $toPadString . ' ' . Str::padRight($lines[0], $length - $amountPadLeft);
+    //     // value already too long
+    //     if (mb_strlen($value) > $length) {
+    //         /**
+    //          * Wordwrap without amount, and shorter width re-add amount pad
+    //          * first line right pad other lines left to match after amount
+    //          */
+    //         $value_exploded = explode("\\s+", $value);
+    //         $toPadString = $value_exploded[0];
+    //         $amountPadLeft = mb_strlen($value_exploded[0] + self::SPACE);
 
-            for ($i = 1; $i < count($lines); $i++) {
-                $lines[$i] = Str::padLeft($lines[$i], strlen($lines[$i]) + $amountPadLeft);
-            }
-        }
-        // pad until long enough
-        else {
-            $lines[] = Str::padRight($value, $length);
-        }
+    //         // string started with a space, so the first values was ""
+    //         if (empty($toPadString) && count($value_exploded) >= 2)
+    //         {
+    //             $toPadString = ' ' . $value_exploded[1];
+    //             $amountPadLeft = mb_strlen($toPadString) + self::SPACE;
+    //         }
 
-        return $lines;
-    }
+    //         $lines = self::wordwrap_toArray(substr($value, $amountPadLeft), $length - $amountPadLeft);
+    //         $lines[0] = $toPadString . ' ' . Str::padRight($lines[0], $length - $amountPadLeft);
+
+    //         for ($i = 1; $i < count($lines); $i++) {
+    //             $lines[$i] = Str::padLeft($lines[$i], mb_strlen($lines[$i]) + $amountPadLeft);
+    //         }
+    //     }
+    //     // pad until long enough
+    //     else {
+    //         $lines[] = Str::padRight($value, $length);
+    //     }
+
+    //     return $lines;
+    // }
 }

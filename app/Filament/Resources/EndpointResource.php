@@ -17,7 +17,7 @@ class EndpointResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-cpu-chip';
 
-    protected static ?string $navigationGroup = 'Output';
+    protected static ?string $navigationGroup = 'Settings';
 
     public static function form(Form $form): Form
     {
@@ -29,24 +29,26 @@ class EndpointResource extends Resource
                     ->schema([
                         Forms\Components\TextInput::make('name')
                             ->label('Naam')
-                            ->helperText('Eigen bedachte naam')
+                            ->helperText('Naam om dit endpoint te identificeren')
                             ->required()
                             ->maxLength(255),
                         Forms\Components\TextInput::make('company_id')
-                            ->helperText('Bij welke company ID behoort dit endpoint')
-                            ->numeric()
-                            ->required(),
+                            ->helperText('Bij welke company ID behoort dit endpoint (leeg voor alle)')
+                            ->numeric(),
                         Forms\Components\Select::make('template_id')
                             ->relationship('template', 'name')
                             ->required(),
                         Forms\Components\Select::make('type')
                             ->options([
                                 'sunmi' => 'Sunmi Cloudprinter',
+                                'html' => 'HTML',
+                                'pdf' => 'PDF',
                             ])
+                            ->live()
                             ->required(),
+
                         Forms\Components\TextInput::make('target')
-                            ->helperText('Het apparaat of email adres waarheen het resultaat wordt gestuurd')
-                            ->required()
+                            ->helperText(fn (\Filament\Forms\Get $get): string => $get('type') == 'sunmi' ? 'Printer SN' : 'Omschrijving (mag leeg blijven)')
                             ->maxLength(100),
                     ]),
                 Section::make('Filters')
@@ -63,7 +65,7 @@ class EndpointResource extends Resource
                         Forms\Components\Toggle::make('filter_printable')
                             ->label('Printable')
                             ->helperText('Filteren op "printable" producten'),
-                ]),
+                    ]),
             ]);
     }
 
@@ -76,7 +78,7 @@ class EndpointResource extends Resource
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('company_id')
-                    ->numeric()
+                    ->default('All')
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('template.name')
@@ -86,6 +88,7 @@ class EndpointResource extends Resource
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('target')
+                    ->default('-')
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('filter_terminal')
@@ -95,15 +98,15 @@ class EndpointResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('filter_zone')
-                ->label('Zone')
+                    ->label('Zone')
                     ->placeholder('Leeg')
                     ->searchable()
                     ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\IconColumn::make('filter_printable')
-                ->label('Printable')
+                    ->label('Printable')
                     ->boolean()
                     ->searchable()
-            ->toggleable(isToggledHiddenByDefault: true),
+                    ->toggleable(isToggledHiddenByDefault: true),
                 Tables\Columns\TextColumn::make('created_at')
                     ->label('Aangemaakt')
                     ->dateTime()
@@ -133,13 +136,6 @@ class EndpointResource extends Resource
             ->emptyStateActions([
                 Tables\Actions\CreateAction::make(),
             ]);
-    }
-
-    public static function getRelations(): array
-    {
-        return [
-            //
-        ];
     }
 
     public static function getPages(): array

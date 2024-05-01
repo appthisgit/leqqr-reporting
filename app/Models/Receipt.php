@@ -3,13 +3,13 @@
 namespace App\Models;
 
 use App\Helpers\ReceiptSettings;
-use App\Http\Data\OrderData;
 use App\Http\Data\ProductData;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Receipt extends Model
 {
+    
     public ReceiptSettings $settings;
     private $products = null;
 
@@ -25,15 +25,14 @@ class Receipt extends Model
         $this->settings = new ReceiptSettings();
     }
 
-    /**
+        /**
      * The attributes that should be cast.
      *
      * @var array
      */
     protected $casts = [
-        'order' => OrderData::class,
+        'response' => 'array',
     ];
-
 
     /**
      * The attributes that are mass assignable.
@@ -41,48 +40,45 @@ class Receipt extends Model
      * @var array<string>
      */
     protected $fillable = [
-        'company_id',
-        'endpoint_id',
-        'confirmation_code',
         'order_id',
+        'endpoint_id',
         'order',
-        'printed',
-        'result_message',
-        'result_response',
+        'status',
+        'response',
     ];
-
-    public function company(): BelongsTo
-    {
-        return $this->belongsTo(Company::class);
-    }
 
     public function endpoint(): BelongsTo
     {
         return $this->belongsTo(Endpoint::class);
     }
 
-    /**
+    public function order(): BelongsTo
+    {
+        return $this->belongsTo(Order::class);
+    }
+
+       /**
      * Retrieve all the required Products from the Order
      */
     public function getRequiredProducts(): array
     {
-        return $this->order->products
+        return $this->order->data->products
             ->toCollection()
             ->filter(fn (ProductData $product) => !($product->category))
             ->all();
     }
 
     /**
-     * Retrieve all Products from the Order after filtering on printable and zone and order them according to settings 
+     * Retrieve all Products from the Order after filtering on printable and zone and order them according to settings
      */
     public function getProducts(): array
     {
         if ($this->products == null) {
-            $productsCollection = $this->order->products->toCollection()->filter(function (ProductData $product) {
+            $productsCollection = $this->order->data->products->toCollection()->filter(function (ProductData $product) {
                 if ($product->category) {
                     if ($this->endpoint->filter_printable || $this->endpoint->filter_zone) {
                         return $product->inFilters(
-                            $this->endpoint->filter_printable, 
+                            $this->endpoint->filter_printable,
                             $this->endpoint->filter_zone
                         );
                     }
