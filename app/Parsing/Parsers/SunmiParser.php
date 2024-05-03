@@ -54,8 +54,7 @@ class SunmiParser extends TemplateParser
             }
 
             return $results;
-        }
-        else {
+        } else {
             $printable = $this->parse();
             return $this->print($printable);
         }
@@ -80,17 +79,15 @@ class SunmiParser extends TemplateParser
 
     private function setFormatting(TextLine|TableCell $item)
     {
-        if ($this->currentInverted != $item->inverted)
-        {
+        if ($this->currentInverted != $item->inverted) {
             $this->printer->setBlackWhiteReverseMode($item->inverted);
             $this->currentInverted = $item->inverted;
         }
-        if ($this->currentAlignment != $item->alignment) {
+        if ($item instanceof TextLine && $this->currentAlignment != $item->alignment) {
             $this->printer->setAlignment(match ($item->alignment) {
                 Alignment::left => SunmiCloudPrinter::ALIGN_LEFT,
                 Alignment::center => SunmiCloudPrinter::ALIGN_CENTER,
                 Alignment::right => SunmiCloudPrinter::ALIGN_RIGHT,
-
             });
             $this->currentAlignment = $item->alignment;
         }
@@ -129,16 +126,13 @@ class SunmiParser extends TemplateParser
                     /** @var \App\Parsing\Parsers\Template\Lines\TableLine */
                     $tableLine = $line;
 
-                    $first = true;
+                    $string = '';
                     foreach ($tableLine->cells as $cell) {
                         $this->setFormatting($cell);
-                        if (!$first) {
-                            //TODO: check this with the spacing thingy
-                            $this->printer->appendText(' ');
-                            $cell->maxLength--;
-                        }
-                        $this->printer->appendText($cell->getText());
-                        $first = false;
+
+                        $string .= $cell->getText();
+                        $this->printer->appendText($string);
+                        $string = ' ';
                     }
 
                     $this->printer->appendText("\n");
@@ -147,7 +141,7 @@ class SunmiParser extends TemplateParser
                     /** @var \App\Parsing\Parsers\Template\Lines\ImageLine */
                     $imageLine = $line;
 
-                    $this->printer->appendImage( $imageLine->getImage(), SunmiCloudPrinter::DIFFUSE_DITHER);
+                    $this->printer->appendImage($imageLine->getImage(), SunmiCloudPrinter::DIFFUSE_DITHER);
 
                     break;
                 default:
