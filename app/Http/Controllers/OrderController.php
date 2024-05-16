@@ -60,9 +60,11 @@ class OrderController extends Controller
      */
     public function show(Order $order, string $format)
     {
-        $endpoint = Endpoint::whereCompanyId($order->company->id)
-            ->orWhereNull('company_id')
-            ->where('type', $format)
+        $endpoint = Endpoint::where('type', $format)
+            ->where(function($query) use ($order) {
+                $query->whereCompanyId($order->company->id);
+                $query->orWhereNull('company_id');
+            })
             ->orderBy('company_id', 'desc')
             ->first();
 
