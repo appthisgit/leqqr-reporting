@@ -172,7 +172,7 @@ class FieldParser
 
                 // Variations
             case 'variation_price':
-                $this->checkValue($this->currentVatRow, "price value=\"$key\"",  'can\'t be accessed outside of variation loop');
+                $this->checkValue($this->currentVariationValue, "price value=\"$key\"",  'can\'t be accessed outside of variation loop');
                 return $this->currentVariationValue->price;
                 
                 // Taxes
