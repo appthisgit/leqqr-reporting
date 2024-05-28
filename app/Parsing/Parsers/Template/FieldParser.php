@@ -54,7 +54,9 @@ class FieldParser
             case 'has_discounts':
                 return !empty($this->receipt->order->data->price_discount);
             case 'has_taxes':
-                return !empty($this->receipt->order->data->vat->order_vat > 0);
+                return $this->receipt->order->data->vat->order_vat > 0;
+            case 'has_no_taxes':
+                return empty($this->receipt->order->data->vat->order_vat);
             case 'is_method_cash':
                 return $this->receipt->order->data->payment_method == 'cash';
             case 'is_method_account':
