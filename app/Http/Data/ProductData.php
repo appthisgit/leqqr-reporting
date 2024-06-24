@@ -13,6 +13,7 @@ class ProductData extends Data
     public function __construct(
         /** @var VariationData[] */
         public DataCollection $variations,
+        public readonly int $id,
         public readonly int $amount,
         public readonly string $name,
         public readonly ?string $kitchen_info,

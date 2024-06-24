@@ -22,7 +22,6 @@ class OrderData extends OrderCollectionItem
         public readonly string $payment_method,
         public readonly ?string $pin_transaction_receipt,
         public readonly ?string $pin_terminal_id,
-        public readonly ?string $mollie_payment_method,
         public readonly float $price_subtotal,
         public readonly float $price_total,
         public readonly ?float $price_discount,
