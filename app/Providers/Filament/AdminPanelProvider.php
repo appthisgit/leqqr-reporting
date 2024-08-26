@@ -26,6 +26,7 @@ class AdminPanelProvider extends PanelProvider
     public function panel(Panel $panel): Panel
     {
         return $panel
+        ->id('admin')
             ->defaultAvatarProvider(GravatarProvider::class)
             ->plugins([
                 GravatarPlugin::make(),
@@ -34,7 +35,6 @@ class AdminPanelProvider extends PanelProvider
                 FilamentLaravelLogPlugin::make()
             )
             ->default()
-            ->id('admin')
             ->path('/')
             ->login()
             ->colors([
