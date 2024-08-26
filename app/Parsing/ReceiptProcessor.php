@@ -115,6 +115,7 @@ class ReceiptProcessor
             $this->receipt->status = 'Done';
             $this->receipt->response = [
                 'result' => [
+                    'status' => 'Receipt has been processed without any printing (no products after filtering)',
                     'filter_on_terminal' => $this->receipt->endpoint->filter_terminal,
                     'ordered with_terminal' => $this->receipt->order->data->pin_terminal_id,
                 ]
