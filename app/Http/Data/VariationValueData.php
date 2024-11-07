@@ -8,7 +8,7 @@ class VariationValueData extends Data {
 
     public function __construct(
         public readonly int $id,
-        public readonly ?int $external_id,
+        public readonly ?string $external_id,
         public readonly string $name,
         public readonly ?string $kitchen_info,
         public readonly ?float $price,

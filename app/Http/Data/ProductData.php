@@ -24,7 +24,7 @@ class ProductData extends Data
         public readonly ?bool $printable,
         public readonly ?float $vat_tarif,
         public readonly ?string $zone,
-        public readonly ?int $external_id,
+        public readonly ?string $external_id,
         public readonly ?CategoryData $category,
     ) {
     }
