@@ -7,6 +7,7 @@ return [
     "online" => "payé en ligne",
     "pin" => "borne à broches",
     "cikam" => "cikam",
+    "none" => "none",
     "eat_in_store" => "eat in store",
     "pickup" => "pickup",
     "delivery" => "delivery",
