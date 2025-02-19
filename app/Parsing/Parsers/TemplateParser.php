@@ -261,8 +261,7 @@ abstract class TemplateParser extends FieldParser
                 }
 
                 $text = $node->textContent;
-                $locale = $this->receipt->order->data->order_locale;
-
+                $locale = $this->receipt->order->data->getLocale();
                 if ($node->attributes->getNamedItem('translate') == true && $locale != 'nl') {
                     if (empty($this->translations[$node->textContent])) {
                         throw new TemplateException('text', "no translations added for '$text'", $this->lineNumber);

@@ -69,7 +69,7 @@ class OrderData extends OrderCollectionItem
 
     public function getShipmentLabel(): string
     {
-        return $this->shipment_label ?? __($this->shipment_type, [], $this->getLocale());
+        return $this->shipment_label ?? __('fields.' . $this->shipment_type, [], $this->getLocale());
     }
 
     public function getLocale(): string

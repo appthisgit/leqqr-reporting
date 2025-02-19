@@ -230,7 +230,7 @@ class FieldParser
             case 'payment_method':
                 return $this->receipt->order->data->payment_method;
             case 'payment_method_translated':
-                return __($this->receipt->order->data->payment_method, [], $this->receipt->order->data->order_locale);
+                return __('fields.' . $this->receipt->order->data->payment_method, [], $this->receipt->order->data->getLocale());
             case 'pin_receipt':
                 return $this->receipt->order->data->hasPinTransactionReceipt()
                     ? $this->receipt->order->data->pin_transaction_receipt : '-- No pin receipt --';
