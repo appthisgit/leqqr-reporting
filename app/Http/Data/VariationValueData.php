@@ -10,6 +10,7 @@ class VariationValueData extends Data {
         public readonly int $id,
         public readonly ?string $external_id,
         public readonly string $name,
+        public readonly ?string $name_translated,
         public readonly ?string $kitchen_info,
         public readonly ?float $price,
         public readonly int $amount,

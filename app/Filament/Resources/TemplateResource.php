@@ -51,6 +51,26 @@ class TemplateResource extends Resource
                 Forms\Components\Section::make('Extra\'s')
                     ->columnSpan(1)
                     ->schema([
+                        Forms\Components\Repeater::make('translations')
+                            ->label('Vertalingen')
+                            ->helperText('Gebruikt teksten in de template met hier ingevulde vertalingen. De volgorde maakt niet uit zolang het <text> element maar \'translate="true"\' bevat in de template en een overeenkomstige Nederlandse naam.')
+                            ->addActionLabel('Vertaling toevoegen')
+                            ->collapsed()
+                            ->columns(3)
+                            ->itemLabel(fn(array $state): ?string => $state['key'] ?? null)
+                            ->schema([
+                                Forms\Components\TextInput::make('key')
+                                    ->label('Nederlands')
+                                    ->live()
+                                    ->columnSpan(3)
+                                    ->required(),
+                                Forms\Components\TextInput::make('de')
+                                    ->label('Duits'),
+                                Forms\Components\TextInput::make('fr')
+                                    ->label('Frans'),
+                                Forms\Components\TextInput::make('en')
+                                    ->label('Engels'),
+                            ]),
                         Forms\Components\FileUpload::make('images')
                             ->label('Afbeeldingen')
                             ->helperText('Houdt rekening met de volgorde van uw afbeeldingen')
