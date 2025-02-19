@@ -249,8 +249,6 @@ class FieldParser
                 $this->checkValue($this->currentProduct, $key,  'can\'t be accessed outside of product loop');
                 return $this->currentProduct->name_translated ?? $this->currentProduct->name;
             case 'product_kitchen_info':
-                $this->checkValue($this->currentProduct, $key,  'can\'t be accessed outside of product loop');
-                return $this->currentProduct->kitchen_info;
             case 'product_kitchen_info_or_name':
                 $this->checkValue($this->currentProduct, $key,  'can\'t be accessed outside of product loop');
                 return $this->currentProduct->kitchen_info ?? $this->currentProduct->name;
@@ -268,6 +266,9 @@ class FieldParser
             case 'required_product_name':
                 $this->checkValue($this->currentRequiredProduct, $key,  'can\'t be accessed outside of required_product loop');
                 return $this->currentRequiredProduct->name;
+            case 'required_product_name_translated':
+                $this->checkValue($this->currentRequiredProduct, $key,  'can\'t be accessed outside of required_product loop');
+                return $this->currentRequiredProduct->name_translated ?? $this->currentRequiredProduct->name;
 
                 // Variation
             case 'variation_symbol':
@@ -280,10 +281,8 @@ class FieldParser
                 $this->checkValue($this->currentVariation, $key,  'can\'t be accessed outside of variation loop');
                 return $this->currentVariationValue->name_translated ?? $this->currentVariationValue->name;
             case 'variation_kitchen_info':
-                $this->checkValue($this->currentVariation, $key,  'can\'t be accessed outside of variation loop');
-                return $this->currentVariationValue->kitchen_info;
             case 'variation_kitchen_info_or_name':
-                $this->checkValue($this->currentProduct, $key,  'can\'t be accessed outside of product loop');
+                $this->checkValue($this->currentVariation, $key,  'can\'t be accessed outside of variation loop');
                 return $this->currentVariationValue->kitchen_info ?? $this->currentVariationValue->name;
 
                 // Taxes
