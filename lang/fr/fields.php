@@ -8,5 +8,6 @@ return [
     "pin" => "pin terminal",
     "cikam" => "cikam",
     "eat_in_store" => "manger en magasin",
-    "pickup" => "ramasser"
+    "pickup" => "ramasser",
+    "delivery" => "livraison",
 ];

@@ -8,5 +8,6 @@ return [
     "pin" => "stiftklemme",
     "cikam" => "cikam",
     "eat_in_store" => "im laden essen",
-    "pickup" => "abholen"
+    "pickup" => "abholen",
+    "delivery" => "lieferung bei",
 ];

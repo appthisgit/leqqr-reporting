@@ -8,5 +8,6 @@ return [
     "pin" => "pinautomaat",
     "cikam" => "cikam",
     "eat_in_store" => "hier opeten",
-    "pickup" => "meenemen"
+    "pickup" => "meenemen",
+    "delivery" => "bezorgen",
 ];

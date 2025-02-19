@@ -8,5 +8,6 @@ return [
     "pin" => "borne à broches",
     "cikam" => "cikam",
     "eat_in_store" => "eat in store",
-    "pickup" => "pickup"
+    "pickup" => "pickup",
+    "delivery" => "delivery",
 ];
