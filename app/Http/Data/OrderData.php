@@ -65,6 +65,10 @@ class OrderData extends OrderCollectionItem
             }
         }
         $this->questions = QuestionData::collection($reformatted);
+
+        if (empty($order_locale)) {
+            $this->order_locale = 'nl';
+        }
     }
 
     public function hasPinTransactionReceipt()
