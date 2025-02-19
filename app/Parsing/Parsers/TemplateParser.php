@@ -28,14 +28,22 @@ abstract class TemplateParser extends FieldParser
     private DOMElement $documentRoot;
     private Line $currentLine;
     private ?array $images;
-
-    
+    private array $translations;
 
     public abstract function run();
 
     public function load(Template $template)
     {
         $this->images = $template->images;
+        $this->translations = [];
+
+        foreach ($template->translations as $translation) {
+            $this->translations[$translation['key']] = [
+                'de' => $translation['de'],
+                'fr' => $translation['fr'],
+                'en' => $translation['en'],
+            ];
+        }
 
         $doc = new DOMDocument();
         $doc->loadXML($template->content);
@@ -252,7 +260,20 @@ abstract class TemplateParser extends FieldParser
                     throw new TemplateException('text', 'trying to add text to a non textual line', $this->lineNumber);
                 }
 
-                $this->currentLine->appendText($node->textContent);
+                $text = $node->textContent;
+                $locale = $this->receipt->order->data->order_locale;
+
+                if ($node->attributes->getNamedItem('translate') == true && $locale != 'nl') {
+                    if (empty($this->translations[$node->textContent])) {
+                        throw new TemplateException('text', "no translations added for '$text'", $this->lineNumber);
+                    }
+                    if (empty($this->translations[$node->textContent][$locale])) {
+                        throw new TemplateException('text', "empty $locale translation for '$text'", $this->lineNumber);
+                    }
+                    $text = $this->translations[$node->textContent][$locale];
+                }
+
+                $this->currentLine->appendText($text);
                 break;
             default: // value nodes
                 if ($node->hasChildNodes()) {
