@@ -1,6 +1,7 @@
 <?php
 
 // @formatter:off
+// phpcs:ignoreFile
 /**
  * A helper file for your Eloquent Models
  * Copy the phpDocs from this file to the correct Model,
@@ -71,7 +72,7 @@ namespace App\Models{
  * @property int $id
  * @property int $company_id
  * @property int $confirmation_code
- * @property \Spatie\LaravelData\Contracts\BaseData|null $data
+ * @property \Spatie\LaravelData\Contracts\BaseData $data
  * @property-read \App\Models\Company $company
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Receipt> $receipts
  * @property-read int|null $receipts_count
@@ -121,6 +122,7 @@ namespace App\Models{
  * @property string $name
  * @property array $images
  * @property string $content
+ * @property array|null $translations
  * @property \Illuminate\Support\Carbon|null $created_at
  * @property \Illuminate\Support\Carbon|null $updated_at
  * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Endpoint> $endpoints
@@ -134,6 +136,7 @@ namespace App\Models{
  * @method static \Illuminate\Database\Eloquent\Builder|Template whereId($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Template whereImages($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Template whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder|Template whereTranslations($value)
  * @method static \Illuminate\Database\Eloquent\Builder|Template whereUpdatedAt($value)
  */
 	class Template extends \Eloquent {}

@@ -19,6 +19,7 @@ class Template extends Model
         'name',
         'zone',
         'content',
+        'translations',
         'images',
     ];
 
@@ -28,6 +29,7 @@ class Template extends Model
      * @var array<string, string>
      */
     protected $casts = [
+        'translations' => 'array',
         'images' => 'array',
     ];
 

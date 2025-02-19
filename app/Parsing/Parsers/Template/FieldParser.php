@@ -229,6 +229,22 @@ class FieldParser
                 return $this->receipt->order->data->shipment_label;
             case 'payment_method':
                 return $this->receipt->order->data->payment_method;
+            case 'payment_method_translated':
+                $locale = $this->receipt->order->data->order_locale;
+                switch ($this->receipt->order->data->payment_method) {
+                    case 'cash':
+                        return ($locale == 'de') ? 'kasse' : (($locale == 'fr') ? 'espèces' : (($locale == 'en') ? 'cash' : 'contant'));
+                    case 'account':
+                        return ($locale == 'de') ? 'auf rechnung' : (($locale == 'fr') ? 'à compte' : (($locale == 'en') ? 'on account' : 'op rekening'));
+                    case 'ideal':
+                    case 'online':
+                        return ($locale == 'de') ? 'online bezahlt' : (($locale == 'fr') ? 'payé en ligne' : (($locale == 'en') ? 'paid online' : 'online betaald'));
+                    case 'pin':
+                        return ($locale == 'de') ? 'stiftklemme' : (($locale == 'fr') ? 'borne à broches' : (($locale == 'en') ? 'pin terminal' : 'pinautomaat'));
+                    case 'cikam':
+                    default:
+                        return $this->receipt->order->data->payment_method;
+                };
             case 'pin_receipt':
                 return $this->receipt->order->data->hasPinTransactionReceipt()
                     ? $this->receipt->order->data->pin_transaction_receipt : '-- No pin receipt --';
@@ -243,7 +259,7 @@ class FieldParser
             case 'product_name':
                 $this->checkValue($this->currentProduct, $key,  'can\'t be accessed outside of product loop');
                 return $this->currentProduct->name;
-            case 'name_translated':
+            case 'product_name_translated':
                 $this->checkValue($this->currentProduct, $key,  'can\'t be accessed outside of product loop');
                 return $this->currentProduct->name_translated;
             case 'product_kitchen_info':
