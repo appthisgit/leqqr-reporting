@@ -27,6 +27,8 @@ class OrderData extends OrderCollectionItem
         public readonly ?float $price_discount,
         public readonly ?float $price_transaction,
         public readonly string $origin,
+        public readonly ?string $shipment_label,
+        public readonly ?string $order_locale,
 
         // super()
         int $id,

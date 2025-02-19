@@ -176,7 +176,7 @@ class FieldParser
             case 'variation_price':
                 $this->checkValue($this->currentVariationValue, "price value=\"$key\"",  'can\'t be accessed outside of variation loop');
                 return $this->currentVariationValue->price;
-                
+
                 // Taxes
             case 'tax':
                 $this->checkValue($this->currentVatRow, "price value=\"$key\"",  'can\'t be accessed outside of tax loop');
@@ -225,6 +225,8 @@ class FieldParser
                 return $this->receipt->order->data->notes;
             case 'order_origin':
                 return $this->receipt->order->data->origin;
+            case 'shipment_label':
+                return $this->receipt->order->data->shipment_label;
             case 'payment_method':
                 return $this->receipt->order->data->payment_method;
             case 'pin_receipt':
@@ -241,6 +243,9 @@ class FieldParser
             case 'product_name':
                 $this->checkValue($this->currentProduct, $key,  'can\'t be accessed outside of product loop');
                 return $this->currentProduct->name;
+            case 'name_translated':
+                $this->checkValue($this->currentProduct, $key,  'can\'t be accessed outside of product loop');
+                return $this->currentProduct->name_translated;
             case 'product_kitchen_info':
                 $this->checkValue($this->currentProduct, $key,  'can\'t be accessed outside of product loop');
                 return $this->currentProduct->kitchen_info;
@@ -270,6 +275,9 @@ class FieldParser
             case 'variation_name':
                 $this->checkValue($this->currentVariation, $key,  'can\'t be accessed outside of variation loop');
                 return $this->currentVariationValue->name;
+            case 'variation_name_translated':
+                $this->checkValue($this->currentVariation, $key,  'can\'t be accessed outside of variation loop');
+                return $this->currentVariationValue->name_translated;
             case 'variation_kitchen_info':
                 $this->checkValue($this->currentVariation, $key,  'can\'t be accessed outside of variation loop');
                 return $this->currentVariationValue->kitchen_info;

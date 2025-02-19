@@ -16,6 +16,7 @@ class ProductData extends Data
         public readonly int $id,
         public readonly int $amount,
         public readonly string $name,
+        public readonly ?string $name_translated,
         public readonly ?string $kitchen_info,
         public readonly ?string $notes,
         public readonly float $subtotal,
