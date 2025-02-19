@@ -226,7 +226,7 @@ class FieldParser
             case 'order_origin':
                 return $this->receipt->order->data->origin;
             case 'shipment_label':
-                return $this->receipt->order->data->shipment_label;
+                return $this->receipt->order->data->getShipmentLabel();
             case 'payment_method':
                 return $this->receipt->order->data->payment_method;
             case 'payment_method_translated':
@@ -247,14 +247,13 @@ class FieldParser
                 return $this->currentProduct->name;
             case 'product_name_translated':
                 $this->checkValue($this->currentProduct, $key,  'can\'t be accessed outside of product loop');
-                return $this->currentProduct->name_translated;
+                return $this->currentProduct->name_translated ?? $this->currentProduct->name;
             case 'product_kitchen_info':
                 $this->checkValue($this->currentProduct, $key,  'can\'t be accessed outside of product loop');
                 return $this->currentProduct->kitchen_info;
             case 'product_kitchen_info_or_name':
                 $this->checkValue($this->currentProduct, $key,  'can\'t be accessed outside of product loop');
-                return (Strings::isNotEmptyOrValueNull($this->currentProduct->kitchen_info)) ?
-                    $this->currentProduct->kitchen_info : $this->currentProduct->name;
+                return $this->currentProduct->kitchen_info ?? $this->currentProduct->name;
             case 'product_notes':
                 $this->checkValue($this->currentProduct, $key,  'can\'t be accessed outside of product loop');
                 return $this->currentProduct->notes;
@@ -279,14 +278,13 @@ class FieldParser
                 return $this->currentVariationValue->name;
             case 'variation_name_translated':
                 $this->checkValue($this->currentVariation, $key,  'can\'t be accessed outside of variation loop');
-                return $this->currentVariationValue->name_translated;
+                return $this->currentVariationValue->name_translated ?? $this->currentVariationValue->name;
             case 'variation_kitchen_info':
                 $this->checkValue($this->currentVariation, $key,  'can\'t be accessed outside of variation loop');
                 return $this->currentVariationValue->kitchen_info;
             case 'variation_kitchen_info_or_name':
                 $this->checkValue($this->currentProduct, $key,  'can\'t be accessed outside of product loop');
-                return (Strings::isNotEmptyOrValueNull($this->currentVariationValue->kitchen_info)) ?
-                    $this->currentVariationValue->kitchen_info : $this->currentVariationValue->name;
+                return $this->currentVariationValue->kitchen_info ?? $this->currentVariationValue->name;
 
                 // Taxes
             case 'tax_tarif':

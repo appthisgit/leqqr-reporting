@@ -65,18 +65,24 @@ class OrderData extends OrderCollectionItem
             }
         }
         $this->questions = QuestionData::collection($reformatted);
-
-        if (empty($order_locale)) {
-            $this->order_locale = 'nl';
-        }
     }
 
-    public function hasPinTransactionReceipt()
+    public function getShipmentLabel(): string
+    {
+        return $this->shipment_label ?? __($this->shipment_type, [], $this->getLocale());
+    }
+
+    public function getLocale(): string
+    {
+        return $this->order_locale ?? 'nl';
+    }
+
+    public function hasPinTransactionReceipt(): bool
     {
         return !empty(trim($this->pin_transaction_receipt));
     }
 
-    public function isIdeal()
+    public function isIdeal(): bool
     {
         return $this->payment_method == 'ideal';
     }
