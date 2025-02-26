@@ -25,8 +25,7 @@ class FieldParser
 
     public function __construct(
         protected readonly Receipt $receipt,
-    ) {
-    }
+    ) {}
 
     protected function doIf(string $key, ?string $value): bool
     {
@@ -149,7 +148,7 @@ class FieldParser
             case 'discount_amount':
                 return $this->receipt->order->data->price_discount;
             case 'tax_total':
-                return $this->receipt->order->data->vat->order->data_vat;
+                return $this->receipt->order->data->vat->order_vat;
             case 'total';
                 return $this->receipt->order->data->price_total;
 
