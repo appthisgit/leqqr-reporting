@@ -11,6 +11,7 @@ use App\Parsing\Parsers\Template\FieldParser;
 use App\Parsing\Parsers\Template\Lines\DividerLine;
 use App\Parsing\Parsers\Template\Lines\ImageLine;
 use App\Parsing\Parsers\Template\Lines\Line;
+use App\Parsing\Parsers\Template\Lines\QRLine;
 use App\Parsing\Parsers\Template\Lines\TableCell;
 use App\Parsing\Parsers\Template\Lines\TableLine;
 use App\Parsing\Parsers\Template\Lines\TextLine;
@@ -55,7 +56,8 @@ abstract class TemplateParser extends FieldParser
         }
     }
 
-    protected function setSetting(string $property, string $value) {
+    protected function setSetting(string $property, string $value)
+    {
         switch ($property) {
             case 'products-sort':
                 $this->receipt->settings->sort = $value;
@@ -147,8 +149,16 @@ abstract class TemplateParser extends FieldParser
                 $this->setCurrentLine(new TextLine($this->receipt->settings), $node);
                 $this->parseChildren($node);
                 break;
+            case 'stripe':
+                $this->setCurrentLine(new DividerLine($this->receipt->settings), $node);
+                break;
             case 'row':
                 $this->setCurrentLine(new TableLine($this->receipt->settings), $node);
+                $this->parseChildren($node);
+                break;
+            case 'qr':
+            case 'qrcode':
+                $this->setCurrentLine(new QRLine($this->receipt->settings), $node);
                 $this->parseChildren($node);
                 break;
             case 'image':
@@ -219,10 +229,6 @@ abstract class TemplateParser extends FieldParser
                         throw new TemplateException('foreach items="' . $node->attributes->getNamedItem('items')->nodeValue . '"', 'unknown items value', $this->lineNumber);
                 }
                 break;
-            case 'stripe':
-                $stripe = new DividerLine($this->receipt->settings);
-                $this->setCurrentLine($stripe, $node);
-                break;
             case 'cell':
                 if (!($this->currentLine instanceof TableLine)) {
                     throw new TemplateException('column', 'found at unparsable location', $this->lineNumber);
@@ -256,7 +262,7 @@ abstract class TemplateParser extends FieldParser
                 $tableLine->appendPrice($this->retrievePrice($key));
                 break;
             case 'text':
-                if (!($this->currentLine instanceof TextLine || $this->currentLine instanceof TableLine)) {
+                if (!($this->currentLine instanceof TextLine || $this->currentLine instanceof QRLine || $this->currentLine instanceof TableLine)) {
                     throw new TemplateException('text', 'trying to add text to a non textual line', $this->lineNumber);
                 }
 
@@ -278,7 +284,7 @@ abstract class TemplateParser extends FieldParser
                 if ($node->hasChildNodes()) {
                     throw new TemplateException($node->nodeName, 'is unknown to have children', $this->lineNumber);
                 }
-                if (!($this->currentLine instanceof TextLine || $this->currentLine instanceof TableLine)) {
+                if (!($this->currentLine instanceof TextLine  || $this->currentLine instanceof QRLine || $this->currentLine instanceof TableLine)) {
                     throw new TemplateException('text', 'trying to add text to a non textual line', $this->lineNumber);
                 }
                 if ($node->hasAttributes()) {
@@ -323,15 +329,18 @@ abstract class TemplateParser extends FieldParser
         /** @var TextLine */
         $textLine = ($object instanceof TextLine) ? $object : false;
 
+        /** @var QRLine */
+        $qrLine = ($object instanceof QRLine) ? $object : false;
+
         /** @var TableLine */
         $tableLine = ($object instanceof TableLine) ? $object : false;
-        if (!$formattedTextObject)
-        {
+        if (!$formattedTextObject) {
             $formattedTextObject = $tableLine;
         }
 
         /** @var TableCell */
         $tableCell = ($object instanceof TableCell) ? $object : false;
+
 
         foreach ($node->attributes as $attribute) {
             $v = $attribute->nodeValue;
@@ -351,7 +360,7 @@ abstract class TemplateParser extends FieldParser
                         $formattedTextObject->inverted = $v;
                         break;
                     case 'align':
-                        $formattedTextObject->alignment = match($v) {
+                        $formattedTextObject->alignment = match ($v) {
                             'center' => Alignment::center,
                             'centered' => Alignment::center,
                             'right' => Alignment::right,
@@ -387,6 +396,25 @@ abstract class TemplateParser extends FieldParser
                         break;
                     case 'font':
                         $textLine->font = $v;
+                        break;
+                }
+            }
+            if ($qrLine) {
+                switch ($attribute->nodeName) {
+                    case 'align':
+                        $qrLine->alignment = match ($v) {
+                            'center' => Alignment::center,
+                            'centered' => Alignment::center,
+                            'right' => Alignment::right,
+                            default => Alignment::left
+                        };
+                        break;
+                    case 'center':
+                    case 'centered':
+                        $qrLine->alignment = ($v) ? Alignment::center : Alignment::left;
+                        break;
+                    case 'size':
+                        $qrLine->size = $v;
                         break;
                 }
             }
