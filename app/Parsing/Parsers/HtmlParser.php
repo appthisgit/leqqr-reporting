@@ -7,10 +7,12 @@ use App\Models\Receipt;
 use App\Parsing\Parsers\Html\HorizontalRule;
 use App\Parsing\Parsers\Html\Paragraph;
 use App\Parsing\Parsers\Html\Img;
+use App\Parsing\Parsers\Html\QR;
 use App\Parsing\Parsers\Html\Table;
 use App\Parsing\Parsers\Html\TableRow;
 use App\Parsing\Parsers\Template\Lines\DividerLine;
 use App\Parsing\Parsers\Template\Lines\ImageLine;
+use App\Parsing\Parsers\Template\Lines\QRLine;
 use App\Parsing\Parsers\Template\Lines\TableLine;
 use App\Parsing\Parsers\Template\Lines\TextLine;
 use Exception;
@@ -71,6 +73,9 @@ class HtmlParser extends TemplateParser
                     break;
                 case ImageLine::class:
                     $this->doc[] = new Img($line);
+                    break;
+                case QRLine::class:
+                    $this->doc[] = new QR($line);
                     break;
                 case TableLine::class:
 

@@ -8,6 +8,7 @@ use App\Parsing\Parsers\Template\Printable;
 use App\Parsing\Parsers\Sunmi\SunmiCloudPrinter;
 use App\Parsing\Parsers\Template\Lines\DividerLine;
 use App\Parsing\Parsers\Template\Lines\ImageLine;
+use App\Parsing\Parsers\Template\Lines\QRLine;
 use App\Parsing\Parsers\Template\Lines\TableCell;
 use App\Parsing\Parsers\Template\Lines\TableLine;
 use App\Parsing\Parsers\Template\Lines\TextLine;
@@ -144,6 +145,11 @@ class SunmiParser extends TemplateParser
                     $this->printer->appendImage($imageLine->getImage(), SunmiCloudPrinter::DIFFUSE_DITHER);
 
                     break;
+                case QRLine::class:
+                    /** @var \App\Parsing\Parsers\Template\Lines\QRLine */
+                    $qrLine = $line;
+                    //max 16 / 3
+                    $this->printer->appendQRcode($qrLine->size, 1, $qrLine->text);
                 default:
                     throw new Exception("how did you get here? >> " . get_class($line));
                     break;
