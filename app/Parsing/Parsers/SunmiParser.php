@@ -150,6 +150,7 @@ class SunmiParser extends TemplateParser
                     $qrLine = $line;
                     //max 16 / 3
                     $this->printer->appendQRcode($qrLine->size, 1, $qrLine->text);
+                    break;
                 default:
                     throw new Exception("how did you get here? >> " . get_class($line));
                     break;
