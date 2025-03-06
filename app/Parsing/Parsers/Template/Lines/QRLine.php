@@ -29,6 +29,9 @@ class QRLine extends Line
 
     public function getSVG(): String
     {
+        if ($this->size < 50) {
+            $this->size *= 10;
+        }
         return QrCode::size($this->size)->generate($this->text);
     }
 }
