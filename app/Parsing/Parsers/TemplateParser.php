@@ -29,7 +29,7 @@ abstract class TemplateParser extends FieldParser
     private DOMElement $documentRoot;
     private Line $currentLine;
     private ?array $images;
-    private array $translations;
+    private array $translations = [];
 
     public abstract function run();
 
@@ -38,12 +38,14 @@ abstract class TemplateParser extends FieldParser
         $this->images = $template->images;
         $this->translations = [];
 
-        foreach ($template->translations as $translation) {
-            $this->translations[$translation['key']] = [
-                'de' => $translation['de'],
-                'fr' => $translation['fr'],
-                'en' => $translation['en'],
-            ];
+        if ($template->translations) {
+            foreach ($template->translations as $translation) {
+                $this->translations[$translation['key']] = [
+                    'de' => $translation['de'],
+                    'fr' => $translation['fr'],
+                    'en' => $translation['en'],
+                ];
+            }
         }
 
         $doc = new DOMDocument();
